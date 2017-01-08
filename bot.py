@@ -106,7 +106,7 @@ async def on_message(message):
                     if hort is 't':
                         return 'tails'
                     else:
-                        return 'heads'
+                        return 'head'
                 
                 if split[2] == win:
                     with open("makotocoin"+fullname(win)+".jpg","rb") as f:
@@ -115,7 +115,8 @@ async def on_message(message):
                 else:
                     with open("makotocoin"+fullname(split[2])+".jpg","rb") as f:
                         await client.send_file(message.channel, f, content='{} you picked {} and that\'s {}, you lose.'.format(message.author.nick or message.author.name, fullname(split[2]), fullname(win))
-                    
+                    user_money[message.author.id] -= round(amount)
+                                               
             else: await client.send_message(message.channel, "{} please bet more than at least {}".format(message.author.nick or message.author.name, mindabs))
                 
 
