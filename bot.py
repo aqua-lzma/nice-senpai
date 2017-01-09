@@ -107,18 +107,18 @@ async def on_message(message):
                         return 'tails'
                     else:
                         return 'head'
-                
+
+                user_money[message.author.id] -= round(amount)
                 if split[2] == win:
-                    with open("makotocoin"+fullname(win)+".jpg","rb") as f:
-                        await client.send_file(message.channel, f, content='{} congrats! You won {} dabs'.format(message.author.nick or message.author.name, round(1.8*amount))
+                    with open("makotocoin"+fullname(win)+".png","rb") as f:
+                        await client.send_file(message.channel, f, content='{} congrats! You won {} dabs'.format(message.author.nick or message.author.name, round(1.8*amount)))
                     user_money[message.author.id] += round(amount * 1.8)
                 else:
-                    with open("makotocoin"+fullname(split[2])+".jpg","rb") as f:
-                        await client.send_file(message.channel, f, content='{} you picked {} and that\'s {}, you lose.'.format(message.author.nick or message.author.name, fullname(split[2]), fullname(win))
-                    user_money[message.author.id] -= round(amount)
-                                               
+                    with open("makotocoin"+fullname(split[2])+".png","rb") as f:
+                        await client.send_file(message.channel, f, content='{} you picked {} and that\'s {}, you lose.'.format(message.author.nick or message.author.name, fullname(split[2]), fullname(win)))
+
             else: await client.send_message(message.channel, "{} please bet more than at least {}".format(message.author.nick or message.author.name, mindabs))
-                
+
 
 
     global message_counter
@@ -155,4 +155,5 @@ async def on_message(message):
             await asyncio.sleep(5)
             await client.delete_message(award)
 
-client.run('MjU5NjYxODAzNjU3NjI1NjEw.C1KShA.vDLtCr-HdYdjvZvBJa3Pv2OPxaI')
+with open("token") as f:
+    client.run(f.read())
