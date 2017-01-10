@@ -15,6 +15,25 @@ Bet dabs on a coin flip with a 1.8* payout.
 h or t works as well as head or tail.
 Make sure you have enough dabs. {}""".format(DAB_EMOJI)
 
+def prettyTable(l):
+    maxs = [max(map(lambda x:len(str(x[i])),l)) for i in range(len(l[0]))]
+    for row in range(len(l)):
+        for col in range(len(l[row])):
+            l[row][col] = str(l[row][col]) + (" " * (maxs[col] - len(str(l[row][col]))))
+    l = list(map(lambda x:[""] + x + [""],l))
+    dashes = list(map(lambda x:"━"*x,maxs))
+    top = "┏" + "┳".join(dashes) + "┓"
+    mid = "┣" + "╋".join(dashes) + "┫"
+    bot = "┗" + "┻".join(dashes) + "┛"
+    out = ""
+    out += top + "\n"
+    for i in l:
+        out += "┃".join(i) + "\n"
+        if i != l[-1]:
+            out += mid + "\n"
+    out += bot
+    return out
+
 class Client(discord.Client):
     def __init__(self):
         super().__init__()
@@ -91,10 +110,9 @@ class Client(discord.Client):
                 if member == None:
                     continue
                 lb.append([member.nick or member.name, self.user_data[user_id]["money"]])
-            msg = ""
-            for i in lb[:num]:
-                msg += str(i) + "\n"
-            yield from self.send_message(message.channel, msg)
+            lb.sort(key=lambda x:x[1], reverse=True)
+            lb = "```" + prettyTable(lb) + "```"
+            yield from self.send_message(message.channel, lb)
             return
 
         if split[0] == "$br":
