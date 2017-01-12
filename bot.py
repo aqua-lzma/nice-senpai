@@ -41,7 +41,6 @@ class Client(discord.Client):
         self.shitpost_target = random.randint(50,200)
         self.dab_count = 0
         self.dab_target = random.randint(20,100)
-        self.dab_available = 0
         self.dab_announce = None
         with open("user_data.json") as f:
             self.user_data = json.load(f)
@@ -120,7 +119,7 @@ class Client(discord.Client):
 
         if split[0] == "$br":
             yield from self.check_user(message.channel, message.author)
-            if len(split) == 2 and split[1].isdigit():
+            if len(split) >= 2 and split[1].isdigit():
                 amount = int(split[1])
                 if amount <= self.user_data[message.author.id]["money"]:
                     self.user_data[message.author.id]["money"] -= amount
@@ -148,7 +147,7 @@ class Client(discord.Client):
         if split[0] == "$bf":
             yield from self.check_user(message.channel, message.author)
             words = ["t", "h", "head", "tail", "heads", "tails"]
-            if len(split) == 3 and ((split[1].isdigit() and split[2] in words) or (split[2].isdigit() and split[1] in words)):
+            if len(split) >= 3 and ((split[1].isdigit() and split[2] in words) or (split[2].isdigit() and split[1] in words)):
                 if split[1].isdigit():
                     amount = int(split[1])
                     guess = split[2][0]
@@ -230,23 +229,19 @@ class Client(discord.Client):
                 msg = "{} dabs have appeared! DAB TO GET EM!".format(dabs)
                 self.dab_announce = yield from self.send_file(message.channel, f, content=msg)
             self.dab_count = 0
-            self.dab_target = random.randint(10,100)
-            self.dab_available += dabs
+            self.dab_target = random.randint(20,100)
+            claim = yield from self.wait_for_message(channel=message.channel, check=lambda x: "dab" in x.content.lower())
+            self.check_user(claim.channel, claim.author)
+            msg = "{} has claimed {} dabs!".format(claim.author.nick or claim.author.name, dabs)
+            award = yield from self.send_message(message.channel, msg)
+            self.user_data[claim.author.id]["money"] += dabs
+            if self.dab_announce != None:
+                yield from self.delete_message(self.dab_announce)
+            yield from asyncio.sleep(10)
+            yield from self.delete_message(award)
         elif self.dab_count > self.dab_target:
             self.dab_count = 0
-            self.dab_target = random.randint(10,100)
-
-        if self.dab_available > 0:
-            if "dab" in message.content.lower():
-                yield from self.check_user(message.channel, message.author)
-                msg = "{} has claimed {} dabs!".format(message.author.nick or message.author.name, self.dab_available)
-                award = yield from self.send_message(message.channel, msg)
-                self.user_data[message.author.id]["money"] += self.dab_available
-                self.dab_available = 0
-                if self.dab_announce != None:
-                    yield from self.delete_message(self.dab_announce)
-                yield from asyncio.sleep(10)
-                yield from self.delete_message(award)
+            self.dab_target = random.randint(20,100)
 
     @asyncio.coroutine
     def update_json(self):
