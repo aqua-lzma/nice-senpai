@@ -2,8 +2,14 @@ import discord
 import asyncio
 import json
 import random
+from pybooru import Danbooru
 
 DAB_EMOJI = "<:ledabbinganimegirl:256497986979233792>"
+DAB_SYNTAX= """ `dabooru` syntax: `$dabooru [tags]`
+Looks for an image on dabooru.
+Make sure not to post naughte outside of lewd lole.
+Optional arguments are: `naughte` and `sort`  
+"""
 GIVE_SYNTAX = """`$give` syntax: `$give [amount] [@person]` or `$give [@person] [amount]`.
 Give dabs to another person.
 Make sure you have enough dabs. {}""".format(DAB_EMOJI)
@@ -14,6 +20,7 @@ BF_SYNTAX = """`$bf` syntax: `$bf [amount] [heads or tails]`.
 Bet dabs on a coin flip with a 1.8* payout.
 h or t works as well as head or tail.
 Make sure you have enough dabs. {}""".format(DAB_EMOJI)
+dab = Danbooru("danbooru")
 
 class Client(discord.Client):
     def __init__(self):
@@ -49,8 +56,8 @@ class Client(discord.Client):
             if role.id == "267405505784184835":
                 return
 
-        split = message.content.split()
-
+        split = message.content.lower().split()
+        
         if split[0] == "$$":
             self.check_user(message.channel, message.author)
             if message.mentions:
@@ -77,7 +84,7 @@ class Client(discord.Client):
                     self.give_money(amount, message.mentions[0])
                     name1 = message.author.nick or message.author.name
                     name2 = message.mentions[0].nick or message.mentions[0].name
-                    await self.send_message(message.channel, "{} gave {} dabs {} to {}.".format(name1, str(amount), DAB_EMOJI, name2))
+                    await self.send_message(message.channel, "{} gave {} dab{} {} to {}.".format(name1, str(amount), 's' if amount>1 else "", DAB_EMOJI, name2))
                 else:
                     await self.send_message(message.channel, "You don't have enough dabs. {}".format(DAB_EMOJI))
                 return
@@ -126,6 +133,34 @@ class Client(discord.Client):
             else:
                 await self.send_message(message.channel, BR_SYNTAX)
             return
+        
+        if split[0] == "$dabooru":
+            if len(split) > 1:
+                if len(split) > 2:
+                    if "naughte" in split: naughte = True
+                    if "sort" in split: sort = True
+                daburl = "http://danbooru.donmai.us%s"
+                check = limit = 10
+                imgs = dab.post_list(tags=[i for i in split[1:] if i not in ("naughte","sort")], limit=limit):
+                rimg = random.choice(imgs)
+                while "file_url" not in rimg.keys() and check >=1:
+                    if not naughte:
+                        while rimg['rating'] in ('q','e'):
+                            rimg = random.choice(imgs)                   
+                    rimg = random.choice(imgs)
+                    check-=1
+                if check == 0:
+                    await self.send_message(message.channel, "I couldn't find anything for the tag{} `{}`".format("s" if len(split) >2 else "", " ".join(i for i in split[1:])
+                else:
+                    if sort:
+                        img_data = requests.get(daburl+rimg["image_url"]).content
+                        with open(rimg+'.png', 'wb') as hdl:
+                            hdl.write(img_data)
+                        sort.all(rimg+'.png')
+                        await client.send_file(message.channel, rimg+'-sortrandom.png', content="score: {}".format(rimg["score"])
+                    else:
+                        await self.send_message(message.channel, "{}\n score: {} size: {}".format("http://danbooru.donmai.us"+rimg['file_url'], rimg["score"], rimg["image_width"]+" x "+rimg["image_height"]))                                                                                             
+            else: await self.send_message(message.channel, DAB_SYNTAX)
 
         if split[0] == "$bf":
             self.check_user(message.channel, message.author)
