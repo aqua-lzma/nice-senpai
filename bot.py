@@ -61,9 +61,8 @@ class Client(discord.Client):
             return
         if message.channel.id in ["183205223609663488", "183214846534352897"]:
             return
-        for role in message.author.roles:
-            if role.id == "182951530591158272":
-                return
+        if "182951530591158272" in [role.id for role in message.author.roles]:
+            return
 
         split = message.content.split()
 
@@ -71,6 +70,8 @@ class Client(discord.Client):
             yield from self.check_user(message.channel, message.author)
             if message.mentions:
                 yield from self.check_user(message.channel, message.mentions[0])
+                if self.user_data.get(message.mentions[0].id) == None:
+                    return
                 member = message.mentions[0]
                 money = self.user_data[message.mentions[0].id]["money"]
             else:
@@ -82,6 +83,8 @@ class Client(discord.Client):
             yield from self.check_user(message.channel, message.author)
             if len(split) == 3 and message.mentions:
                 yield from self.check_user(message.channel, message.mentions[0])
+                if self.user_data.get(message.mentions[0].id) == None:
+                    return
                 if split[1].isdigit():
                     amount = int(split[1])
                 elif split[2].isdigit():
@@ -111,7 +114,7 @@ class Client(discord.Client):
                     continue
                 lb.append([member.nick or member.name, self.user_data[user_id]["money"]])
             lb.sort(key=lambda x:x[1], reverse=True)
-            lb = "```" + prettyTable(lb) + "```"
+            lb = "```" + prettyTable(lb[:num]) + "```"
             yield from self.send_message(message.channel, lb)
             return
 
@@ -162,9 +165,9 @@ class Client(discord.Client):
                             yield from self.send_file(message.channel, f, content="Coin flip: heads.")
                         success = guess == "h"
                     else:
-                        with open("makotocoinhead.png", "rb") as f:
+                        with open("makotocointails.png", "rb") as f:
                             yield from self.send_file(message.channel, f, content="Coin flip: tails.")
-                        success = guess == "f"
+                        success = guess == "t"
                     if success:
                         self.user_data[message.author.id]["money"] += int(amount*1.8)
                         yield from self.send_message(message.channel, "Congratz you win {} dabs! {}".format(int(amount*1.8),DAB_EMOJI))
@@ -176,10 +179,22 @@ class Client(discord.Client):
                 yield from self.send_message(message.channel, BF_SYNTAX)
             return
 
+        if split[0] == "$del":
+            if len(split) == 2 and message.mentions and message.author.id == "147790355776012289":
+                if self.user_data.get(message.mentions[0].id) != None:
+                    del self.user_data[message.mentions[0].id]
+                    yield from self.send_message(message.channel, "{} deleted from database.".format(message.mentions[0].nick or message.mentions[0].name))
+                else:
+                    yield from self.send_message(message.channel, "{} not found in database.".format(message.mentions[0].nick or message.mentions[0].name))
+            return
         yield from self.update_vars(message)
 
     @asyncio.coroutine
     def check_user(self, channel, member):
+        if member == self.user:
+            return
+        if "182951530591158272" in [role.id for role in member.roles]:
+            return
         if self.user_data.get(member.id) == None:
             yield from self.send_message(channel, "{} not found in database, 100 free dabs! {}".format(member.nick or member.name, DAB_EMOJI))
             self.user_data[member.id] = {"money":100}
