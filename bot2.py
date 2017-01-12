@@ -55,6 +55,8 @@ class Client(discord.Client):
         for role in message.author.roles:
             if role.id == "267405505784184835":
                 return
+        if message.attachments:
+            lastmedia = {"url":message.attachments[0]['url'],"name":message.attachments[0]['filename']}
 
         split = message.content.lower().split()
         
@@ -133,7 +135,27 @@ class Client(discord.Client):
             else:
                 await self.send_message(message.channel, BR_SYNTAX)
             return
-        
+        #will start working on sort command, you can test it, it should work
+        #if split[0] == "$sort":
+        #   if len(split) == 0:
+        #       img = lastmedia['url']
+        #       imgn= lastmedia['name']
+        #   elif message.attachments:
+        #       img = message.attachments[0]['url']
+        #       imgn= message.attachments[0]['filename']
+        #   else:
+        #       img = split[1]
+        #       imgn= imgn.split('/')[len(imgn.split('/')-1)
+        #   with aiohttp.ClientSession() as session:
+        #       async with session.get(img) as r:
+        #           data = await r.read()
+        #           with open(imgn, "wb") as f:
+        #               f.write(data)
+        #           if sorttype is "all":
+        #               sort.all(imgn)
+        #           else:
+        #               sort.random(imgn, 50, times=1)
+        #           await client.send_file(message.channel, imgn)
         if split[0] == "$dabooru":
             if len(split) > 1:
                 if len(split) > 2:
@@ -153,11 +175,14 @@ class Client(discord.Client):
                     await self.send_message(message.channel, "I couldn't find anything for the tag{} `{}`".format("s" if len(split) >2 else "", " ".join(i for i in split[1:])
                 else:
                     if sort:
-                        img_data = requests.get(daburl+rimg["image_url"]).content
-                        with open(rimg+'.png', 'wb') as hdl:
-                            hdl.write(img_data)
-                        sort.all(rimg+'.png')
-                        await client.send_file(message.channel, rimg+'-sortrandom.png', content="score: {}".format(rimg["score"])
+                        with aiohttp.ClientSession() as session:
+                            async with session.get(daburl+rimg['url']) as r:
+                                data = await r.read()
+                                with open(daburl+rimg['md5']+'.png', "wb") as f:
+                                    f.write(data)
+                        img.save(daburl+rimg['md5']+'.png', 'PNG')
+                        sort.all(daburl+rimg['md5']+'.png')
+                        await client.send_file(message.channel, daburl+rimg['md5']+'-sortrandom.png', content="score: {}".format(rimg["score"])
                     else:
                         await self.send_message(message.channel, "{}\n score: {} size: {}".format("http://danbooru.donmai.us"+rimg['file_url'], rimg["score"], rimg["image_width"]+" x "+rimg["image_height"]))                                                                                             
             else: await self.send_message(message.channel, DAB_SYNTAX)
