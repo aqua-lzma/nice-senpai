@@ -1,3 +1,4 @@
+#!/usr/bin/python3.5
 import discord
 import asyncio
 import json
