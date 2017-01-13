@@ -231,7 +231,8 @@ class Client(discord.Client):
                 self.dab_announce = yield from self.send_file(message.channel, f, content=msg)
             self.dab_count = 0
             self.dab_target = random.randint(20,100)
-            claim = yield from self.wait_for_message(channel=message.channel, check=lambda x: "dab" in x.content.lower())
+            check = lambda x: "dab" in x.content.lower() and x.author != self.user
+            claim = yield from self.wait_for_message(channel=message.channel, check=check)
             self.check_user(claim.channel, claim.author)
             msg = "{} has claimed {} dabs!".format(claim.author.nick or claim.author.name, dabs)
             award = yield from self.send_message(message.channel, msg)
