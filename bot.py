@@ -3,6 +3,7 @@ import discord
 import asyncio
 import json
 import random
+import time
 
 DAB_EMOJI = "<:ledabbinganimegirl:256497986979233792>"
 GIVE_SYNTAX = """`$give` syntax: `$give [amount] [@person]` or `$give [@person] [amount]`.
@@ -34,6 +35,25 @@ def prettyTable(l):
             out += mid + "\n"
     out += bot
     return out
+
+def formatNumber(inp):
+    inp = str(inp)
+    inp = inp.replace("0",":zero:")
+    inp = inp.replace("1",":one:")
+    inp = inp.replace("2",":two:")
+    inp = inp.replace("3",":three:")
+    inp = inp.replace("4",":four:")
+    inp = inp.replace("5",":five:")
+    inp = inp.replace("6",":six:")
+    inp = inp.replace("7",":seven:")
+    inp = inp.replace("8",":eight:")
+    inp = inp.replace("9",":nine:")
+    return inp
+
+def formatLevel(inp):
+    inp *= 10
+    inp -= 9
+    return int(inp)
 
 class Client(discord.Client):
     def __init__(self):
@@ -73,11 +93,15 @@ class Client(discord.Client):
                 if self.user_data.get(message.mentions[0].id) == None:
                     return
                 member = message.mentions[0]
-                money = self.user_data[message.mentions[0].id]["money"]
             else:
                 member = message.author
-                money = self.user_data[message.author.id]["money"]
-            yield from self.send_message(message.channel, '{} has {} dabs. {}'.format(member.nick or member.name, str(money), DAB_EMOJI))
+            money = self.user_data[member.id]["money"]
+            level = self.user_data[member.id]["dubs"]["level"]
+            level = formatLevel(level)
+            rolls = self.user_data[member.id]["dubs"]["rolls"]
+            fmt = [member.nick or member.name, money, DAB_EMOJI, level, rolls]
+            msg =  "{0} has {1} dabs. {2}\n{0} is level {3} and has {4} rolls left today.".format(*fmt)
+            yield from self.send_message(message.channel, msg)
 
         if split[0] == "$give":
             yield from self.check_user(message.channel, message.author)
@@ -189,6 +213,48 @@ class Client(discord.Client):
             return
         yield from self.update_vars(message)
 
+        if split[0] == "$droll":
+            yield from self.check_user(message.channel, message.author)
+            if self.user_data[message.author.id]["dubs"]["rolls"] > 0:
+                self.user_data[message.author.id]["dubs"]["rolls"] -= 1
+                roll = str(random.randint(1,1000000))
+                win = 0
+                for i in range(-1, -len(roll), -1):
+                    if roll[i] == roll[i-1]:
+                        win += 1
+                    else:
+                        break
+                yield from self.send_message(message.channel, formatNumber(roll))
+                if roll == "0":
+                    msg = "WOW! LOWEST POSSIBLE ROLL! What does this mean?"
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 100)
+                elif roll == "1000000":
+                    msg = "WOW! HIGHEST POSSIBLE ROLL! What does this mean?"
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 100)
+                elif win == 0:
+                    msg = "No dubs :frowning:"
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"])
+                elif win == 1:
+                    msg = "Dubs! Nice! Check'em!"
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 10)
+                elif win == 2:
+                    msg = "Trips?! Whoa, check those bad boys!"
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 20)
+                elif win == 3:
+                    msg = "Quads?! No way! Witnessed!"
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 30)
+                elif win == 4:
+                    msg = "PENTS?! HOT DAMN! Now that's #rare."
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 40)
+                elif win == 5:
+                    msg = "TOO MANY REPEATING DIGITS. GET THIS PERSON A MEDAL!"
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 50)
+                msg += "\n"+"{} wins {} dabs. {}".format(message.author.nick or message.author.name, prize, DAB_EMOJI)
+                yield from self.send_message(message.channel, msg)
+                self.user_data[message.author.id]["money"] += prize
+            else:
+                yield from self.send_message(message.channel, "No daily dub rolls left. Try again tomorrow.")
+
     @asyncio.coroutine
     def check_user(self, channel, member):
         if member == self.user:
@@ -198,6 +264,13 @@ class Client(discord.Client):
         if self.user_data.get(member.id) == None:
             yield from self.send_message(channel, "{} not found in database, 100 free dabs! {}".format(member.nick or member.name, DAB_EMOJI))
             self.user_data[member.id] = {"money":100}
+        if self.user_data[member.id].get("dubs") == None:
+            dubs = {"rolls":10,"level":1.0,"claimed":time.gmtime().tm_yday}
+            self.user_data[member.id]["dubs"] = dubs
+        if self.user_data[member.id]["dubs"]["claimed"] != time.gmtime().tm_yday:
+            self.user_data[member.id]["dubs"]["claimed"] = time.gmtime().tm_yday
+            self.user_data[member.id]["dubs"]["rolls"] += int(self.user_data[member.id]["dubs"]["level"] * 10)
+            yield from self.send_message(channel, "{} has {} daily rolls for dubs left.".format(member.nick or member.name, self.user_data[member.id]["dubs"]["rolls"]))
         yield from self.update_json()
 
     @asyncio.coroutine
