@@ -279,12 +279,13 @@ class Client(discord.Client):
         if split[0] == "$exec":
             if message.author.id == "147790355776012289":
                 cmd = " ".join(split[1:])
-                cmd = cmd.strip("```")
+                cmd = cmd.strip("`")
                 cmd = cmd.strip()
                 try:
-                    out = exec(cmd)
-                    if out != None:
-                        yield from self.send_message(message.channel, "```{}```".format(str(out)))
+                    self.exec_out = None
+                    exec(cmd)
+                    if self.exec_out != None:
+                        yield from self.send_message(message.channel, str(self.exec_out))
                 except Exception as e:
                     yield from self.send_message(message.channel, "```{}```".format(str(e)))
             return
