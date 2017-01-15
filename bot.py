@@ -276,6 +276,7 @@ class Client(discord.Client):
                 self.user_data[message.author.id]["money"] += prize
             else:
                 yield from self.send_message(message.channel, "No daily dub rolls left. Try again tomorrow.")
+            return
 
 
     @asyncio.coroutine
