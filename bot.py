@@ -23,6 +23,30 @@ BUY_TYPES = """Buyable items categories:
 `role`: buy roles such as Radio Mod (alias for `role`: `r`)
 `item`: buy items such as `10` or `5` drools (alias for `item`: `i`)"""
 
+def drawChess(table):
+    """┏━┳━┳━┳━┳━┳━┳━┳━┓
+┃♜┃♞┃♝┃♛┃♚┃♝┃♞┃♜┃8
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃♟┃♟┃♟┃♟┃♟┃♟┃♟┃♟┃7
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃6
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃5
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃4
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃3
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃♙┃♙┃♙┃♙┃♙┃♙┃♙┃♙┃2
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃♖┃♘┃♗┃♕┃♔┃♗┃♘┃♖┃1
+┗━┻━┻━┻━┻━┻━┻━┻━┛
+  a   b  c   d  e  f  g  h"""
+    top = "┏━┳━┳━┳━┳━┳━┳━┳━┓"
+    mid = "┣━╋━╋━╋━╋━╋━╋━╋━┫"
+    bot = "┗━┻━┻━┻━┻━┻━┻━┻━┛"
+    letters = "  a   b  c   d  e  f  g  h"
+
 def prettyTable(l):
     maxs = [max(map(lambda x:len(str(x[i])),l)) for i in range(len(l[0]))]
     for row in range(len(l)):
@@ -165,7 +189,6 @@ elif stuff[0].lower() in ('r','role'):
                     yield from self.send_message(message.channel, BUY_SYNTAX)
             else:
                 yield from self.send_message(message.channel, BUY_TYPES)
-                #self.user_data[message.author.id]["money"]
 
         if split[0] == "$lb":
             lb = []
