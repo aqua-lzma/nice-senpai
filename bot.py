@@ -16,6 +16,12 @@ BF_SYNTAX = """`$bf` syntax: `$bf [amount] [heads or tails]`.
 Bet dabs on a coin flip with a 1.8* payout.
 h or t works as well as head or tail.
 Make sure you have enough dabs. {}""".format(DAB_EMOJI)
+BUY_SYNTAX = """`$buy` syntax: `$buy [type]:[name]`.
+Buy stuff that's on sale using dabs {}, use `$buy` to 
+see which `type`s are available to be bought from.""".format(DAB_EMOJI)
+BUY_TYPES = """Buyable items categories:
+`role`: buy roles such as Radio Mod (alias for `role`: `r`)
+`item`: buy items such as `10` or `5` drools (alias for `item`: `i`)"""
 
 def prettyTable(l):
     maxs = [max(map(lambda x:len(str(x[i])),l)) for i in range(len(l[0]))]
@@ -143,17 +149,22 @@ class Client(discord.Client):
                 stuff = split[1].split(':')
                 if stuff[0] in self.buyables:
                     if len(stuff) > 1:
-                        if stuff[1].lower() in self.niceroles:
+                        if stuff[0] in ("roles", "r", "role") and stuff[1].lower() in self.prices["roles"].keys():
                             if self.user_data[message.author.id]["money"] >= self.prices[name]:
                                 self.user_data[message.author.id]["money"] -= self.prices[name]
                                 yield from self.send_message(message, "You bought the {} role {} woo!".format(discord.utils.get([i.lower() for i in message.server.roles], name=name).mention, (message.author.nick or message.author.name)))
                                 self.add_roles(discord.utils.get([i.lower() for i in message.server.roles], name=name), discord.utils.get(message.server.members, id=message.author.id))
+                        elif stuff[0] in ("items", "i", "item"):
+                            if stuff[1] in self.prices["items"].keys():
+                                print("has to be finished, -marin")
                     elif stuff[0].lower() in ('r','role'):
                         yield from self.send_message(message.channel, "You can buy the following roles: \n{}".format('\n'.join([i+' '+str(self.rolePrices[i])+DAB_EMOJI for i in self.rolePrices.keys()])))
                     elif stuff[0].lower() in ('i','item'):
                         yield from self.send_message(message.channel, "You can buy the following items: \n{}".format('\n'.join([i+' '+str(self.itemPrices[i])+DAB_EMOJI for i in self.itemPrices.keys()])))
                 else:
-                    print("cmon dude finish your code @marin")
+                    yield from self.send_message(message.channel, BUY_SYNTAX)
+            else:
+                yield from self.send_message(message.channel, BUY_TYPES)
                 #self.user_data[message.author.id]["money"]
 
         if split[0] == "$lb":
