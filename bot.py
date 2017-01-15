@@ -283,9 +283,11 @@ class Client(discord.Client):
                 cmd = cmd.strip()
                 try:
                     out = exec(cmd)
-                    yield from self.send_message(message.channel, "```{}```".format(str(out)))
+                    if out != None:
+                        yield from self.send_message(message.channel, "```{}```".format(str(out)))
                 except Exception as e:
                     yield from self.send_message(message.channel, "```{}```".format(str(e)))
+            return
 
         if split[0] == "$drool":
             yield from self.check_user(message.channel, message.author)
