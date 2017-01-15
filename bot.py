@@ -17,6 +17,30 @@ Bet dabs on a coin flip with a 1.8* payout.
 h or t works as well as head or tail.
 Make sure you have enough dabs. {}""".format(DAB_EMOJI)
 
+def drawChess(table):
+    """┏━┳━┳━┳━┳━┳━┳━┳━┓
+┃♜┃♞┃♝┃♛┃♚┃♝┃♞┃♜┃8
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃♟┃♟┃♟┃♟┃♟┃♟┃♟┃♟┃7
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃6
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃5
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃4
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃3
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃♙┃♙┃♙┃♙┃♙┃♙┃♙┃♙┃2
+┣━╋━╋━╋━╋━╋━╋━╋━┫
+┃♖┃♘┃♗┃♕┃♔┃♗┃♘┃♖┃1
+┗━┻━┻━┻━┻━┻━┻━┻━┛
+  a   b  c   d  e  f  g  h"""
+    top = "┏━┳━┳━┳━┳━┳━┳━┳━┓"
+    mid = "┣━╋━╋━╋━╋━╋━╋━╋━┫"
+    bot = "┗━┻━┻━┻━┻━┻━┻━┻━┛"
+    letters = "  a   b  c   d  e  f  g  h"
+
 def prettyTable(l):
     maxs = [max(map(lambda x:len(str(x[i])),l)) for i in range(len(l[0]))]
     for row in range(len(l)):
