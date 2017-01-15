@@ -157,10 +157,10 @@ class Client(discord.Client):
                         elif stuff[0] in ("items", "i", "item"):
                             if stuff[1] in self.prices["items"].keys():
                                 print("has to be finished, -marin")
-                    elif stuff[0].lower() in ('r','role'):
-                        yield from self.send_message(message.channel, "You can buy the following roles: \n{}".format('\n'.join([i+' '+str(self.rolePrices[i])+DAB_EMOJI for i in self.rolePrices.keys()])))
+elif stuff[0].lower() in ('r','role'):
+                        yield from self.send_message(message.channel, "You can buy the following roles: \n{}".format('\n'.join([i+' '+str(self.prices["roles"])+DAB_EMOJI for i in self.prices["roles"].keys()])))
                     elif stuff[0].lower() in ('i','item'):
-                        yield from self.send_message(message.channel, "You can buy the following items: \n{}".format('\n'.join([i+' '+str(self.itemPrices[i])+DAB_EMOJI for i in self.itemPrices.keys()])))
+                        yield from self.send_message(message.channel, "You can buy the following items: \n{}".format('\n'.join([i+' '+str(self.prices["items"])+DAB_EMOJI for i in self.prices["items"].keys()])))
                 else:
                     yield from self.send_message(message.channel, BUY_SYNTAX)
             else:
