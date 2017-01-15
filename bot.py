@@ -50,7 +50,7 @@ def mappu(old, new):
         old_ma= max(old[1:3])
         new_mi= min(new)
         new_ma= max(new)
-            
+
         return ( (old_v - old_mi) / (old_ma - old_mi) ) * (new_ma - new_mi) + new_mi
 
 class Client(discord.Client):
@@ -61,7 +61,6 @@ class Client(discord.Client):
         self.dab_count          = 0
         self.dab_target         = random.randint(20,100)
         self.dab_announce       = None
-        self.niceroles          = [i.name for i in [server for server in self.servers if server is "Nice"][0].roles]
         self.prices             = {
             "roles":{
                 'Radio Mod': 1000 },
@@ -79,6 +78,9 @@ class Client(discord.Client):
         print(client.user.name)
         print(client.user.id)
         print('------')
+        nice_server = self.get_server("182829461786460161")
+        self.niceroles = [role.name for role in nice_server.roles]
+        #self.niceroles = [i.name for i in [server for server in self.servers if server is "Nice"][0].roles]
 
     @asyncio.coroutine
     def on_message(self, message):
@@ -151,7 +153,7 @@ class Client(discord.Client):
                     elif stuff[0].lower() in ('i','item'):
                         yield from self.send_message(message.channel, "You can buy the following items: \n{}".format('\n'.join([i+' '+str(self.itemPrices[i])+DAB_EMOJI for i in self.itemPrices.keys()])))
                 else:
-
+                    print("cmon dude finish your code @marin")
                 #self.user_data[message.author.id]["money"]
 
         if split[0] == "$lb":
@@ -255,7 +257,6 @@ class Client(discord.Client):
                     4:'Quads?! No way! Witnessed!',
                     5:'PENTS?! HOT DAMN! Now that\'s #rare.',
                     6:'TOO MANY REPEATING DIGITS. GET THIS PERSON A MEDAL!',
-                    'prize':'int(self.user_data[message.author.id]["dubs"]["level"] * (win*10))',
                     7:'HIGHEST'
                 }
                 for i in range(-1, -len(roll), -1):
@@ -263,19 +264,40 @@ class Client(discord.Client):
                         win += 1
                     else:
                         break
-                yield from self.send_message(message.channel, ''.join([":{}:".format(inflect.engine().number_to_words(int(i))) for i in roll]))
+                numdict = {
+                "1" : ":one:",
+                "2" : ":two:",
+                "3" : ":three:",
+                "4" : ":four:",
+                "5" : ":five:",
+                "6" : ":six:",
+                "7" : ":seven:",
+                "8" : ":eight:",
+                "9" : ":nine:",
+                "0" : ":zero:"
+                }
+                prize_dict = {
+                1:1,
+                2:10,
+                3:100,
+                4:250,
+                5:500,
+                6:750
+                }
+                yield from self.send_message(message.channel, ''.join([numdict[i] for i in roll]))
                 if roll in ("0","1000000"):
-                    msg = "WOW! {} POSSIBLE ROLL! What does this mean?".format(win[mappu((int(roll),0,1000000),(0,7))]) 
-                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 100)
+                    msg = "WOW! {} POSSIBLE ROLL! What does this mean?".format(win[mappu((int(roll),0,1000000),(0,7))])
+                    prize = int(self.user_data[message.author.id]["dubs"]["level"] * 1000)
                 else:
                     msg   = wins[win]
-                    prize = eval(wins[prize])
+                    prize = int(prize_dict[win] * self.user_data[message.author.id]["dubs"]["level"])
 
                 msg += "\n"+"{} wins {} dabs. {}".format(message.author.nick or message.author.name, prize, DAB_EMOJI)
                 yield from self.send_message(message.channel, msg)
                 self.user_data[message.author.id]["money"] += prize
             else:
                 yield from self.send_message(message.channel, "No daily dub rolls left. Try again tomorrow.")
+            return
 
 
     @asyncio.coroutine
@@ -350,4 +372,3 @@ if __name__ == "__main__":
     with open("token") as f:
         client =  Client()
         client.run(f.read())
-
