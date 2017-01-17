@@ -23,29 +23,48 @@ BUY_TYPES = """Buyable items categories:
 `role`: buy roles such as Radio Mod (alias for `role`: `r`)
 `item`: buy items such as `10` or `5` drools (alias for `item`: `i`)"""
 
+default_board = [['wR', 'wN', 'wB', 'wK', 'wQ', 'wB', 'wN', 'wR'],
+                ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+                ['__', '__', '__', '__', '__', '__', '__', '__'],
+                ['__', '__', '__', '__', '__', '__', '__', '__'],
+                ['__', '__', '__', '__', '__', '__', '__', '__'],
+                ['__', '__', '__', '__', '__', '__', '__', '__'],
+                ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+                ['bR', 'bN', 'bB', 'bK', 'bQ', 'bB', 'bN', 'bR']]
+
 def drawChess(table):
-    """┏━┳━┳━┳━┳━┳━┳━┳━┓
-┃♜┃♞┃♝┃♛┃♚┃♝┃♞┃♜┃8
-┣━╋━╋━╋━╋━╋━╋━╋━┫
-┃♟┃♟┃♟┃♟┃♟┃♟┃♟┃♟┃7
-┣━╋━╋━╋━╋━╋━╋━╋━┫
-┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃6
-┣━╋━╋━╋━╋━╋━╋━╋━┫
-┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃5
-┣━╋━╋━╋━╋━╋━╋━╋━┫
-┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃4
-┣━╋━╋━╋━╋━╋━╋━╋━┫
-┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃3
-┣━╋━╋━╋━╋━╋━╋━╋━┫
-┃♙┃♙┃♙┃♙┃♙┃♙┃♙┃♙┃2
-┣━╋━╋━╋━╋━╋━╋━╋━┫
-┃♖┃♘┃♗┃♕┃♔┃♗┃♘┃♖┃1
-┗━┻━┻━┻━┻━┻━┻━┻━┛
-  a   b  c   d  e  f  g  h"""
+    pieces = {
+        "wK":"♛",
+        "wQ":"♚",
+        "wR":"♜",
+        "wB":"♝",
+        "wN":"♞",
+        "wP":"♟",
+        "bK":"♕",
+        "bQ":"♔",
+        "bR":"♖",
+        "bB":"♗",
+        "bN":"♘",
+        "bP":"♙",
+        "__":" "
+    }
     top = "┏━┳━┳━┳━┳━┳━┳━┳━┓"
     mid = "┣━╋━╋━╋━╋━╋━╋━╋━┫"
     bot = "┗━┻━┻━┻━┻━┻━┻━┻━┛"
     letters = "  a   b  c   d  e  f  g  h"
+    sep = "┃"
+    out = []
+    for i in range(8):
+        row = list(map(lambda x: pieces[x], table[i]))
+        row = "┃{}┃".format("┃".join(row))
+        row += " " + str(i)
+        out.append(row)
+        out.append(mid)
+    out.pop()
+    out.insert(0,top)
+    out.append(bot)
+    out.append(letters)
+    return "\n".join(out)
 
 def prettyTable(l):
     maxs = [max(map(lambda x:len(str(x[i])),l)) for i in range(len(l[0]))]
