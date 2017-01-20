@@ -311,7 +311,8 @@ class Client(discord.Client):
 
         if split[0] == "$drool":
             yield from self.check_user(message.channel, message.author)
-
+            if message.channel.id == "182829461786460161":
+                yield from self.send_message(message.channel, "You were TOLD my MARCH to no drool in #general!")
             drools = 1
             if len(split) > 1 and split[1].isdigit():
                 drools = int(split[1])
