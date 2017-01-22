@@ -86,8 +86,8 @@ def prettyTable(l):
     return out
 
 def formatLevel(inp):
+    inp -= 1
     inp *= 10
-    inp -= 9
     return int(inp)
 
 def mappu(old, new):
@@ -387,6 +387,27 @@ class Client(discord.Client):
                 yield from self.send_message(message.channel, "No daily dub rolls left. Try again tomorrow.")
             return
 
+        if split[0] == "$level":
+            yield from self.check_user(message.channel, message.author)
+            level = self.user_data[message.author.id]["dubs"]["level"]
+            cost = int(level * 20)
+            yield from self.send_message(message.channel, "You are level {}, to level up it costs {} dabs.".format(formatLevel(level), cost))
+            if cost > self.user_data[message.author.id]["money"]:
+                yield from self.send_message(message.channel, "You can't afford it right now. :(")
+            else:
+                yield from self.send_message(message.channel, "Would you like to buy the level? `y/n`")
+                check = lambda x: x.content.lower()[0] == "y" or x.content.lower()[0] == "n"
+                response = yield from self.wait_for_message(timeout=10, channel=message.channel, author=message.author, check=check)
+                if response.content.lower()[0] == "y":
+                    self.user_data[message.author.id]["money"] -= cost
+                    self.user_data[message.author.id]["dubs"]["level"] += 0.1
+                    level = self.user_data[message.author.id]["dubs"]["level"]
+                    yield from self.send_message(message.channel, "You are now level {}!".format(formatLevel(level)))
+                    yield from self.update_json()
+                else:
+                    return
+            return
+
         yield from self.update_vars(message)
 
 
@@ -402,10 +423,15 @@ class Client(discord.Client):
         if self.user_data[member.id].get("dubs") == None:
             dubs = {"rolls":10,"level":1.0,"claimed":time.gmtime().tm_yday}
             self.user_data[member.id]["dubs"] = dubs
+        if self.user_data[member.id].get("record") == None:
+            self.user_data[member.id]["record"] = self.user_data[member.id]["money"]
+        if self.user_data[member.id]["record"] > self.user_data[member.id]["money"]:
+            self.user_data[member.id]["record"] = self.user_data[member.id]["money"]
         if self.user_data[member.id]["dubs"]["claimed"] != time.gmtime().tm_yday:
             self.user_data[member.id]["dubs"]["claimed"] = time.gmtime().tm_yday
             self.user_data[member.id]["dubs"]["rolls"] += int(self.user_data[member.id]["dubs"]["level"] * 10)
             yield from self.send_message(channel, "{} has {} daily rolls for dubs left.".format(member.nick or member.name, self.user_data[member.id]["dubs"]["rolls"]))
+
         yield from self.update_json()
 
     @asyncio.coroutine
