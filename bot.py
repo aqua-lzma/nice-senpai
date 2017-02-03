@@ -4,6 +4,7 @@ import asyncio
 import json
 import random
 import time
+import math
 
 DAB_EMOJI = "<:ledabbinganimegirl:256497986979233792>"
 GIVE_SYNTAX = """`$give` syntax: `$give [amount] [@person]` or `$give [@person] [amount]`.
@@ -36,12 +37,6 @@ def pretty_table(l):
             out += mid + "\n"
     out += bot
     return out
-
-
-def format_level(inp):
-    inp -= 1
-    inp *= 10
-    return int(inp)
 
 
 def mappu(old, new):
@@ -109,9 +104,8 @@ class Client(discord.Client):
             else:
                 member = message.author
             money = self.user_data[member.id]["money"]
-            level = self.user_data[member.id]["dubs"]["level"]
-            level = format_level(level)
-            rolls = self.user_data[member.id]["dubs"]["rolls"]
+            level = self.user_data[member.id]["level"]
+            rolls = self.user_data[member.id]["rolls"]
             fmt = [member.nick or member.name, money, DAB_EMOJI, level, rolls]
             msg = "{0} has {1} dabs. {2}\n{0} is level {3} and has {4} rolls left today.".format(*fmt)
             yield from self.send_message(message.channel, msg)
@@ -148,6 +142,8 @@ class Client(discord.Client):
             else:
                 num = 10
             for user_id in self.user_data:
+                if isinstance(self.user_data[user_id]["money"], str):
+                    continue
                 member = message.server.get_member(user_id)
                 if member is None:
                     continue
@@ -255,16 +251,16 @@ class Client(discord.Client):
                                              "You were TOLD my MARCH to no drool in #general or #oc_channel!")
                 return
 
-            if self.user_data[message.author.id]["dubs"]["rolls"] > 0:
+            if self.user_data[message.author.id]["rolls"] > 0:
                 drools = 1
 
                 if len(split) > 1 and split[1].isdigit():
                     drools = int(split[1])
                 elif len(split) > 1 and split[1].lower() == "all":
-                    drools = self.user_data[message.author.id]["dubs"]["rolls"]
+                    drools = self.user_data[message.author.id]["rolls"]
 
-                if self.user_data[message.author.id]["dubs"]["rolls"] >= drools:
-                    self.user_data[message.author.id]["dubs"]["rolls"] -= drools
+                if self.user_data[message.author.id]["rolls"] >= drools:
+                    self.user_data[message.author.id]["rolls"] -= drools
                     wins_shortened = {
                         0: "No dubs :(", 1: "*dubs*", 2: "**trips**", 3: "***quads***",
                         4: "quints!", 5: "***WHAT TO HECK, SEXTUPLES***",
@@ -280,6 +276,7 @@ class Client(discord.Client):
                         "6": "six", "7": "seven", "8": "eight", "9": "nine", "0": "zero"
                     }
                     prize_dict = {0: 1, 1: 10, 2: 100, 3: 250, 4: 500, 5: 750}
+                    level_mod = math.log(self.user_data[message.author.id]["level"]) + 1
 
                     if drools > 1:
                         finalprize, out = 0, ""
@@ -287,7 +284,7 @@ class Client(discord.Client):
                             roll = str(random.randint(0, 1000000))
                             if roll in (0, 1000000):
                                 out += wins_shortened[mappu((int(roll), 0, 1000000), (6, 7))]
-                                finalprize += int(self.user_data[message.author.id]["dubs"]["level"] * 1000)
+                                finalprize += int(level_mod * 1000)
                                 break
                             else:
                                 win = 0
@@ -301,14 +298,13 @@ class Client(discord.Client):
                                 out += "{2} roll {0} {1}\n".format(str(i)+'. ',
                                                                    wins_shortened[win],
                                                                    ''.join([":{}:".format(numdict[i]) for i in roll]))
-                                finalprize += prize_dict[win]*self.user_data[message.author.id]["dubs"]["level"]
+                                finalprize += prize_dict[win] * level_mod
                         finalprize = int(finalprize)
                         out += "You won {} dabs {} total!".format(finalprize, DAB_EMOJI)
                         self.user_data[message.author.id]["money"] += finalprize
                         yield from self.send_message(message.channel, out)
 
                     else:
-
                         roll = str(random.randint(0, 1000000))
                         win = 0
 
@@ -321,10 +317,10 @@ class Client(discord.Client):
                         yield from self.send_message(message.channel, ''.join([":{}:".format(numdict[i]) for i in roll]))
                         if roll in ("0", "1000000"):
                             msg = "WOW! {} POSSIBLE ROLL! What does this mean?".format(win[mappu((int(roll), 0, 1000000), (0, 7))])
-                            prize = int(self.user_data[message.author.id]["dubs"]["level"] * 1000)
+                            prize = int(level_mod * 1000)
                         else:
                             msg = wins[win]
-                            prize = int(prize_dict[win] * self.user_data[message.author.id]["dubs"]["level"])
+                            prize = int(prize_dict[win] * level_mod)
 
                         msg += "\n"+"{} wins {} dabs. {}".format(message.author.nick or message.author.name,
                                                                  prize,
@@ -337,23 +333,47 @@ class Client(discord.Client):
 
         if split[0] == "$level":
             yield from self.check_user(message.channel, message.author)
-            level = self.user_data[message.author.id]["dubs"]["level"]
-            cost = int(level * 20)
-            yield from self.send_message(message.channel, "You are level {}, to level up it costs {} dabs.".format(format_level(level), cost))
-            if cost > self.user_data[message.author.id]["money"]:
-                yield from self.send_message(message.channel, "You can't afford it right now. :(")
-            else:
+            level = self.user_data[message.author.id]["level"]
+            if len(split) >= 2 and split[1] == "all":
+                cost = int((level ** 2) / 11)
+                money = self.user_data[message.author.id]["money"]
+                if cost > money:
+                    yield from self.send_message(message.channel, "You can't afford to level up at all right now.")
+                    return
+                templevel = 1
+                while cost < money:
+                    templevel += 1
+                    cost += int(((level + templevel) ** 2) / 11)
+                cost -= int(((level + templevel) ** 2) / 11)
+                templevel -= 1
+                yield from self.send_message(message.channel, "You can level up {} times and it would cost {} dabs.".format(templevel, cost))
                 yield from self.send_message(message.channel, "Would you like to buy the level? `y/n`")
                 check = lambda x: x.content.lower()[0] == "y" or x.content.lower()[0] == "n"
-                response = yield from self.wait_for_message(timeout=10, channel=message.channel, author=message.author, check=check)
-                if response.content.lower()[0] == "y":
+                response = yield from self.wait_for_message(timeout=10, channel=message.channel, author=message.author,
+                                                            check=check)
+                if response is not None and response.content.lower()[0] == "y":
                     self.user_data[message.author.id]["money"] -= cost
-                    self.user_data[message.author.id]["dubs"]["level"] += 0.1
-                    level = self.user_data[message.author.id]["dubs"]["level"]
-                    yield from self.send_message(message.channel, "You are now level {}!".format(format_level(level)))
+                    self.user_data[message.author.id]["level"] += templevel
+                    level = self.user_data[message.author.id]["level"]
+                    yield from self.send_message(message.channel, "You are now level {}!".format(level))
                     yield from self.update_json()
+
+            else:
+                cost = int((level ** 2) / 11)
+                yield from self.send_message(message.channel, "You are level {}, to level up it costs {} dabs.".format(level, cost))
+                if cost > self.user_data[message.author.id]["money"]:
+                    yield from self.send_message(message.channel, "You can't afford it right now. :(")
                 else:
-                    return
+                    yield from self.send_message(message.channel, "Would you like to buy the level? `y/n`")
+                    check = lambda x: x.content.lower()[0] == "y" or x.content.lower()[0] == "n"
+                    response = yield from self.wait_for_message(timeout=10, channel=message.channel,
+                                                                author=message.author, check=check)
+                    if response is not None and response.content.lower()[0] == "y":
+                        self.user_data[message.author.id]["money"] -= cost
+                        self.user_data[message.author.id]["level"] += 1
+                        level = self.user_data[message.author.id]["level"]
+                        yield from self.send_message(message.channel, "You are now level {}!".format(level))
+                        yield from self.update_json()
             return
 
         yield from self.update_vars(message)
@@ -362,22 +382,28 @@ class Client(discord.Client):
     def check_user(self, channel, member):
         if member == self.user:
             return
+
         if "182951530591158272" in [role.id for role in member.roles]:
             return
+
         if self.user_data.get(member.id) is None:
             yield from self.send_message(channel, "{} not found in database, 100 free dabs! {}".format(member.nick or member.name, DAB_EMOJI))
-            self.user_data[member.id] = {"money": 100}
-        if self.user_data[member.id].get("dubs") is None:
-            dubs = {"rolls": 10, "level": 1.0, "claimed": time.gmtime().tm_yday}
-            self.user_data[member.id]["dubs"] = dubs
+            self.user_data[member.id] = {"money": 100, "rolls": 10, "level": 1, "claimed": -1}
+
+        if isinstance(self.user_data[member.id]["money"], str):
+            return
+
         if self.user_data[member.id].get("record") is None:
             self.user_data[member.id]["record"] = self.user_data[member.id]["money"]
+
         if self.user_data[member.id]["record"] > self.user_data[member.id]["money"]:
             self.user_data[member.id]["record"] = self.user_data[member.id]["money"]
-        if self.user_data[member.id]["dubs"]["claimed"] != time.gmtime().tm_yday:
-            self.user_data[member.id]["dubs"]["claimed"] = time.gmtime().tm_yday
-            self.user_data[member.id]["dubs"]["rolls"] += int(self.user_data[member.id]["dubs"]["level"] * 10)
-            yield from self.send_message(channel, "{} has {} daily rolls for dubs left.".format(member.nick or member.name, self.user_data[member.id]["dubs"]["rolls"]))
+
+        if self.user_data[member.id]["claimed"] != time.gmtime().tm_yday:
+            self.user_data[member.id]["claimed"] = time.gmtime().tm_yday
+            level_mod = math.log(self.user_data[member.id]["level"])
+            self.user_data[member.id]["rolls"] += int(level_mod * 10)
+            yield from self.send_message(channel, "{} has {} daily rolls for dubs left.".format(member.nick or member.name, self.user_data[member.id]["rolls"]))
 
         yield from self.update_json()
 
