@@ -311,8 +311,8 @@ class Client(discord.Client):
 
         if split[0] == "$drool":
             yield from self.check_user(message.channel, message.author)
-            if message.channel.id == "182829461786460161":
-                yield from self.send_message(message.channel, "You were TOLD my MARCH to no drool in #general!")
+            if message.channel.id == "182829461786460161" or message.channel.id == "23361230172061696":
+                yield from self.send_message(message.channel, "You were TOLD my MARCH to no drool in #general or #oc_channel!")
                 return
             if self.user_data[message.author.id]["dubs"]["rolls"] > 0:
                 drools = 1
