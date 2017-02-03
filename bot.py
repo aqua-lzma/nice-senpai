@@ -314,75 +314,76 @@ class Client(discord.Client):
             if message.channel.id == "182829461786460161":
                 yield from self.send_message(message.channel, "You were TOLD my MARCH to no drool in #general!")
                 return
-            drools = 1
-            if len(split) > 1 and split[1].isdigit():
-                drools = int(split[1])
-            elif len(split) > 1 and split[1].lower() == "all":
-                drools = self.user_data[message.author.id]["dubs"]["rolls"]
+            if self.user_data[message.author.id]["dubs"]["rolls"] > 0:
+                drools = 1
+                if len(split) > 1 and split[1].isdigit():
+                    drools = int(split[1])
+                elif len(split) > 1 and split[1].lower() == "all":
+                    drools = self.user_data[message.author.id]["dubs"]["rolls"]
 
-            if self.user_data[message.author.id]["dubs"]["rolls"] >= drools:
+                if self.user_data[message.author.id]["dubs"]["rolls"] >= drools:
 
 
-                self.user_data[message.author.id]["dubs"]["rolls"] -= drools
-                wins_shortened = {0:"No dubs :frowning:",1:"*dubs*",2:"**trips**",3:"***quads***",
-                                  4:"quints!",5:"***WHAT TO HECK, SEXTUPLES***",6:"***WOWE! LOWEST ROL POSSIBLE!!***",7:"***WOWE! HIHGEST ROL POSSIBLE!!***\n"}
+                    self.user_data[message.author.id]["dubs"]["rolls"] -= drools
+                    wins_shortened = {0:"No dubs :frowning:",1:"*dubs*",2:"**trips**",3:"***quads***",
+                                      4:"quints!",5:"***WHAT TO HECK, SEXTUPLES***",6:"***WOWE! LOWEST ROL POSSIBLE!!***",7:"***WOWE! HIHGEST ROL POSSIBLE!!***\n"}
 
-                wins = {
-                        0: 'No dubs :frowning:', 1: "Dubs! Nice! Check'em!", 2: 'Trips?! Whoa, check those bad boys!',
-                        3: 'Quads?! No way! Witnessed!', 4: "PENTS?! HOT DAMN! Now that's #rare.", 5: 'TOO MANY REPEATING DIGITS. GET THIS PERSON A MEDAL!',
-                        6: 'LOWEST', 7:"HIGHEST"
-                        }
-                numdict = {
-                            "1" : "one","2" : "two","3" : "three","4" : "four","5" : "five",
-                            "6" : "six","7" : "seven","8" : "eight","9" : "nine", "0":"zero"
-                          }
-                prize_dict = {
-                              0: 1, 1: 10, 2: 100,
-                              3: 250, 4: 500, 5: 750
+                    wins = {
+                            0: 'No dubs :frowning:', 1: "Dubs! Nice! Check'em!", 2: 'Trips?! Whoa, check those bad boys!',
+                            3: 'Quads?! No way! Witnessed!', 4: "PENTS?! HOT DAMN! Now that's #rare.", 5: 'TOO MANY REPEATING DIGITS. GET THIS PERSON A MEDAL!',
+                            6: 'LOWEST', 7:"HIGHEST"
+                            }
+                    numdict = {
+                                "1" : "one","2" : "two","3" : "three","4" : "four","5" : "five",
+                                "6" : "six","7" : "seven","8" : "eight","9" : "nine", "0":"zero"
                               }
+                    prize_dict = {
+                                  0: 1, 1: 10, 2: 100,
+                                  3: 250, 4: 500, 5: 750
+                                  }
 
-                if drools > 1:
-                    finalprize, out = 0, ""
-                    for i in range(0,drools):
-                        roll = str(random.randint(0,1000000))
-                        if roll in (0,1000000):
-                            out        += wins_shortened[mappu((int(roll),0,1000000),(6,7))]
-                            finalprize += int(self.user_data[message.author.id]["dubs"]["level"] * 1000)
-                            break
-                        else:
-                            win = 0
+                    if drools > 1:
+                        finalllyprize, out = 0, ""
+                        for i in range(0,drools):
+                            roll = str(random.randint(0,1000000))
+                            if roll in (0,1000000):
+                                out        += wins_shortened[mappu((int(roll),0,1000000),(6,7))]
+                                finalprize += int(self.user_data[message.author.id]["dubs"]["level"] * 1000)
+                                break
+                            else:
+                                win = 0
 
-                            for i in range(-1, -len(roll), -1):
-                                if roll[i] == roll[i-1]: win += 1
-                                else:                    break
+                                for i in range(-1, -len(roll), -1):
+                                    if roll[i] == roll[i-1]: win += 1
+                                    else:                    break
 
-                            out         += "{2} roll {0} {1}\n".format(str(i)+'. ',wins_shortened[win], ''.join([":{}:".format(numdict[i]) for i in roll]))
-                            finalprize  += prize_dict[win]*self.user_data[message.author.id]["dubs"]["level"]
-                    finalprize = int(finalprize)
-                    out+="You won {} dabs {} total!".format(finalprize, DAB_EMOJI)
-                    self.user_data[message.author.id]["money"] += finalprize
-                    yield from self.send_message(message.channel, out)
+                                out         += "{2} roll {0} {1}\n".format(str(i)+'. ',wins_shortened[win], ''.join([":{}:".format(numdict[i]) for i in roll]))
+                                finalprize  += prize_dict[win]*self.user_data[message.author.id]["dubs"]["level"]
+                        finalprize = int(finalprize)
+                        out+="You won {} dabs {} total!".format(finalprize, DAB_EMOJI)
+                        self.user_data[message.author.id]["money"] += finalprize
+                        yield from self.send_message(message.channel, out)
 
-                else:
-
-                    roll = str(random.randint(0,1000000))
-                    win = 0
-
-                    for i in range(-1, -len(roll), -1):
-                        if roll[i] == roll[i-1]: win += 1
-                        else:                    break
-
-                    yield from self.send_message(message.channel, ''.join([":{}:".format(numdict[i]) for i in roll]))
-                    if roll in ("0","1000000"):
-                        msg = "WOW! {} POSSIBLE ROLL! What does this mean?".format(win[mappu((int(roll),0,1000000),(0,7))])
-                        prize = int(self.user_data[message.author.id]["dubs"]["level"] * 1000)
                     else:
-                        msg   = wins[win]
-                        prize = int(prize_dict[win] * self.user_data[message.author.id]["dubs"]["level"])
 
-                    msg += "\n"+"{} wins {} dabs. {}".format(message.author.nick or message.author.name, prize, DAB_EMOJI)
-                    yield from self.send_message(message.channel, msg)
-                    self.user_data[message.author.id]["money"] += prize
+                        roll = str(random.randint(0,1000000))
+                        win = 0
+
+                        for i in range(-1, -len(roll), -1):
+                            if roll[i] == roll[i-1]: win += 1
+                            else:                    break
+
+                        yield from self.send_message(message.channel, ''.join([":{}:".format(numdict[i]) for i in roll]))
+                        if roll in ("0","1000000"):
+                            msg = "WOW! {} POSSIBLE ROLL! What does this mean?".format(win[mappu((int(roll),0,1000000),(0,7))])
+                            prize = int(self.user_data[message.author.id]["dubs"]["level"] * 1000)
+                        else:
+                            msg   = wins[win]
+                            prize = int(prize_dict[win] * self.user_data[message.author.id]["dubs"]["level"])
+
+                        msg += "\n"+"{} wins {} dabs. {}".format(message.author.nick or message.author.name, prize, DAB_EMOJI)
+                        yield from self.send_message(message.channel, msg)
+                        self.user_data[message.author.id]["money"] += prize
             else:
                 yield from self.send_message(message.channel, "No daily dub rolls left. Try again tomorrow.")
             return
