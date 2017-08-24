@@ -18,3 +18,7 @@ then you make a new bot and you get the token and save it as a file called token
 and then uhhh you can invite your bot to a server through some dumb bullshit way i dunno l0l google it
 
 and then you run the bot dude cmon?
+
+## wow marin how about MAKE A PULL REQUESTR smh
+cant believe
+u betrey me leik thios
