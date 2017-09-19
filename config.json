@@ -1,0 +1,11 @@
+{
+    "token": "",
+    "owner_id": "",
+    "command_prefix": "$",
+    "server_prefix": {},
+    "ignore": {
+        "server": [],
+        "channel": [],
+        "user": []
+    }
+}
