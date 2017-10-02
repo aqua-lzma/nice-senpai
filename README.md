@@ -1,6 +1,10 @@
 # Nice-Senpai
 nice bot
 
+# Rewriting in node.js
+
+> WE GOING JAVASCRIPT NOW BOISSS, HELP REWRITE
+
 this is a super cool special awesome very nice bot no bully running on a undisclosed location somewhere
 
 (its a very nice place no bully allowed)
