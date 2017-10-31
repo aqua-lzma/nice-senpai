@@ -8,6 +8,7 @@ nice bot
 Requirements:
 - node.js ( i think 8 or above )
 - a nice attitude
+
 How to:
 1. Install node.js v8+ im pretty sure ( and therefore also npm )
 1. Choose wher you want to test the bote
