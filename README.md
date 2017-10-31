@@ -1,28 +1,25 @@
 # Nice-Senpai
 nice bot
 
-# Rewriting in node.js
+## Node Rewrite:
 
-> WE GOING JAVASCRIPT NOW BOISSS, HELP REWRITE
+### Voice
+#### Commands:
+- [ ] : play
+- [x] : queue
+- [ ] : np
+- [x] : pause
+- [x] : resume
+- [ ] : skip
+- [ ] : clear
+- [ ] : pldump
+- [ ] : set <avatar|name|nick>
+- [ ] : search
+- [ ] : restart
+#### Note:
+>Unticked means not yet (fully) implemented.
 
-this is a super cool special awesome very nice bot no bully running on a undisclosed location somewhere
 
-(its a very nice place no bully allowed)
+### Other stuff
 
-if you would like to halp that would be berry nice of yuo!
-
-first of all you need this thing to run it: https://github.com/Rapptz/discord.py
-
-which also means u need python 3.5 to run it
-
-anyway to test things you'll need a discord bot found over here: https://discordapp.com/developers/applications/me
-
-then you make a new bot and you get the token and save it as a file called token. (no newline at the end btw)
-
-and then uhhh you can invite your bot to a server through some dumb bullshit way i dunno l0l google it
-
-and then you run the bot dude cmon?
-
-## wow marin how about MAKE A PULL REQUESTR smh
-cant believe
-u betrey me leik thios
+this is where aqua writes XDDDDDDDDDDDDDD
