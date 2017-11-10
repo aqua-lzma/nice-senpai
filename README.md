@@ -6,10 +6,10 @@ nice bot
 ### Voice
 #### Commands:
 - [ ] : play
-- [x] : queue
+- [ ] : queue
 - [ ] : np
-- [x] : pause
-- [x] : resume
+- [ ] : pause
+- [ ] : resume
 - [ ] : skip
 - [ ] : clear
 - [ ] : pldump
