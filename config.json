@@ -1,11 +1,18 @@
 {
     "token": "",
-    "owner_id": "",
+    "owner_id": "176104513151696896",
     "command_prefix": "$",
+
+    "ytapikey":"",
+    "Playing" : false,
+    "queue"   : [],
+    "dispatcher":null,
+
     "server_prefix": {},
     "ignore": {
         "server": [],
         "channel": [],
         "user": []
     }
+
 }

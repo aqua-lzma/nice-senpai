@@ -1,0 +1,27 @@
+{
+  "name": "nice-senpai",
+  "version": "1.0.0",
+  "description": "nice bot",
+  "main": "senpai.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mariniere/Nice-Senpai.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mariniere/Nice-Senpai/issues"
+  },
+  "homepage": "https://github.com/mariniere/Nice-Senpai#readme",
+  "dependencies": {
+    "discord.js": "^11.2.1",
+    "ffmpeg-binaries": "^3.2.2-3",
+    "fs": "0.0.1-security",
+    "opusscript": "0.0.4",
+    "request": "^2.83.0",
+    "ytdl-core": "^0.18.1"
+  }
+}
