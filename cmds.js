@@ -2,15 +2,17 @@ const Discord = require("discord.js")
 const fs      = require("fs")
 
 function update_dabs(message, config, amount) {
-    user = config.users[message.author.id]
-    if (user === undefined) {
-        user = config.users[message.author.id] = {
+    user = findUserInConfig(message.author, config);
+    if (user === -1) {
+        user =  {
+            id: message.author.id,
             dabs: 100,
             dab_record: 100,
             level: 1,
             daily_rolls: 0,
             daily_claim: -1,
         }
+        config.ignore.user.push(user);
         message.reply("not found in database, 100 free dabs!")
     }
     if (user.daily_claim !== new Date().getDay()) {
@@ -30,6 +32,23 @@ function circularJSON(key, value) {
     }
     return value;
 }
+
+/**
+ * Utility function that accepts a discord.js user object and returns 
+ * an entry in the specified config file if the user exists in it.
+ * Otherwise it will return -1
+ */
+function findUserInConfig(user, config) {
+   for (let member of config.ignore.user){
+       if (member.id = user.id){
+           return member
+        }
+  }
+   return -1
+}
+           
+
+
 
 module.exports = [
     {
@@ -59,11 +78,12 @@ module.exports = [
                         embed.fields.push({ name: "Syntax", value: cmd.syntax.split("{prefix}").join(prefix) })
                     if (content === "help") {
                         available = ""
-                        for (let cmd2 of module.exports)
+                        for (let cmd2 of module.exports){
                                 if (cmd2.owner_only)
                                     continue
                             available += `\`${prefix}${cmd2.alias[0]}\` `
                         embed.fields.push({name: "Available commands", value: available})
+                        }
                     }
                     message.channel.send("", { embed: embed })
                     return
@@ -389,5 +409,52 @@ module.exports = [
                 message.channel.send(e.toString())
             }
         }
+    },
+    {
+        title           : "Give",
+        desc            : "Give dabs to a group of people",
+        alias           : ["give"],
+        syntax          : "`{prefix}give [users] <amount>",
+        owner_only      : false,
+        affect_config   : true,
+        action          : function(message, config) {
+            params = message.contents.split(" ");
+            num_receivers = params.length - 2;
+            dabs_to_give = params.slice(-1)[0] * 1;
+
+            if (params.length < 3){
+                    message.channel.send("Missing some arguments.");
+            }
+
+            if (message.mentions.size == 0){
+                    message.channel.send("Mention a user when inputting the command");
+                    return
+            }
+
+            if (dabs_to_give * 1 == NaN){ //Convert  string to number
+                    message.channel.send("Specify the amount of dabs to give when" + 
+                                    "entering the command");
+                    return
+            }
+
+            giver = update_dabs(message, config)
+            if (dabs_to_give * num_receivers > giver.dabs) {
+                    message.channel.send("You don't have enough dabs to give.");
+                    return
+            }
+            //I don't wanna rewrite update_dabs, and receiver may not exist
+            //in database so have this hack
+            
+            for (value of message.mentions){
+                fake_message = message;
+                fake_message.author.id = value.id
+                receiver = update_dabs(fake_message, config);
+
+                //do transaction
+                receiver.dabs += dabs_to_give;
+                giver.dabs -= dabs_to_give;
+            }
+        }
     }
+
 ]
