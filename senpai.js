@@ -28,8 +28,9 @@ client.on("message", function(message) {
             if (cmd.alias.indexOf(input) >= 0) {
                 if (cmd.owner_only && message.author.id !== config.owner_id) return
                 cmd.action(message, config)
-                if (cmd.affect_config)
+                if (cmd.affect_config){
                     fs.writeFile("./config.json", JSON.stringify(config, null, 4))
+                }
                 return
             }
         }

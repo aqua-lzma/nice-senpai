@@ -46,7 +46,6 @@ function findUserInConfig(user, config) {
   }
    return -1
 }
-           
 
 
 
@@ -111,7 +110,7 @@ module.exports = [
               "*Check yourself before you wreck yourself.*",
         alias: ["me", "checkme", "dabs"],
         owner_only: false,
-        affect_config: false,
+        affect_config: true,
         action: function(message, config) {
             user = update_dabs(message, config)
             message.guild.fetchMember(message.author)
@@ -131,6 +130,7 @@ module.exports = [
                     ]
                 }})
             })
+            
         }
     },
     {
@@ -181,6 +181,7 @@ module.exports = [
                 suffix = "Something went wrong."
             user.dabs += winnings
             message.channel.send(`You rolled ${number} and won ${suffix}`)
+            
         }
     },
     {
@@ -239,7 +240,8 @@ module.exports = [
                 user.dabs += winnings
                 text = `You win ${winnings} dabs! ${config.dab_emoji}`
             }
-            message.channel.send((new Discord.RichEmbed({ title: title, description: text })).setImage(coin))
+            message.channel.send((new Discord.RichEmbed({ title: title, description: text })).setImage(coin));
+            
         }
     },
     {
@@ -362,6 +364,7 @@ module.exports = [
             while (text_out.length > 2048) {
                 //tell them to filter better
             }
+            
         }
     },
     {
@@ -408,6 +411,7 @@ module.exports = [
             catch (e) {
                 message.channel.send(e.toString())
             }
+            
         }
     },
     {
@@ -445,7 +449,7 @@ module.exports = [
             //I don't wanna rewrite update_dabs, and receiver may not exist
             //in database so have this hack
             
-            for (value of message.mentions){
+            for (let value of message.mentions.values()){
                 fake_message = message;
                 fake_message.author.id = value.id
                 receiver = update_dabs(fake_message, config);
@@ -454,6 +458,7 @@ module.exports = [
                 receiver.dabs += dabs_to_give;
                 giver.dabs -= dabs_to_give;
             }
+            
         }
     }
 
