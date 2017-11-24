@@ -2,8 +2,16 @@
 nice bot
 
 ## Node Rewrite
+### Dab bot
+- [x] : $$
+- [x] : give
+- [ ] : leaderboards
+- [x] : bet roll
+- [x] : bet flip
+- [ ] : drool (WIP)
+- [ ] : level
+- [ ] : random dabs
 ### Voice
-#### Commands
 - [ ] : play
 - [ ] : queue
 - [ ] : np
@@ -15,23 +23,10 @@ nice bot
 - [ ] : set <avatar|name|nick>
 - [ ] : search
 - [ ] : restart
-
-### Dab bot
-#### Commands
-- [ ] : $$
-- [ ] : give
-- [ ] : leaderboards
-- [ ] : bet roll
-- [ ] : bet flip
-- [ ] : drool
-- [ ] : level
-- [ ] : random dabs
-
 ### Other stuff
-- [ ] : exec
+- [x] : exec
 - [ ] : shitposting "^ interesting" and "hmm"
 - [ ] : nice-chess (we miss you saucy)
-
 #### Note:
 >Unticked means not yet (fully) implemented.
 
