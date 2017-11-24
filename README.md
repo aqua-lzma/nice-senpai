@@ -1,8 +1,39 @@
 # Nice-Senpai
 nice bot
 
-## Rewriting in node.js
-> WE GOING JAVASCRIPT NOW BOISSS, HELP REWRITE
+## Node Rewrite
+### Voice
+#### Commands
+- [ ] : play
+- [ ] : queue
+- [ ] : np
+- [ ] : pause
+- [ ] : resume
+- [ ] : skip
+- [ ] : clear
+- [ ] : pldump
+- [ ] : set <avatar|name|nick>
+- [ ] : search
+- [ ] : restart
+
+### Dab bot
+#### Commands
+- [ ] : $$
+- [ ] : give
+- [ ] : leaderboards
+- [ ] : bet roll
+- [ ] : bet flip
+- [ ] : drool
+- [ ] : level
+- [ ] : random dabs
+
+### Other stuff
+- [ ] : exec
+- [ ] : shitposting "^ interesting" and "hmm"
+- [ ] : nice-chess (we miss you saucy)
+
+#### Note:
+>Unticked means not yet (fully) implemented.
 
 ## Testing / developing for the js version
 Requirements:

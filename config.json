@@ -2,10 +2,17 @@
     "token": "",
     "owner_id": "",
     "command_prefix": "$",
+
+    "ytapikey":"",
+    "Playing" : false,
+    "queue"   : [],
+    "dispatcher":null,
+
     "server_prefix": {},
     "ignore": {
         "server": [],
         "channel": [],
         "user": []
     }
+
 }
