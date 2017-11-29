@@ -27,6 +27,7 @@ nice bot
 - [x] : exec
 - [ ] : shitposting "^ interesting" and "hmm"
 - [ ] : nice-chess (we miss you saucy)
+- [ ] : google image search (hi)
 #### Note:
 >Unticked means not yet (fully) implemented.
 
