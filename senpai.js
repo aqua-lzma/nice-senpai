@@ -1,20 +1,14 @@
-
-// -------------------------
-const Discord       = require("discord.js")
-const fs            = require("fs")
-const cmds          = require("./cmds.js")
-const ytdl          = require("ytdl-core");
-var config          = require("./config.json")
-var client          = new Discord.Client()
-// -------------------------
+const Discord = require("discord.js")
+const fs = require("fs")
+const cmds = require("./cmds.js")
+var config = require("./config.json")
+var client = new Discord.Client()
 
 client.login(config.token)
 
 client.on("ready", function() {
     console.log("hi")
 })
-
-// -------------------------
 
 client.on("message", function(message) {
     if (
@@ -34,8 +28,14 @@ client.on("message", function(message) {
             if (cmd.alias.indexOf(input) >= 0) {
                 if (cmd.owner_only && message.author.id !== config.owner_id) return
                 cmd.action(message, config)
-                if (cmd.affect_config)
-                    fs.writeFile("./config.json", JSON.stringify(config, null, 4))
+                if (cmd.affect_config){
+                    console.log(JSON.stringify(config, null, 4));
+                    fs.writeFile("./config.json", JSON.stringify(config, null, 4),
+                            function (err) {
+                                if (err) console.log("Saving error")
+                                else console.log("Saving complete");
+                            });
+                }
                 return
             }
         }

@@ -1,17 +1,18 @@
-const Discord = require("discord.js");
-const fs      = require("fs");
-const request = require("request");
+const Discord = require("discord.js")
+const fs      = require("fs")
 
 function update_dabs(message, config, amount) {
-    user = config.users[message.author.id]
-    if (user === undefined) {
-        user = config.users[message.author.id] = {
+    user = findUserInConfig(message.author, config);
+    if (user === -1) {
+        user =  {
+            id: message.author.id,
             dabs: 100,
             dab_record: 100,
             level: 1,
             daily_rolls: 0,
             daily_claim: -1,
         }
+        config.ignore.user.push(user);
         message.reply("not found in database, 100 free dabs!")
     }
     if (user.daily_claim !== new Date().getDay()) {
@@ -31,6 +32,22 @@ function circularJSON(key, value) {
     }
     return value;
 }
+
+/**
+ * Utility function that accepts a discord.js user object and returns 
+ * an entry in the specified config file if the user exists in it.
+ * Otherwise it will return -1
+ */
+function findUserInConfig(user, config) {
+   for (let member of config.ignore.user){
+       if (member.id = user.id){
+           return member
+        }
+  }
+   return -1
+}
+
+
 
 module.exports = [
     {
@@ -60,11 +77,12 @@ module.exports = [
                         embed.fields.push({ name: "Syntax", value: cmd.syntax.split("{prefix}").join(prefix) })
                     if (content === "help") {
                         available = ""
-                        for (let cmd2 of module.exports)
+                        for (let cmd2 of module.exports){
                                 if (cmd2.owner_only)
                                     continue
                             available += `\`${prefix}${cmd2.alias[0]}\` `
                         embed.fields.push({name: "Available commands", value: available})
+                        }
                     }
                     message.channel.send("", { embed: embed })
                     return
@@ -92,7 +110,7 @@ module.exports = [
               "*Check yourself before you wreck yourself.*",
         alias: ["me", "checkme", "dabs"],
         owner_only: false,
-        affect_config: false,
+        affect_config: true,
         action: function(message, config) {
             user = update_dabs(message, config)
             message.guild.fetchMember(message.author)
@@ -112,6 +130,7 @@ module.exports = [
                     ]
                 }})
             })
+            
         }
     },
     {
@@ -162,6 +181,7 @@ module.exports = [
                 suffix = "Something went wrong."
             user.dabs += winnings
             message.channel.send(`You rolled ${number} and won ${suffix}`)
+            
         }
     },
     {
@@ -220,7 +240,8 @@ module.exports = [
                 user.dabs += winnings
                 text = `You win ${winnings} dabs! ${config.dab_emoji}`
             }
-            message.channel.send((new Discord.RichEmbed({ title: title, description: text })).setImage(coin))
+            message.channel.send((new Discord.RichEmbed({ title: title, description: text })).setImage(coin));
+            
         }
     },
     {
@@ -343,6 +364,7 @@ module.exports = [
             while (text_out.length > 2048) {
                 //tell them to filter better
             }
+            
         }
     },
     {
@@ -389,130 +411,55 @@ module.exports = [
             catch (e) {
                 message.channel.send(e.toString())
             }
+            
         }
     },
     {
-      title         : "Play",
-      desc          : "Add a song to the :fire: Radio queue.",
-      alias         : ["play","p"],
-      syntax        : "`{prefix}play <url | search query>`" +
-                      "List of supported urls: https://rg3.github.io/youtube-dl/supportedsites.html",
-      owner_only    : false,
-      affect_config : true,
-      action        : function(message, config){
+        title           : "Give",
+        desc            : "Give dabs to a group of people",
+        alias           : ["give"],
+        syntax          : "`{prefix}give [users] <amount>",
+        owner_only      : false,
+        affect_config   : true,
+        action          : function(message, config) {
+            params = message.contents.split(" ");
+            num_receivers = params.length - 2;
+            dabs_to_give = params.slice(-1)[0] * 1;
 
-        query = {
-          content:message.content.split(" ").slice(1).join(" "),
-          requester:message
-        };
+            if (params.length < 3){
+                    message.channel.send("Missing some arguments.");
+            }
 
-        if(query.content.indexOf("http://") > -1){
-            query.type = "url";
+            if (message.mentions.size == 0){
+                    message.channel.send("Mention a user when inputting the command");
+                    return
+            }
 
-            if(query.content[0].indexOf("youtube.com") > -1){
-                query.content = query.content[0].split("&")[0];
-                query.type    = "yt";
-            };
-        } else {
-          if(query.content.length === 11){
-            if (!getTitle(query.content)){
-              query.type = "string";
-          } else {
-              query.content = `http://www.youtube.com/watch?v=${query.content}`
-              query.type = "yt";
-          };
-        };
+            if (dabs_to_give * 1 == NaN){ //Convert  string to number
+                    message.channel.send("Specify the amount of dabs to give when" + 
+                                    "entering the command");
+                    return
+            }
 
-        function getTitle(ytid){
-          request(`https://www.googleapis.com/youtube/v3/videos?id=${id}&key=${config["ytapikey"]}&fields=items(snippet(title))&part=snippet`,
-            function(error, response, body) {
-              var json = JSON.parse(body);
-              if(json.items[0]){
-                  return json.items[0].snippet.title
-              } else {
-                  return false;
-              }
-          });
+            giver = update_dabs(message, config)
+            if (dabs_to_give * num_receivers > giver.dabs) {
+                    message.channel.send("You don't have enough dabs to give.");
+                    return
+            }
+            //I don't wanna rewrite update_dabs, and receiver may not exist
+            //in database so have this hack
+            
+            for (let value of message.mentions.values()){
+                fake_message = message;
+                fake_message.author.id = value.id
+                receiver = update_dabs(fake_message, config);
+
+                //do transaction
+                receiver.dabs += dabs_to_give;
+                giver.dabs -= dabs_to_give;
+            }
+            
         }
+    }
 
-        function do_the_thing_uhhhh_the_thingamajig(){
-          console.log(config["queue"]["vChan"])
-          vChan = config["queue"][0]["vChan"];
-          vChan.join().then(connection => {
-            song = ytdl(config["queue"][0]["url"], {
-                filter:"audioonly"
-            });
-            dispatcher = connection.playStream(song);
-
-            message.channel.send(`<@${config["queue"][0]["message"].author.id}>, your song **${config["queue"][0]["title"]}** is now playing in **${vChan.name}**!`)
-
-            dispatcher.on('end', function() {
-              config["queue"].shift();
-
-              if(config["queue"].length > 0){
-                setTimeout(function(){
-                  do_the_thing_uhhhh_the_thingamajig();
-                },500);
-              } else {
-                config["queue"][0]["message"].channel.send("Queue's empty! Play your own songs with **-play <search query | url>**.")
-              };
-            });
-          });
-        };
-
-        if ( message.member.voiceChannel )  {
-
-            if ( config["queue"].length === 0 ){
-              config["queue"].push("__") //placeholder
-            };
-
-            if ( config["queue"].length > 0 || config["Playing"] ){
-              console.log("happened")
-              config["queue"].push(query);
-              title = null;
-
-              if (query.type === "yt"){
-                title = getTitle(query.content.split('?v=')[0]);
-
-              } else if(query.type === "url") {
-                title = query.content.split('/')[query.content.split('/').length-1];
-
-              } else {
-                request(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=${encodeURIComponent(query)}&key=${config["ytapikey"]}`,
-                  function(error, response, body) {
-
-                    var json = JSON.parse(body);
-                    if (json.items[0]) {
-                      title          = getTitle(json.items[0].id.videoId);
-                      query.content = `https://www.youtube.com/watch?v=${json.items[0].id.videoId}`;
-                    };
-                });
-              };
-
-              if(title){
-                message.channel.send(`Enqueued **${title} to be played. Position in queue: ${config["queue"].indexOf(query)+1}`);
-                var content = {
-                  "url":query.content,
-                  "title":title,
-                  "message":message,
-                  "skips":[]
-                }
-                console.log(content);
-                config["queue"].push(content);
-              } else {
-                message.channel.send("You want to play THAT? Hahaha, gross!"); // shh, dont tell anyone we didn't get any results from searching youtube
-              };
-
-              if (config["queue"].length === 2 && config["queue"][0] === "__"){
-
-                config["Playing"] = true;
-                do_the_thing_uhhhh_the_thingamajig();
-
-              };
-
-          };
-
-        };
-      }
-    }}
 ]
