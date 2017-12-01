@@ -1,9 +1,7 @@
-
 // -------------------------
 const Discord       = require("discord.js")
 const fs            = require("fs")
-const cmds          = require("./cmds.js")
-const ytdl          = require("ytdl-core");
+const commands      = require("./commands.js")
 var config          = require("./config.json")
 var client          = new Discord.Client()
 // -------------------------
@@ -30,11 +28,11 @@ client.on("message", function(message) {
         prefix = config.server_prefix[message.guild.id]
     if (message.content.startsWith(prefix)) {
         var input = message.content.split(" ")[0].slice(1).toLowerCase()
-        for(cmd of cmds) {
-            if (cmd.alias.indexOf(input) >= 0) {
-                if (cmd.owner_only && message.author.id !== config.owner_id) return
-                cmd.action(message, config)
-                if (cmd.affect_config)
+        for(command of commands) {
+            if (command.alias.indexOf(input) >= 0) {
+                if (command.owner_only && message.author.id !== config.owner_id) return
+                command.action(message, config)
+                if (command.affect_config)
                     fs.writeFile("./config.json", JSON.stringify(config, null, 4))
                 return
             }
