@@ -12,7 +12,7 @@ module.exports = {
             prefix = config.server_prefix[message.guild.id]
         content = message.content.toLowerCase().split(" ")
         content = (content.length === 1)?"help":content[1]
-        for (let cmd of module.exports) {
+        for (let cmd of require("../commands.js")) {
             if (cmd.alias.indexOf(content) >= 0){
                 embed = {
                     title: cmd.title,

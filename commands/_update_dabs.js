@@ -15,5 +15,6 @@ module.exports = function update_dabs(message, config, amount) {
         user.daily_rolls += Math.floor(10 * (Math.log(user.level) / Math.log(5))) + 1
         message.channel.send(`${message.author} has new daily rolls!`)
     }
+    if (user.dabs > user.dab_record) user.dab_record = user.dabs
     return user
 }

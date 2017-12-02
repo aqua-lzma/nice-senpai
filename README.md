@@ -4,7 +4,7 @@ nice bot
 ## Node Rewrite
 ### Dab bot
 - [x] : $$
-- [x] : give
+- [ ] : give (WIP)
 - [ ] : leaderboards
 - [x] : bet roll
 - [x] : bet flip
