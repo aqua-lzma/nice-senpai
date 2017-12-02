@@ -8,7 +8,7 @@ nice bot
 - [ ] : leaderboards
 - [x] : bet roll
 - [x] : bet flip
-- [ ] : drool (WIP)
+- [x] : drool
 - [ ] : level
 - [ ] : random dabs
 ### Voice
