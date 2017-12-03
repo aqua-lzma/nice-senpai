@@ -2,7 +2,7 @@ const update_dabs = require("./_update_dabs.js")
 
 function rolls_to_string(rolls) {
     text_out = ""
-    for(let item of rolls) {
+    for (let item of rolls) {
         text_out += item[0]
             .split("0").join(":zero:") .split("1").join(":one:")
             .split("2").join(":two:")  .split("3").join(":three:")
@@ -39,7 +39,7 @@ module.exports = {
           "*Try not to drool over yourself.* 🤤",
     alias: ["dailyroll", "droll", "drool", "dr"],
     syntax: "`{prefix}droll` roll once.\n" +
-            "`{prefix}droll number` roll number amount of times.\n" +
+            "`{prefix}droll <number>` roll number amount of times.\n" +
             "`{prefix}drool all` roll all you can and get it over with.\n",
     owner_only: false,
     affect_config: true,

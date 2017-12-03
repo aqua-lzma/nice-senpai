@@ -4,9 +4,9 @@ module.exports = {
     title: "Bet flip",
     desc: "Bet dabs on a coin flip and win one and a half times what you bet if you win.",
     alias: ["betflip", "bflip", "blip", "bf"],
-    syntax: "`{prefix}betflip number heads|tails` where number equals how much you want to bet.\n" +
-            "`{prefix}betflip tails|heads number` this also works.\n" +
-            "`{prefix}betflip all heads|tails` bet all your dabs *(madman)*.\n" +
+    syntax: "`{prefix}betflip <number> <heads | tails>` where number equals how much you want to bet.\n" +
+            "`{prefix}betflip <tails | heads> <number>` this also works.\n" +
+            "`{prefix}betflip all <heads | tails>` bet all your dabs *(madman)*.\n" +
             "You can use `h` or `t` as shorthand for heads/tails.",
     owner_only: false,
     affect_config: true,

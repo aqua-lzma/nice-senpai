@@ -10,7 +10,7 @@ module.exports = {
             "100   : Ten times your bet!\n" +
             "```",
     alias: ["betroll", "broll", "brool", "bro", "br"],
-    syntax: "`{prefix}betroll number` where number equals how much you want to bet.\n" +
+    syntax: "`{prefix}betroll <number>` where number equals how much you want to bet.\n" +
             "`{prefix}betroll all` bet all of your dabs *(madman)*.",
     owner_only: false,
     affect_config: true,
