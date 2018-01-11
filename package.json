@@ -21,7 +21,8 @@
     "ffmpeg-binaries": "^3.2.2-3",
     "fs": "0.0.1-security",
     "opusscript": "0.0.4",
+    "package.json": "^2.0.1",
     "request": "^2.83.0",
-    "ytdl-core": "^0.18.3"
+    "ytdl-core": "^0.18.5"
   }
 }
