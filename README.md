@@ -9,7 +9,7 @@ nice bot
 - [x] : bet roll
 - [x] : bet flip
 - [x] : drool
-- [ ] : level
+- [x] : level
 - [ ] : random dabs
 ### Voice
 - [ ] : play
