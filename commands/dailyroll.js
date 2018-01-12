@@ -44,7 +44,7 @@ module.exports = {
     owner_only: false,
     affect_config: true,
     action: function(message, config) {
-        user = update_dabs(message, config)
+        user = update_dabs(message.author, config)
 
         content = message.content.toLowerCase().split(" ")
         amount = 1
@@ -61,6 +61,7 @@ module.exports = {
             return message.channel.send("Not enough rolls left.")
         if (amount === NaN || Math.floor(amount) != amount || amount <= 0)
             return message.channel.send("Invalid input.")
+        user.daily_rolls -= amount
 
         // Do rolls
         full_rolls = []

@@ -15,7 +15,7 @@ module.exports = {
     owner_only: false,
     affect_config: true,
     action: function(message, config) {
-        user = update_dabs(message, config)
+        user = update_dabs(message.author, config)
         content = message.content.toLowerCase().split(" ")[1]
         bonus = 1
         if (content === "all") {

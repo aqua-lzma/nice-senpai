@@ -5,11 +5,11 @@ nice bot
 ### Dab bot
 - [x] : $$
 - [ ] : give (WIP)
-- [ ] : leaderboards
+- [x] : leaderboards
 - [x] : bet roll
 - [x] : bet flip
 - [x] : drool
-- [ ] : level
+- [x] : level
 - [ ] : random dabs
 ### Voice
 - [ ] : play
