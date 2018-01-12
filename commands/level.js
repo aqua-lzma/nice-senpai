@@ -29,7 +29,7 @@ module.exports = {
     owner_only: false,
     affect_config: true,
     action: function(message, config) {
-        user = update_dabs(message, config)
+        user = update_dabs(message.author, config)
 
         content = message.content.split(" ")
         if (content.length >= 2) {

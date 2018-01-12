@@ -12,7 +12,7 @@ module.exports = {
     affect_config: false,
     action: function(message, config) {
         // TODO: Check other people
-        user = update_dabs(message, config)
+        user = update_dabs(message.author, config)
         message.guild.fetchMember(message.author)
         .then(guildMember => {
             message.channel.send("", {embed: {
