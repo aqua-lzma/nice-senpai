@@ -22,11 +22,12 @@ module.exports = {
         promises = []
         // You knew you'd never keep!
         for (user in config.users) {
-            promises.push(message.guild.fetchMember(user))
+            promises.push(message.guild.fetchMember(user).catch(user => { return null }))
         }
         // Why do I believe
         Promise.all(promises).then(users => {
             for (user of users) {
+                if (user === null) continue
                 value = (dabs?config.users[user.id].dabs:config.users[user.id].dab_record)
                 table.push([user.displayName, String(value)])
             }
