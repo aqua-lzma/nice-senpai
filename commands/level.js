@@ -31,7 +31,7 @@ module.exports = {
     action: function(message, config) {
         user = update_dabs(message.author, config)
 
-        content = message.content.split(" ")
+        content = message.content.toLowerCase().split(" ")
         if (content.length >= 2) {
             if (content[1] === "all") {
                 amount = get_max(user.level, user.dabs)
