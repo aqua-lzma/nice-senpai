@@ -7,7 +7,7 @@ module.exports = {
           "*Check yourself before you wreck yourself.*",
     alias: ["info", "check", "dabs"],
     syntax: "`{prefix}{prefix}` Shows your info.\n" +
-            "`{prefix}{prefix} @person` shows the persons info.",
+            "`{prefix}{prefix} @person` shows the persons info. *Actually not really.*",
     owner_only: false,
     affect_config: false,
     action: function(message, config) {

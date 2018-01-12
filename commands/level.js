@@ -18,9 +18,13 @@ function get_cost(level, count) {
 }
 
 module.exports = {
-    title: "Level",
-    desc: "Use your dabs to increase your level so you can get more dabs so you can get more levels!",
-    syntax: "",
+    title: "Level up",
+    desc: "Use your dabs to increase your level so you can get more dabs so you can get more levels!\n" +
+          "You will always be prompted to level up so you can just check how much it costs.\n" +
+          "*More levels equal more dabs equal more levels!*",
+    syntax: "`{prefix}level` Try to level up once.\n" +
+            "`{prefix}level <number>` try level up `number` amount of times.\n" +
+            "`{prefix}level all` will calculate how many levels you can afford if any.",
     alias: ["level", "lvl"],
     owner_only: false,
     affect_config: true,
@@ -65,10 +69,5 @@ module.exports = {
                 message.channel.send(`You are now level ${user.level}!`)
             }
         })
-        .catch(
-            response => {
-                message.channel.send("timeout")
-            }
-        )
     }
 }
