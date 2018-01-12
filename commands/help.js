@@ -5,7 +5,7 @@ module.exports = {
           "https://github.com/aqua-rar/Nice-Senpai\n" +
           "Or contact @aqua\\\\\\スケルトン#9099",
     syntax: "`{prefix}help` to show this and a list of available commands.\n" +
-            "`{prefix}help command` shows more information about specified command.",
+            "`{prefix}help <command>` shows more information about specified command.",
     alias: ["help", "halp", "h", "imdumbplshelpme"],
     owner_only: false,
     affect_config: false,
