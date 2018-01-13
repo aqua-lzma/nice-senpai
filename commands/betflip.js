@@ -1,6 +1,8 @@
 const update_dabs = require("./_update_dabs.js")
 const pay_dabs = require("./_pay_dabs.js")
 const get_dabs = require("./_get_dabs.js")
+// tell me if this is a bad thing to do
+const Discord       = require("discord.js")
 
 module.exports = {
     title: "Bet flip",
@@ -44,7 +46,7 @@ module.exports = {
         }
         result = Math.floor(Math.random() * 2)
         title = "Coin flip: "
-        coin = "https://raw.githubusercontent.com/aqua-rar/Nice-Senpai/master/makotocoin"
+        coin = "http://localhost:80/resources/makotocoin"
         if (result === 1) {
             title += "heads"
             coin += "head.png"
@@ -60,6 +62,9 @@ module.exports = {
             get_dabs(message.author, config, winnings)
             text = `You win ${winnings} dabs! ${config.dab_emoji}`
         }
-        message.channel.send((new Discord.RichEmbed({ title: title, description: text })).setImage(coin))
+        message_embed = new Discord.RichEmbed({ title: title, description: text })
+        console.log(typeof(message_embed))
+        message_embed.setImage(coin)
+        message.channel.send("", message_embed)
     }
 }
