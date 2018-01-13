@@ -13,10 +13,11 @@ module.exports = {
     action: function(message, config) {
         mentioned_users = message.mentions.users
         mentioned_users.set(message.author.id, message.author)
-        for (mentioned_user of mentioned_users){
-            user = update_dabs(mentioned_user, config)
+        for (mentioned_user of mentioned_users.values()){
             message.guild.fetchMember(mentioned_user)
             .then(guildMember => {
+                console.log(guildMember)
+                user = update_dabs(guildMember, config)
                 message.channel.send("", {embed: {
                     author: {
                         name: guildMember.displayName,
@@ -30,8 +31,8 @@ module.exports = {
                         { inline: true, name: "Daily rolls left", value: String(user.daily_rolls) },
                     ]
                 }})
-            }, rejectReason => {
-            })
+            }
+            )
         }
     }
 }
