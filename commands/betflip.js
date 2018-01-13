@@ -1,4 +1,6 @@
 const update_dabs = require("./_update_dabs.js")
+const pay_dabs = require("./_pay_dabs.js")
+const get_dabs = require("./_get_dabs.js")
 
 module.exports = {
     title: "Bet flip",
@@ -14,30 +16,32 @@ module.exports = {
         user = update_dabs(message.author, config)
         content = message.content.toLowerCase().split(" ")
         bonus = 1
-        if (content[1] === "all"){
-            amount = user.dabs
-            choice = content[2]
-            bonus = 2
-        } else if (content[2] === "all") {
-            amount = user.dabs
-            choice = content[1]
-            bonus = 2
-        } else {
-            amount = Number(content[1])
-            choice = content[2]
-            if (amount === NaN || Math.floor(amount) != amount || amount < 0) {
-                amount = Number(content[2])
-                choice = content[1]
-                if (amount === NaN || Math.floor(amount) != amount || amount < 0)
-                    return message.channel.send("Invalid amount.")
-            }
-            if (amount > user.dabs)
-                return message.channel.send("You don't have enough dabs.")
+        if (content.length !== 3){
+            message.channel.send("Needs 2 arguments. Check $help betflip for" +
+                " more details.")
+            return 1
         }
-        if (choice === undefined || (!choice.startsWith("h") && !choice.startsWith("t")))
-            return message.channel.send("Invalid choice.")
 
-        user.dabs -= amount
+        if (content[1].startsWith("h") || content[1].startsWith("t")){
+            choice = content[1]
+            amount = content[2]
+            if (content[2] === "all")
+                bonus = 2
+        } else if (content[2].startsWith("h") || content[2].startsWith("t")){
+            choice = content[2]
+            amount = content[1]
+            if (content[1] === "all")
+                bonus = 2
+        } else {
+            message.channel.send("Missing h[eads] or t[ails]. Check $help " + 
+                "betflip for more details.")
+        }
+
+        paid_dabs = pay_dabs(message.author, config, amount)
+        if (paid_dabs < 0){
+            message.channel.send("Not enough dabs to bet.")
+            return paid_dabs
+        }
         result = Math.floor(Math.random() * 2)
         title = "Coin flip: "
         coin = "https://raw.githubusercontent.com/aqua-rar/Nice-Senpai/master/makotocoin"
@@ -52,8 +56,8 @@ module.exports = {
         }
         text = "You win no dabs."
         if (success) {
-            winnings = Math.floor(amount * 1.5 * bonus)
-            user.dabs += winnings
+            winnings = Math.floor(paid_dabs * 1.5 * bonus)
+            get_dabs(message.author, config, winnings)
             text = `You win ${winnings} dabs! ${config.dab_emoji}`
         }
         message.channel.send((new Discord.RichEmbed({ title: title, description: text })).setImage(coin))
