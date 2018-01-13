@@ -18,19 +18,23 @@ module.exports = {
         user = update_dabs(message.author, config)
         content = message.content.toLowerCase().split(" ")[1]
         bonus = 1
-        if (content === "all") {
-            amount = user.dabs
+        if (content === "all")
             bonus = 2
-        } else {
-            amount = Number(content)
-            if (amount === NaN || Math.floor(amount) != amount || amount < 0)
-                return message.channel.send("Invalid amount.")
-            if (amount > user.dabs) {
-                return message.channel.send("You don't have enough dabs.")
-            }
+
+        amount = content
+        if (amount === NaN && bonus != 2 || Number(amount) <= 0) {
+            message.channel.send("Invalid amount. Input a positive number " + 
+                "or `all`")
+            return amount
         }
 
-        user.dabs -= amount
+        paid_dabs = pay_dabs(message.author, config, amount)
+
+        if (paid_dabs < 0){
+            message.channel.send("Not enough dabs to bet.")
+            return paid_dabs
+        }
+
         number = Math.floor(Math.random() * 101)
         if (number < 66) {
             suffix = "no dabs."
@@ -46,7 +50,7 @@ module.exports = {
             suffix = `${winnings} dabs! PERFECT ROLL! ${config.dab_emoji}`
         } else
             suffix = "Something went wrong."
-        user.dabs += winnings
+        get_dabs(message.author, config, amount)
         message.channel.send(`You rolled ${number} and won ${suffix}`)
     }
 }
