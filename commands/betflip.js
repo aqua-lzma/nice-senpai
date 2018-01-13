@@ -15,7 +15,6 @@ module.exports = {
     owner_only: false,
     affect_config: true,
     action: function(message, config) {
-        user = update_dabs(message.author, config)
         content = message.content.toLowerCase().split(" ")
         bonus = 1
         if (content.length !== 3){
@@ -37,6 +36,10 @@ module.exports = {
         } else {
             message.channel.send("Missing h[eads] or t[ails]. Check $help " + 
                 "betflip for more details.")
+        }
+        if (amount === NaN && bonus != 2) {
+            message.channel.send("Invalid amount. Input a number or `all`")
+            return amount
         }
 
         paid_dabs = pay_dabs(message.author, config, amount)
