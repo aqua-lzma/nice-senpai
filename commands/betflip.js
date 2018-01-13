@@ -15,7 +15,6 @@ module.exports = {
     owner_only: false,
     affect_config: true,
     action: function(message, config) {
-        user = update_dabs(message.author, config)
         content = message.content.toLowerCase().split(" ")
         bonus = 1
         if (content.length !== 3){
@@ -37,6 +36,11 @@ module.exports = {
         } else {
             message.channel.send("Missing h[eads] or t[ails]. Check $help " + 
                 "betflip for more details.")
+        }
+        if (amount === NaN && bonus != 2 || Number(amount) <= 0) {
+            message.channel.send("Invalid amount. Input a positive number " + 
+                "or `all`")
+            return amount
         }
 
         paid_dabs = pay_dabs(message.author, config, amount)
@@ -63,7 +67,6 @@ module.exports = {
             text = `You win ${winnings} dabs! ${config.dab_emoji}`
         }
         message_embed = new Discord.RichEmbed({ title: title, description: text })
-        console.log(typeof(message_embed))
         message_embed.setImage(coin)
         message.channel.send("", message_embed)
     }
