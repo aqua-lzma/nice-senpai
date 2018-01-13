@@ -24,7 +24,7 @@ module.exports = {
             return -1
         }
         console.log("Size = " + receivers.size)
-        for (receiver of receivers) {
+        for (receiver of receivers.values()) {
             console.log(receiver)
             pay_dabs(message.author, config, amount)
             get_dabs(receiver, config, amount)

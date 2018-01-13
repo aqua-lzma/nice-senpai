@@ -7,5 +7,5 @@ module.exports = function pay_dabs(member, config, amount) {
         console.log("WARNING: amount is negative (" + amount + ")")
         console.log("get_dabs will DECREASE the user's dabs!")
     }
-    update_dabs(member, config, amount)
+    update_dabs(member, config, Number(amount))
 }
