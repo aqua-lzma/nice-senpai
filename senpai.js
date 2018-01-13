@@ -28,7 +28,7 @@ client.on("message", function(message) {
         prefix = config.server_prefix[message.guild.id]
     if (message.content.startsWith(prefix)) {
         var input = message.content.split(" ")[0].slice(1).toLowerCase()
-        if (message.content === prefix + prefix) input = "info"
+        if (message.content.slice(0,2) === prefix + prefix) input = "info"
         for (command of commands) {
             if (command.alias.indexOf(input) >= 0) {
                 if (command.owner_only && message.author.id !== config.owner_id) return

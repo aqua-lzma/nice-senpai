@@ -27,7 +27,9 @@ module.exports = {
         // Why do I believe
         Promise.all(promises).then(users => {
             for (user of users) {
+                // And you can't finish what you start
                 if (user === null) continue
+                // If this is love it breaks my heart!
                 value = (dabs?config.users[user.id].dabs:config.users[user.id].dab_record)
                 table.push([user.displayName, String(value)])
             }
