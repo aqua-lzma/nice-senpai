@@ -9,8 +9,7 @@ module.exports = function update_dabs(member, config, amount, key="dabs") {
             daily_rolls: 0,
             daily_claim: -1,
         }
-        message.channel.send(member.username + "not in database. " + user.dabs
-            + "free dabs!")
+        // TOCONSIDER : Announce free dabs
     }
     if (user.daily_claim != new Date().getDay()) {
         user.daily_claim = new Date().getDay()
