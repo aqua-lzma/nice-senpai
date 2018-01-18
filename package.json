@@ -1,6 +1,6 @@
 {
   "name": "nice-senpai",
-  "version": "1.0.0",
+  "version": "4.2.0",
   "description": "nice bot",
   "main": "senpai.js",
   "scripts": {
@@ -8,18 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mariniere/Nice-Senpai.git"
+    "url": "git+https://github.com/aqua-rar/Nice-Senpai.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "WTFPL",
   "bugs": {
-    "url": "https://github.com/mariniere/Nice-Senpai/issues"
+    "url": "https://github.com/aqua-rar/Nice-Senpai/issues"
   },
-  "homepage": "https://github.com/mariniere/Nice-Senpai#readme",
+  "homepage": "https://github.com/aqua-rar/Nice-Senpai#readme",
   "dependencies": {
     "discord.js": "^11.2.1",
     "ffmpeg-binaries": "^3.2.2-3",
     "fs": "0.0.1-security",
+    "moment-timezone": "^0.5.14",
     "opusscript": "0.0.4",
     "package.json": "^2.0.1",
     "request": "^2.83.0",
