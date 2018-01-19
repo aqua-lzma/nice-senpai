@@ -1,8 +1,8 @@
 module.exports = {
     title: "Give",
     desc: "Give mentioned users <amount> dabs. Positive amounts only.",
-    syntax: "`{prefix}give <amount> [user-mentions ...]",
-    alias: ["give"],
+    syntax: "`{prefix}give <amount> [user-mentions ...]`",
+    alias: ["give", "gib", "g"],
     owner_only: false,
     affect_config: false,
     action: function(message, config) {
