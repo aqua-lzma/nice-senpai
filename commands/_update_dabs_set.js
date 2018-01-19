@@ -16,6 +16,6 @@ module.exports = function update_dabs_set(member, config, amount=0, field="dabs"
         // TOCONSIDER : Announce that user has drools
     }
     if (user.dabs > user.dab_record) user.dab_record = user.dabs
-    amount[field] = amount
+    user[field] = amount
     return user
 }
