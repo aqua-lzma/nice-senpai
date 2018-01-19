@@ -1,4 +1,4 @@
-module.exports = function update_dabs(member, config, amount=0, field="dabs") {
+module.exports = function update_dabs_set(member, config, amount=0, field="dabs") {
     user = config.users[member.id]
     if (user === undefined) {
         user = config.users[member.id] = {
@@ -16,6 +16,6 @@ module.exports = function update_dabs(member, config, amount=0, field="dabs") {
         // TOCONSIDER : Announce that user has drools
     }
     if (user.dabs > user.dab_record) user.dab_record = user.dabs
-    amount[field] += amount
+    amount[field] = amount
     return user
 }
