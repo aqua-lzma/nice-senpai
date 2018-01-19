@@ -5,7 +5,7 @@ function get_max(level, dabs) {
     count = 0
     while (cost < dabs) {
         count++
-        cost += Math.floor((((level + count) ** 2) * 0.1) + 10)
+        cost += Math.floor(((Math.pow((level + count), 2)) * 0.1) + 10)
     }
     return count
 }
@@ -13,7 +13,7 @@ function get_max(level, dabs) {
 function get_cost(level, count) {
     cost = 0
     for(i=0; i<count; i++)
-        cost += Math.floor((((level + i) ** 2) * 0.1) + 10)
+        cost += Math.floor(((Math.pow((level + i), 2)) * 0.1) + 10)
     return cost
 }
 
