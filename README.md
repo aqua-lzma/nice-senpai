@@ -1,35 +1,6 @@
 # Nice-Senpai
 nice bot
-
-## Node Rewrite
-### Dab bot
-- [x] : $$
-- [ ] : give (WIP)
-- [x] : leaderboards
-- [x] : bet roll
-- [x] : bet flip
-- [x] : drool
-- [x] : level
-- [ ] : random dabs
-### Voice
-- [ ] : play
-- [ ] : queue
-- [ ] : np
-- [ ] : pause
-- [ ] : resume
-- [ ] : skip
-- [ ] : clear
-- [ ] : pldump
-- [ ] : set <avatar|name|nick>
-- [ ] : search
-- [ ] : restart
-### Other stuff
-- [x] : exec
-- [ ] : shitposting "^ interesting" and "hmm"
-- [ ] : nice-chess (we miss you saucy)
-- [ ] : google image search (hi)
-#### Note:
->Unticked means not yet (fully) implemented.
+does dabs and stuff...
 
 ## Testing / developing for the js version
 Requirements:
