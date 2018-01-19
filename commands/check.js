@@ -28,12 +28,28 @@ module.exports = {
     owner_only: false,
     affect_config: false,
     action: function(message, config) {
-        if (message.mentions.members.size == 0)
-            message.guild.fetchMember(message.author)
-            .then(guildMember => message.channel.send("", build_embed(guildMember, config)))
-        else
-            message.mentions.members.map(
-                guildMember => message.channel.send("", build_embed(guildMember, config))
+        mentioned_users = message.mentions.users
+        mentioned_users.set(message.author.id, message.author)
+        for (mentioned_user of mentioned_users.values()){
+            message.guild.fetchMember(mentioned_user)
+            .then(guildMember => {
+                console.log(guildMember)
+                user = update_dabs(guildMember, config)
+                message.channel.send("", {embed: {
+                    author: {
+                        name: guildMember.displayName,
+                        icon_url: guildMember.user.avatarURL
+                    },
+                    color: guildMember.displayColor,
+                    fields: [
+                        { inline: true, name: "Dabs", value: String(user.dabs) },
+                        { inline: true, name: "Highest held dabs", value: String(user.dab_record) },
+                        { inline: true, name: "Level", value: String(user.level) },
+                        { inline: true, name: "Daily rolls left", value: String(user.daily_rolls) },
+                    ]
+                }})
+            }
             )
+        }
     }
 }
