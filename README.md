@@ -2,26 +2,25 @@
 nice bot
 does dabs and stuff...
 
-## Testing / developing for the js version
-Requirements:
-- node.js ( i think 8 or above )
-- a nice attitude
+## Installation
+>For running it and or testing / developing
+### Requirements:
+- node.js
 
-How to:
-1. Install node.js v8+ im pretty sure ( and therefore also npm )
-1. Choose wher you want to test the bote
-1. `npm install discord.js` thats the only req
-1. Clone the `senpai.js` `cmds.js` and `config.json` files ( .py files are legacy )
-1. You need a bot token to test with
-1. To get a bot go to https://discordapp.com/developers/applications/me
-1. Make a new bot ( or make use an existing one ( wait if you already have a bot why do you need this guide ))
-1. Add a name and whatnot
-1. Get the bot token and put the full string into the token field in `config.json`
-1. Copy the bot id marked client id *not the token* into the client id field here: https://discordapi.com/permissions.html
-1. *dubs, nice*
-1. You don't need to bother ticking perms just invite it to your server (you gotta sign in and authenticate and what not)
-1. It's super helpful to go in your discord settings -> appearance and enable developer mode
-1. Copy your id by right clicking your profile picture and put it in the owner id field in `config.json`
-1. At this point the bot should be workable, either run it with `node senpai.js` or if you're cool and use VS Code like me just press F5 while on the `senpai.js` file ( nice for debugging )
-1. make sure to have fun
->if the program halts in vs code, make it continue running and it will show you the async discord error in the debug output
+### How to:
+1. Install node.js (Current if you're cool, LTS if you're square)
+1. Clone the repo. Either `git clone` if you're a smart kid or just download the zip.
+1. `npm install` should get all the dependacies from `package.json`.
+1. Put your bot token in the token field in `config.json`.
+   1. To get a bot go to https://discordapp.com/developers/applications/me
+   1. Make a new bot ( or make use of an existing one )
+   1. Reveal the token and copy paste it
+1. Get the bot in your server.
+   1. Copy the id marked client id *not the token* into the client id field here: https://discordapi.com/permissions.html and then follow the link that it generates.
+   1. You don't need to bother ticking perms just invite it to your server ( You have to have a certain level of permissions to invite it to a server, you can't invite it willy nilly even if you can make regular invite links )
+1. It's super helpful to go in your discord settings -> appearance and enable developer mode so you can right click people channels and servers to copy ids.
+1. Copy your profile id and put it in the owner id field in `config.json`.
+1. At this point the bot should be workable, either run it with `node senpai.js`. Or if you're a cool kid 😎 press F5 on VS Code and it knows to run `senpai.js` based on the `package.json` file.
+1. Make sure to have fun, I mean it. I'm like santa, I'll know if you're not having fun. And I'd come for you then.
+1. hi
+1. *Dubs, nice*
