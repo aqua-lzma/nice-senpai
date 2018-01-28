@@ -45,7 +45,7 @@ module.exports = {
                     value: `\`${time}\``
                 }
                 if (outputs[time].length > 3)
-                    field.name += ` [and ${output[time].length - 3} more]`
+                    field.name += ` [and ${outputs[time].length - 3} more]`
                 embed.fields.push(field)
             }
         }
