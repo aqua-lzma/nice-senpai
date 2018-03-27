@@ -15,7 +15,7 @@ module.exports = {
 
         if (amount === undefined)
             return message.channel.send("Specify an amount. No dabs given.")
-        if (amount <= 0 || (Number.isInteger == false))
+        if (amount <= 0 || (Number.isInteger(amount) == false))
             return message.channel.send("Specify a valid amount. No dabs given.")
 
         sender = message.author
