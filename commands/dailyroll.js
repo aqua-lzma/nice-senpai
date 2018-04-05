@@ -86,7 +86,7 @@ module.exports = {
         filter = 0
         filtered = full_rolls.slice()
         text_out = rolls_to_string(filtered)
-        while (text_out.length >= 2048) {
+        while (text_out.length >= 1300) {
             filter += 1
             if (filter > 6) {
                 text_out = "Something went wrong."
