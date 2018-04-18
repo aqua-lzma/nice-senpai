@@ -5,15 +5,15 @@ module.exports = {
     desc: "Bet dabs on a roll for dubs up to sextuples." +
             "```\n" +
             "No dubs : No money back.\n" +
-            "Dubs    : Double what you bet.\n" +
+            "Dubs    : 5 times what you bet.\n" +
             "Trips   : 20 times your bet!\n" +
-            "Quads   : 200 times your bet!\n" +
-            "Quints  : 2,000 times your bet!\n" +
-            "Sexts   : 20,000 times your bet, wow!\n" +
+            "Quads   : 50 times your bet!\n" +
+            "Quints  : 500 times your bet!\n" +
+            "Sexts   : 5,000 times your bet, wow!\n" +
             "```",
-    alias: ["dubroll", "rolldubs", "dubrool", "dubr"],
-    syntax: "`{prefix}dubroll <number>` where number equals how much you want to bet.\n" +
-            "`{prefix}dubroll all` bet all of your dabs *(madman)*.",
+    alias: ["betdubs", "betdub", "bubs", "bub", "bd"],
+    syntax: "`{prefix}betdubs <number>` where number equals how much you want to bet.\n" +
+            "`{prefix}betdubs all` bet all of your dabs *(madman)*.",
     owner_only: false,
     affect_config: true,
     action: function(message, config) {
@@ -44,19 +44,19 @@ module.exports = {
             suffix = "no dabs."
             winnings = 0
         } else if (win == 1) {
-            winnings = amount * 2 * bonus
+            winnings = amount * 5 * bonus
             suffix = `${winnings} dabs! *Dubs!* ${config.dab_emoji}`
         } else if (win == 2) {
             winnings = amount * 20 * bonus
             suffix = `${winnings} dabs! **Trips!** ${config.dab_emoji}`
         } else if (win == 3) {
-            winnings = amount * 200 * bonus
+            winnings = amount * 50 * bonus
             suffix = `${winnings} dabs! **QUADS!** ${config.dab_emoji}`
         } else if (win == 4) {
-            winnings = amount * 2000 * bonus
+            winnings = amount * 500 * bonus
             suffix = `${winnings} dabs! ***QUINTUPLES*** ${config.dab_emoji}`
         } else if (win == 5) {
-            winnings = amount * 20000 * bonus
+            winnings = amount * 5000 * bonus
             suffix = `${winnings} dabs! ***S E X T U P L E S*** ${config.dab_emoji}`
         } else
             suffix = "Something went wrong."
