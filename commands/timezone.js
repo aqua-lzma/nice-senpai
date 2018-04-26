@@ -19,8 +19,6 @@ module.exports = {
             if (zone.indexOf(search) >= 0)
                 matches.push(zone.join("/"))
 
-        console.log(matches)
-
         outputs = {}
         date = new Date()
         for (match of matches) {
