@@ -34,7 +34,10 @@ client.on("message", function(message) {
                 if (command.owner_only && message.author.id !== config.owner_id) return
                 command.action(message, config)
                 if (command.affect_config)
-                    fs.writeFile("./config.json", JSON.stringify(config, null, 4))
+                    fs.writeFile("./config.json", JSON.stringify(config, null, 4), (err) => {
+                        if (err) return message.channel.send('Error saving file, progress might be lost.')
+                        console.log('Config saved.')
+                    })
                 return
             }
         }
