@@ -91,6 +91,7 @@ module.exports = {
 
       var tryNext = err => {
         if (messages.length == 0) {
+        if (messages.length == 0) {
           return message.channel.send('No images found.')
         }
         var url
@@ -98,9 +99,8 @@ module.exports = {
         if (message.attachments.size > 0) {
           url = message.attachments.first().url
         } else {
-          let thumb =
-            messages.first().embeds[0].image != null ? 'image' : 'thumbnail'
-          url = messages.first().embeds[0][thumb]['url']
+          let thumb = message.embeds[0].image != null ? 'image' : 'thumbnail'
+          url = message.embeds[0][thumb]['url']
         }
         jimp.read(url).then(callback).catch(tryNext)
       }
