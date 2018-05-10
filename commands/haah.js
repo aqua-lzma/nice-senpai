@@ -91,7 +91,6 @@ module.exports = {
 
       var tryNext = err => {
         if (messages.length == 0) {
-        if (messages.length == 0) {
           return message.channel.send('No images found.')
         }
         var url
