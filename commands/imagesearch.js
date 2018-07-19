@@ -37,39 +37,40 @@ module.exports = {
       }
 
       function awaitReactions (response) {
-        response.react('⏪')
-          .then(() => response.react('◀'))
-          .then(() => response.react('▶'))
-          .then(() => response.react('⏩'))
-          .then(() => response.react('🔀'))
-          .then(() => {
-            response.createReactionCollector(
-              (reaction, user) => ['⏪', '◀', '▶', '⏩', '🔀'].indexOf(reaction.emoji.name) >= 0 && user.id === message.author.id,
-              { max: 1, time: 30000 }
-            ).on('collect', reaction => {
-              if (reaction.emoji.name === '⏪') index -= 10
-              else if (reaction.emoji.name === '◀') index--
-              else if (reaction.emoji.name === '▶') index++
-              else if (reaction.emoji.name === '⏩') index += 10
-              else if (reaction.emoji.name === '🔀') index = Math.floor(Math.random() * images.length)
-              index = ((index % 100) + 100) % 100
-              response.edit('', {embed: {
-                title: query + `: ${index}`,
-                description: images[index],
-                image: { url: images[index] }
-              }})
-              response.clearReactions().then(awaitReactions)
-            }).on('end', (collected, reason) => {
-              if (reason !== 'limit') response.clearReactions()
-            })
-          })
+        response.createReactionCollector(
+          (reaction, user) => ['⏪', '◀', '▶', '⏩', '🔀'].indexOf(reaction.emoji.name) >= 0 && user.id === message.author.id,
+          { max: 1, time: 30000 }
+        ).on('collect', reaction => {
+          if (reaction.emoji.name === '⏪') index -= 10
+          else if (reaction.emoji.name === '◀') index--
+          else if (reaction.emoji.name === '▶') index++
+          else if (reaction.emoji.name === '⏩') index += 10
+          else if (reaction.emoji.name === '🔀') index = Math.floor(Math.random() * images.length)
+          index = ((index % 100) + 100) % 100
+          response.edit('', {embed: {
+            title: query + `: ${index}`,
+            description: images[index],
+            image: { url: images[index] }
+          }})
+          reaction.remove(message.author).then(() => awaitReactions(response))
+        }).on('end', (collected, reason) => {
+          if (reason !== 'limit') response.clearReactions()
+        })
       }
 
       message.channel.send('', {embed: {
         title: query + `: ${index}`,
         description: images[index],
         image: { url: images[index] }
-      }}).then(awaitReactions)
+      }}).then(response => {
+        response
+          .react('⏪')
+          .then(() => response.react('◀'))
+          .then(() => response.react('▶'))
+          .then(() => response.react('⏩'))
+          .then(() => response.react('🔀'))
+          .then(() => awaitReactions(response))
+      })
     })
   }
 }
