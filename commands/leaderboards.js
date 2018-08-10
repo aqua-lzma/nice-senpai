@@ -1,62 +1,79 @@
-const update_dabs = require("./_update_dabs.js")
+const updateDabs = require('./_update_dabs.js')
+
+function buildFields (lbs, page) {
+  var output = []
+  for (let user of lbs.slice(10 * page, (10 * page) + 10)) {
+    output.push({
+      'name': `${lbs.indexOf(user) + 1}. ${user[0]}`,
+      'value': `Current: ${user[1]}, Record: ${user[2]}`
+    })
+  }
+  return output
+}
 
 module.exports = {
-    title: "Leaderboards",
-    desc: "Show server members with the **largest** dab collections.\n" +
-          "Or alternatively show members with the highest ever held dabs.\n" +
-          "*They probably already gambled them away*",
-    syntax: "`{prefix}lb` show regular leaderboards for current server.\n" +
-            "`{prefix}lb <highest | record>` show record leaderboards.",
-    alias: ["lb", "leaderboards"],
-    owner_only: false,
-    affect_config: false,
-    action: function(message, config) {
-        content = message.content.toLowerCase().split(" ")
-        dabs = true
-        if ((content.length >= 2) && (content[1] == "highest" || content[1] == "record"))
-            dabs = false
+  title: 'Leaderboards',
+  desc: [
+    'Show server members with the **largest** dab collections.',
+    'Or alternatively show members with the highest ever held dabs.',
+    '*They probably already gambled them away.*'
+  ].join('\n'),
+  syntax: '`{prefix}lb` show  leader boards for current server.',
+  alias: ['lb', 'leaderboards'],
+  owner_only: false,
+  affect_config: false,
+  action: function (message, config) {
+    message.guild.fetchMembers().then(guild => {
+      var leaderboards = []
+      for (let member of guild.members) {
+        let user = updateDabs(member[1], config)
+        leaderboards.push([member[1].displayName, user.dabs, user.dab_record])
+      }
+      var sortByCurrent = true
+      var page = 0
+      var limit = Math.ceil(leaderboards.length / 10)
+      leaderboards = leaderboards.sort((a, b) => b[1] - a[1])
+      var embed = {
+        'author': {
+          'name': `Leaderboards for ${guild.name} by ${sortByCurrent ? 'current' : 'record'} dabs:`,
+          'icon_url': guild.iconUrl
+        },
+        'fields': buildFields(leaderboards, page)
+      }
 
-        table = [["User", (dabs?"Dabs held":"Dab record")]]
-        // https://youtu.be/WBupia9oidU
-        // Promises
-        promises = []
-        // You knew you'd never keep!
-        for (user in config.users) {
-            promises.push(message.guild.fetchMember(user).catch(user => { return null }))
-        }
-        // Why do I believe
-        Promise.all(promises).then(users => {
-            for (user of users) {
-                // And you can't finish what you start
-                if (user === null) continue
-                // If this is love it breaks my heart!
-                value = (dabs?config.users[user.id].dabs:config.users[user.id].dab_record)
-                table.push([user.displayName, String(value)])
-            }
-
-            table = table.sort((a, b) => b[1] - a[1])
-            table = table.slice(0, 10)
-            widths = [0, 0]
-            for (i of table) {
-                if (i[0].length > widths[0]) widths[0] = i[0].length
-                if (i[1].length > widths[1]) widths[1] = i[1].length
-            }
-            for (i of table) {
-                i[0] = i[0].padEnd(widths[0], " ")
-                i[1] = i[1].padEnd(widths[1], " ")
-            }
-
-            lines = ["".padEnd(widths[0], "━"), "".padEnd(widths[1], "━"),]
-            top_str = "┏" + lines[0] + "┳" + lines[1] + "┓\n"
-            mid_str = "┣" + lines[0] + "╋" + lines[1] + "┫\n"
-            bot_str = "┗" + lines[0] + "┻" + lines[1] + "┛"
-
-            row_strs = []
-            for (i of table)
-                row_strs.push("┃" + i[0] + "┃" + i[1] + "┃\n")
-            output = top_str + row_strs.join(mid_str) + bot_str
-
-            message.channel.send("```" + output + "```")
+      function awaitReactions (response) {
+        response.createReactionCollector(
+          (reaction, user) => ['◀', '▶', '🔀'].indexOf(reaction.emoji.name) >= 0 && user.id === message.author.id,
+          { max: 1, time: 30000 }
+        ).on('collect', reaction => {
+          if (reaction.emoji.name === '◀') page--
+          else if (reaction.emoji.name === '▶') page++
+          else if (reaction.emoji.name === '🔀') {
+            sortByCurrent = !sortByCurrent
+            leaderboards = leaderboards.sort((a, b) => b[sortByCurrent ? 1 : 2] - a[sortByCurrent ? 1 : 2])
+            page = 0
+          }
+          page = ((page % limit) + limit) % limit
+          response.edit('', {embed: {
+            'author': {
+              'name': `Leaderboards for ${guild.name} by ${sortByCurrent ? 'current' : 'record'} dabs:`,
+              'icon_url': guild.iconUrl
+            },
+            'fields': buildFields(leaderboards, page)
+          }})
+          reaction.remove(message.author).then(() => awaitReactions(response))
+        }).on('end', (collected, reason) => {
+          if (reason !== 'limit') response.clearReactions()
         })
-    }
+      }
+
+      message.channel.send('', {embed: embed}).then(response => {
+        response
+          .react('◀')
+          .then(() => response.react('▶'))
+          .then(() => response.react('🔀'))
+          .then(() => awaitReactions(response))
+      })
+    })
+  }
 }
