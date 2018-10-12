@@ -1,8 +1,8 @@
 const request = require('request')
-const { RichEmbed } = require('discord.js')
+const { RichEmbed, Util } = require('discord.js')
 
 function nameLinks (str) {
-  str.match(/\[[\w ]+\]/g).map(namedLink => {
+  str.match(/\[[\w\-' ]+\]/g).map(namedLink => {
     str = str.replace(
       namedLink,
       namedLink + `(https://www.urbandictionary.com/define.php?term=${encodeURIComponent(namedLink.slice(1, -1))})`)
@@ -16,9 +16,12 @@ function buildEmbed (definition, index, total) {
     title: definition.word,
     url: definition.permalink,
     description: [
-      nameLinks(definition.definition),
+      Util.escapeMarkdown(nameLinks(definition.definition)),
       '',
-      `*${nameLinks(definition.example).split('\r\n').join('*\n*')}*`
+      Util.escapeMarkdown(nameLinks(definition.example))
+        .split('\r\n')
+        .map(line => line === '' ? line : `*${line}*`)
+        .join('\n')
     ].join('\n'),
     footer: { text: definition.author },
     timestamp: definition.written_on
