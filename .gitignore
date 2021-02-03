@@ -1,4 +1,12 @@
 #################
+## Custom stuff :o
+#################
+
+node_modules/
+package-lock\.json
+config\.json
+
+#################
 ## Eclipse
 #################
 
@@ -216,9 +224,3 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
-
-node_modules/
-
-package-lock\.json
-
-config\.json
