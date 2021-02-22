@@ -1,5 +1,6 @@
 module.exports = function (liveStruct, targetStruct) {
   // Names should match already
+
   console.log(`Comparing ${liveStruct.name} command structs . . .`)
   if (liveStruct.type !== targetStruct.type) {
     console.log("Type doesn't match")
