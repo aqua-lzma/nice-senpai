@@ -73,7 +73,7 @@ function do_rolls(amount){
     }
 }
 
-function filter(){
+function filter(message){
 
     filter = 0
 
@@ -175,6 +175,6 @@ module.exports = {
 	do_rolls(amount)
 
         // Filter until fits in message
-	filter()
+	filter(message)
     }
 }
