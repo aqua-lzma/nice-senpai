@@ -40,6 +40,35 @@ const struct = {
     description: 'Roll your daily rolls for some daily dabs'
   }, {
     type: CommandOptionType.SUB_COMMAND,
+    name: 'give',
+    description: 'Give some of your dabs to a different user',
+    options: [{
+      type: CommandOptionType.USER,
+      name: 'user',
+      description: 'User to give dabs to',
+      required: true
+    }, {
+      type: CommandOptionType.INTEGER,
+      name: 'dabs',
+      description: 'Number of dabs to give',
+      required: true
+    }]
+  }, {
+    type: CommandOptionType.SUB_COMMAND,
+    name: 'leaderboards',
+    description: 'Check the current server leaderboards',
+    options: [{
+      type: CommandOptionType.STRING,
+      name: 'type',
+      description: 'Type of leaderboards to show',
+      choices: [{
+        name: 'Current dabs', value: 'currentDabs',
+      }, {
+        name: 'Record dabs', value: 'recordDabs'
+      }]
+    }]
+  }, {
+    type: CommandOptionType.SUB_COMMAND,
     name: 'bet-roll',
     description: 'Bet dabs on a roll from 0 to 100, the higher the number the better the payout',
     options: [{
@@ -76,21 +105,6 @@ const struct = {
       type: 4,
       name: 'dabs',
       description: 'Number of dabs to bet',
-      required: true
-    }]
-  }, {
-    type: CommandOptionType.SUB_COMMAND,
-    name: 'give',
-    description: 'Give some of your dabs to a different user',
-    options: [{
-      type: CommandOptionType.USER,
-      name: 'user',
-      description: 'User to give dabs to',
-      required: true
-    }, {
-      type: CommandOptionType.INTEGER,
-      name: 'dabs',
-      description: 'Number of dabs to give',
       required: true
     }]
   }]
