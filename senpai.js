@@ -1,53 +1,80 @@
-const Discord = require('discord.js')
-const fs = require('fs')
-const commands = require('./commands.js')
-const responses = require('./responses')
-const config = require('./config.json')
-const client = new Discord.Client()
+// Node modules
+import { readFileSync, writeFile, writeFileSync } from 'fs'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+// External modules
+import { Client } from 'discord.js'
+// Local modules
+import './typedefs.js'
+import commands from './commands/index.js'
+import compareStructs from './utils/compareStructs.js'
+
+const client = new Client()
+
+const rootDir = dirname(fileURLToPath(import.meta.url))
+const config = JSON.parse(readFileSync(join(rootDir, 'config.json'), 'utf8'))
 
 client.login(config.token)
 
-client.on('ready', function () {
-  console.log('hi')
+client.on('ready', async function () {
+  console.log('hi . . .')
+  console.log('Comparing live and target commands . . .')
+  /** @type {[ApplicationCommand]} */
+  let liveCommands = await client.api.applications(client.user.id).commands.get()
+  let changesMade = false
+  for (let command of commands) {
+    let liveCommand = liveCommands.find(c => c.name === command.name)
+    if (liveCommand != null) {
+      if (compareStructs(liveCommand, command.struct)) {
+        console.log(`${command.name}: Matched . . .`)
+      } else {
+        console.log(`${command.name}: Mismatched, patching . . .`)
+        client.api.applications(client.user.id).commands(liveCommand.id).patch({
+          data: command.struct
+        })
+        changesMade = true
+      }
+    } else {
+      console.log(`${command.name}: Missing, uploading . . .`)
+      client.api.applications(client.user.id).commands.post({
+        data: command.struct
+      })
+      changesMade = true
+    }
+  }
+  for (let liveCommand of liveCommands) {
+    if (!commands.some(command => liveCommand.name === command.name)) {
+      console.log(`${liveCommand.name}: Deprecated, deleting . . .`)
+      // client.api.applications(client.user.id).commands(liveCommand.id).delete()
+      changesMade = true
+    }
+  }
+  if (changesMade) {
+    console.warn('WARNING: Changes were made to the command structures. Bot may misbehave for an hour while the changes go live.')
+  }
 })
 
-client.on('message', function (message) {
-  if (
-    message.author.id === client.user.id ||
-        !message.guild ||
-        config.ignore.server.indexOf(message.guild.id) >= 0 ||
-        config.ignore.channel.indexOf(message.channel.id) >= 0 ||
-        config.ignore.user.indexOf(message.author.id) >= 0
-  ) return
-
-  let prefix = config.command_prefix
-  if (config.server_prefix[message.guild.id]) { prefix = config.server_prefix[message.guild.id] }
-  if (message.content.startsWith(prefix)) {
-    let input = message.content.split(' ')[0].slice(1).toLowerCase()
-    if (message.content.slice(0, 2) === prefix + prefix) input = 'info'
-    for (const command of commands) {
-      if (command.alias.indexOf(input) >= 0) {
-        if (command.owner_only && message.author.id !== config.owner_id) return
-        command.action(message, config)
-        if (command.affect_config) {
-          fs.writeFile('./config.json', JSON.stringify(config, null, 4), (err) => {
-            if (err) return message.channel.send('Error saving file, progress might be lost.')
-            console.log('Config saved.')
-          })
-        }
-        return
-      }
+client.ws.on('INTERACTION_CREATE', /** @param {Interaction} interaction */ async interaction => {
+  let command = commands.find(command => command.name === interaction.data.name)
+  if (command != null) {
+    let response = await command.action(client, interaction)
+    try {
+      await client.api.interactions(interaction.id, interaction.token).callback.post({
+        data: response
+      })
+    } catch (e) {
+      console.error(`Failed to respond to command: ${interaction.data.name}`)
+      console.error(e)
+      let errorFileName = `${(new Date()).getTime()}.json`
+      let errorPath = join(rootDir, 'logs', errorFileName)
+      console.error(`Logging interaction and response to: ${errorPath}`)
+      writeFileSync(errorPath, JSON.stringify({ interaction , response }, null, 2), 'utf8')
     }
-  } else if (message.author.id !== client.id && !message.author.bot) {
-    if (config.responses[message.guild.id]) {
-      for (const [response, responseData] of Object.entries(config.responses[message.guild.id])) {
-        responses[response].action(message, responseData, config)
-        console.log(response, responseData)
-        fs.writeFile('./config.json', JSON.stringify(config, null, 4), (err) => {
-          if (err) return message.channel.send('Error saving file, progress might be lost.')
-          console.log('Config saved.')
-        })
-      }
-    }
+  } else {
+    console.error(`Interaction with unknown command name: ${interaction.data.name}`)
+    let errorFileName = `${(new Date()).getTime()}.json`
+    let errorPath = join(rootDir, 'logs', errorFileName)
+    console.error(`Logging interaction to: ${errorPath}`)
+    writeFileSync(errorPath, JSON.stringify(interaction, null, 2), 'utf8')
   }
 })
