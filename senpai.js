@@ -29,14 +29,17 @@ client.on('ready', async function () {
         console.log(`${command.name}: Matched . . .`)
       } else {
         console.log(`${command.name}: Mismatched, patching . . .`)
-        client.api.applications(client.user.id).commands(liveCommand.id).patch({
+        // The PATCH method is autistic, because it rejects commands with the same name.
+        // So we delete and re-upload.
+        await client.api.applications(client.user.id).commands(liveCommand.id).delete()
+        await client.api.applications(client.user.id).commands.post({
           data: command.struct
         })
         changesMade = true
       }
     } else {
       console.log(`${command.name}: Missing, uploading . . .`)
-      client.api.applications(client.user.id).commands.post({
+      await client.api.applications(client.user.id).commands.post({
         data: command.struct
       })
       changesMade = true
@@ -45,7 +48,7 @@ client.on('ready', async function () {
   for (let liveCommand of liveCommands) {
     if (!commands.some(command => liveCommand.name === command.name)) {
       console.log(`${liveCommand.name}: Deprecated, deleting . . .`)
-      // client.api.applications(client.user.id).commands(liveCommand.id).delete()
+      await client.api.applications(client.user.id).commands(liveCommand.id).delete()
       changesMade = true
     }
   }
