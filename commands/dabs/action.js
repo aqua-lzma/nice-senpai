@@ -2,16 +2,18 @@
  * @module template-action Response generator for template command
  */
 import { Client } from 'discord.js'
-import '../../typedefs'
+import '../../typedefs.js'
 
-import betDubs from './subcommands/bet-dubs'
-import betFlip from './subcommands/bet-flip'
-import betRoll from './subcommands/bet-roll'
-import check from './subcommands/check'
-import dailyRoll from './subcommands/daily-roll'
-import give from './subcommands/give'
-import leaderboards from './subcommands/leaderboards'
-import level from './subcommands/level'
+/*
+import betDubs from './subcommands/bet-dubs.js'
+import betFlip from './subcommands/bet-flip.js'
+import betRoll from './subcommands/bet-roll.js'
+import check from './subcommands/check.js'
+import dailyRoll from './subcommands/daily-roll.js'
+import give from './subcommands/give.js'
+import leaderboards from './subcommands/leaderboards.js'
+import level from './subcommands/level.js'
+*/
 
 /**
  * Enum for InteractionResponseType values.
@@ -34,6 +36,7 @@ const CommandOptionType = {
  */
 export default async function (client, interaction) {
   switch (interaction.data.options[0].name) {
+    /*
     case 'bet-dubs':
       return await betDubs(client, interaction)
     case 'bet-flip':
@@ -50,6 +53,7 @@ export default async function (client, interaction) {
       return await leaderboards(client, interaction)
     case 'level':
       return await level(client, interaction)
+    */
     default:
       return {
         type: CommandOptionType.AcknowledgeWithSource

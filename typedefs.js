@@ -22,8 +22,6 @@
  * @property {[ApplicationCommandOption]} [options] - if the option is a subcommand or subcommand group type, this nested options will be the parameters
  */
 
-
-
 /**
  * [ApplicationCommandOptionChoice](https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoptionchoice)
  * - If you specify `choices` for an option, they are the only valid values for a user to pick.
