@@ -2,7 +2,7 @@
  * @module template-action Response generator for template command
  */
 import { Client } from 'discord.js'
-import '../../typedefs.js'
+import '../../../typedefs.js'
 
 /**
  * Enum for InteractionResponseType values.

@@ -1,19 +1,34 @@
-const update_dabs = require("./_update_dabs.js")
+/**
+ * @module template-action Response generator for template command
+ */
+import { readUser, writeUser } from '../utils.js'
+import { Client } from 'discord.js'
+import '../../../typedefs.js'
 
-module.exports = {
-    title: "Bet dubs",
-    desc: "Bet dabs on a roll for dubs up to sextuples." +
-            "```\n" +
-            "No dubs : No money back.\n" +
-            "Dubs    : 5 times what you bet.\n" +
-            "Trips   : 20 times your bet!\n" +
-            "Quads   : 50 times your bet!\n" +
-            "Quints  : 500 times your bet!\n" +
-            "Sexts   : 5,000 times your bet, wow!\n" +
-            "```",
-    alias: ["betdubs", "betdub", "bubs", "bub", "bd"],
-    syntax: "`{prefix}betdubs <number>` where number equals how much you want to bet.\n" +
-            "`{prefix}betdubs all` bet all of your dabs *(madman)*.",
+/**
+ * Enum for InteractionResponseType values.
+ * @readonly
+ * @enum {number}
+ */
+const CommandOptionType = {
+  Pong: 1, // ACK a Ping
+  Acknowledge: 2, // ACK a command without sending a message, eating the user's input
+  ChannelMessage: 3, // respond with a message, eating the user's input
+  ChannelMessageWithSource: 4, // respond with a message, showing the user's input
+  AcknowledgeWithSource: 5 // ACK a command without sending a message, showing the user's input
+}
+
+/**
+ * Respond to command trigger
+ * @param {Client} client - bot client
+ * @param {Interaction} interaction - interaction that triggered the command
+ * @returns {InteractionResponse} interaction to send back
+ */
+export default async function (client, interaction) {
+
+}
+
+let oldStuff = {
     owner_only: false,
     affect_config: true,
     action: function(message, config) {

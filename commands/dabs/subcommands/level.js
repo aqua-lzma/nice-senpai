@@ -1,4 +1,31 @@
-update_dabs = require("./_update_dabs.js")
+/**
+ * @module template-action Response generator for template command
+ */
+import { Client } from 'discord.js'
+import '../../../typedefs.js'
+
+/**
+ * Enum for InteractionResponseType values.
+ * @readonly
+ * @enum {number}
+ */
+const CommandOptionType = {
+  Pong: 1, // ACK a Ping
+  Acknowledge: 2, // ACK a command without sending a message, eating the user's input
+  ChannelMessage: 3, // respond with a message, eating the user's input
+  ChannelMessageWithSource: 4, // respond with a message, showing the user's input
+  AcknowledgeWithSource: 5 // ACK a command without sending a message, showing the user's input
+}
+
+/**
+ * Respond to command trigger
+ * @param {Client} client - bot client
+ * @param {Interaction} interaction - interaction that triggered the command
+ * @returns {InteractionResponse} interaction to send back
+ */
+export default async function (client, interaction) {
+
+}
 
 function get_max(level, dabs) {
     cost = Math.floor((level * level * 0.1) + 10)
@@ -17,7 +44,7 @@ function get_cost(level, count) {
     return cost
 }
 
-module.exports = {
+let oldStuff = {
     title: "Level up",
     desc: "Use your dabs to increase your level so you can get more dabs so you can get more levels!\n" +
           "You will always be prompted to level up so you can just check how much it costs.\n" +

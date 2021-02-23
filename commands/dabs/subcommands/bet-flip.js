@@ -1,6 +1,33 @@
-const update_dabs = require("./_update_dabs.js")
+/**
+ * @module template-action Response generator for template command
+ */
+import { Client } from 'discord.js'
+import '../../../typedefs.js'
 
-module.exports = {
+/**
+ * Enum for InteractionResponseType values.
+ * @readonly
+ * @enum {number}
+ */
+const CommandOptionType = {
+  Pong: 1, // ACK a Ping
+  Acknowledge: 2, // ACK a command without sending a message, eating the user's input
+  ChannelMessage: 3, // respond with a message, eating the user's input
+  ChannelMessageWithSource: 4, // respond with a message, showing the user's input
+  AcknowledgeWithSource: 5 // ACK a command without sending a message, showing the user's input
+}
+
+/**
+ * Respond to command trigger
+ * @param {Client} client - bot client
+ * @param {Interaction} interaction - interaction that triggered the command
+ * @returns {InteractionResponse} interaction to send back
+ */
+export default async function (client, interaction) {
+
+}
+
+let oldStuff = {
     title: "Bet flip",
     desc: "Bet dabs on a coin flip and win one and a half times what you bet if you win.",
     alias: ["betflip", "bflip", "blip", "bf"],

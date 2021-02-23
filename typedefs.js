@@ -96,7 +96,7 @@
  * - `value` and `options` are mutually exclusive.
  * @typedef {object} ApplicationCommandInteractionDataOption
  * @property {string} name - the name of the parameter
- * @property {number} [value] - the `ApplicationCommandOptionType` value of the pair
+ * @property {string | number | boolean} [value] - the `ApplicationCommandOptionType` value of the pair
  * @property {[ApplicationCommandInteractionDataOption]} [options] - present if this option is a group or subcommand
  */
 

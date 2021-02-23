@@ -41,7 +41,7 @@ const struct = {
   }, {
     type: CommandOptionType.SUB_COMMAND,
     name: 'give',
-    description: 'Give some of your dabs to a different user',
+    description: 'Give some of your dabs to a different user. Maximum of 50% of your total dabs a day',
     options: [{
       type: CommandOptionType.USER,
       name: 'user',
@@ -50,7 +50,7 @@ const struct = {
     }, {
       type: CommandOptionType.INTEGER,
       name: 'dabs',
-      description: 'Number of dabs to give',
+      description: 'Number of dabs to give. 0 means all of your current dabs',
       required: true
     }]
   }, {
@@ -59,12 +59,35 @@ const struct = {
     description: 'Check the current server leaderboards',
     options: [{
       type: CommandOptionType.STRING,
-      name: 'type',
-      description: 'Type of leaderboards to show',
+      name: 'priority',
+      description: 'Priority value for the leaderboards',
       choices: [{
         name: 'Current dabs', value: 'currentDabs',
       }, {
         name: 'Record dabs', value: 'recordDabs'
+      }]
+    }, {
+      type: CommandOptionType.STRING,
+      name: 'type',
+      description: 'Type of leaderboards to show',
+      choices: [{
+        name: 'Positive', value: 'positive'
+      }, {
+        name: 'Negative', value: 'negative'
+      }]
+    }]
+  }, {
+    type: CommandOptionType.SUB_COMMAND,
+    name: 'switch-mode',
+    description: 'Change from positive dabs to negative dabs. Or vice versa.',
+    options: [{
+      type: CommandOptionType.STRING,
+      name: 'type',
+      description: 'Type of mode to switch to',
+      choices: [{
+        name: 'Positive', value: 'positive',
+      }, {
+        name: 'Negative', value: 'negative'
       }]
     }]
   }, {
@@ -72,9 +95,9 @@ const struct = {
     name: 'bet-roll',
     description: 'Bet dabs on a roll from 0 to 100, the higher the number the better the payout',
     options: [{
-      type: 4,
+      type: CommandOptionType.INTEGER,
       name: 'dabs',
-      description: 'Number of dabs to bet',
+      description: 'Number of dabs to bet. ',
       required: true
     }]
   }, {
@@ -94,7 +117,7 @@ const struct = {
     }, {
       type: CommandOptionType.INTEGER,
       name: 'dabs',
-      description: 'Number of dabs to bet',
+      description: 'Number of dabs to bet. 0 means all of your current dabs',
       required: true
     }]
   }, {
@@ -102,9 +125,9 @@ const struct = {
     name: 'bet-dubs',
     description: 'Bet dabs on a random number from 0 to 1000000 being dubs or better',
     options: [{
-      type: 4,
+      type: CommandOptionType.INTEGER,
       name: 'dabs',
-      description: 'Number of dabs to bet',
+      description: 'Number of dabs to bet. 0 means all of your current dabs',
       required: true
     }]
   }]

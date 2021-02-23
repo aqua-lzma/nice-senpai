@@ -1,39 +1,124 @@
-const update_dabs = require("./_update_dabs.js")
+/**
+ * @module template-action Response generator for template command
+ */
+import { readUser, writeUser } from '../utils.js'
+import { Client } from 'discord.js'
+import '../../../typedefs.js'
 
-function build_embed(guild_member, config) {
-    user = update_dabs(guild_member, config)
-    return {embed: {
-        author: {
-            name: guild_member.displayName,
-            icon_url: guild_member.user.avatarURL
-        },
-        color: guild_member.displayColor,
-        fields: [
-            { inline: true, name: "Dabs", value: String(user.dabs) },
-            { inline: true, name: "Highest held dabs", value: String(user.dab_record) },
-            { inline: true, name: "Level", value: String(user.level) },
-            { inline: true, name: "Daily rolls left", value: String(user.daily_rolls) },
-        ]
-    }}
+/**
+ * Enum for InteractionResponseType values.
+ * @readonly
+ * @enum {number}
+ */
+const CommandOptionType = {
+  Pong: 1, // ACK a Ping
+  Acknowledge: 2, // ACK a command without sending a message, eating the user's input
+  ChannelMessage: 3, // respond with a message, eating the user's input
+  ChannelMessageWithSource: 4, // respond with a message, showing the user's input
+  AcknowledgeWithSource: 5 // ACK a command without sending a message, showing the user's input
 }
 
-module.exports = {
-    title: "Check your self",
-    desc: "Check how many dabs you or someone else has.\n" +
-          "Shows your level and how many daily rolls you have.\n" +
-          "*Check yourself before you wreck yourself.*",
-    alias: ["check", "dabs", "info"],
-    syntax: "`{prefix}{prefix}` Shows your info.\n" +
-            "`{prefix}{prefix} @person` shows the persons info. *Actually not really.*",
-    owner_only: false,
-    affect_config: false,
-    action: function(message, config) {
-        if (message.mentions.members.size == 0)
-            message.guild.fetchMember(message.author)
-            .then(guildMember => message.channel.send("", build_embed(guildMember, config)))
-        else
-            message.mentions.members.map(
-                guildMember => message.channel.send("", build_embed(guildMember, config))
-            )
+/**
+ * Respond to command trigger
+ * @param {Client} client - bot client
+ * @param {Interaction} interaction - interaction that triggered the command
+ * @returns {InteractionResponse} interaction to send back
+ */
+export default async function (client, interaction) {
+  let guild = await client.guilds.fetch(interaction.guild_id)
+  let invokerGuildUser = await guild.members.fetch(interaction.member.user.id)
+  let invokerDisplayName = invokerGuildUser.displayName
+  let invokerAvatarURL = invokerGuildUser.user.avatarURL()
+
+  let targetUserID, targetDisplayName, targetAvatarURL, targetDisplayColour
+  if (interaction.data.options[0].options != null) {
+    targetUserID = interaction.data.options[0].options[0].value
+    let guildMember = await guild.members.fetch(targetUserID)
+    targetDisplayName = guildMember.displayName
+    targetAvatarURL = guildMember.user.avatarURL()
+    targetDisplayColour = guildMember.displayColor
+  } else {
+    targetUserID = interaction.member.user.id
+    targetDisplayName = invokerDisplayName
+    targetAvatarURL = invokerAvatarURL
+    targetDisplayColour = invokerGuildUser.displayColor
+  }
+
+  let user = readUser(targetUserID)
+
+  return {
+    type: CommandOptionType.ChannelMessage,
+    data: {
+      embeds: [{
+        title: `**${targetDisplayName}**`,
+        thumbnail: { url: targetAvatarURL },
+        color: targetDisplayColour,
+        fields: [{
+          name: '**Dabs:**',
+          value: [
+            '```',
+            `Mode:    ${user.positive ? 'positive' : 'negative'}`,
+            `Current: ${user.dabs}`,
+            `Highest: ${user.highestDabs}`,
+            `Lowest:  ${user.lowestDabs}`,
+            '```'
+          ].join('\n'),
+          //inline: true
+        }, {
+          name: '**Levels:**',
+          value: [
+            '```',
+            `Current: ${user.level}`,
+            `Highest: ${user.highestLevel}`,
+            `Lowest:  ${user.lowestLevel}`,
+            '```'
+          ].join('\n'),
+          inline: true
+        }, {
+          name: '**Daily rolls:**',
+          value: [
+            '```',
+            `Claimed?:  ${true}`,
+            `Streak:    ${user.claimStreak}`,
+            `Total won: ${user.dailyWins}`,
+            '```'
+          ].join('\n'),
+          inline: true
+        }, {
+          name: '**Gambling:**',
+          value: [
+            '```',
+            `Total bet: ${user.betTotal}`,
+            `Total won: ${user.betWon}`,
+            `Net:       ${user.betWon - user.betTotal}`,
+            '```'
+          ].join('\n'),
+          inline: true
+        }, {
+          name: '**Badges:**',
+          value: [
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+            '<:that:640311611516518421>',
+          ].join(' ')
+        }],
+        footer: {
+          icon_url: invokerAvatarURL,
+          text: invokerDisplayName
+        },
+        timestamp: (new Date()).toISOString()
+      }]
     }
+  }
 }
