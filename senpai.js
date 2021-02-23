@@ -60,7 +60,19 @@ client.on('ready', async function () {
 client.ws.on('INTERACTION_CREATE', /** @param {Interaction} interaction */ async interaction => {
   let command = commands.find(command => command.name === interaction.data.name)
   if (command != null) {
-    let response = await command.action(client, interaction)
+    /** @type {InteractionResponse} */
+    let response
+    try {
+      response = await command.action(client, interaction)
+    } catch (e) {
+      console.error(`Failed running command: ${interaction.data.name}`)
+      console.error(e)
+      let errorFileName = `${(new Date()).getTime()}.json`
+      let errorPath = join(rootDir, 'logs', errorFileName)
+      console.error(`Logging interaction to: ${errorPath}`)
+      writeFileSync(errorPath, JSON.stringify({ interaction }, null, 2), 'utf8')
+      response = { type: 5 }
+    }
     try {
       await client.api.interactions(interaction.id, interaction.token).callback.post({
         data: response

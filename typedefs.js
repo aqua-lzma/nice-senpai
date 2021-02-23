@@ -1,4 +1,24 @@
 /**
+ * Dab related info for a user
+ * @typedef {object} NiceUser
+ * @property {boolean} positive - defines whether they gain or lose dabs from daily rolls
+ * @property {number} dabs - number of dabs user currently has
+ * @property {number} highestDabs - highest dabs user has ever had
+ * @property {number} lowestDabs - lowest dabs user has ever had
+ * @property {number} lastGive - last day the user used give command
+ * @property {number} givenPercent - percentage of total dabs given away today
+ * @property {number} level - current level of user
+ * @property {number} highestLevel - highest level user has ever had
+ * @property {number} lowestLevel - lowest level user has ever had
+ * @property {number} lastClaim - last time user used daily-roll command
+ * @property {number} claimStreak - number of days in a row user has used daily-roll
+ * @property {number} dailyWins - total number of dabs user has won from daily-roll (absolute)
+ * @property {number} betTotal - total number of dabs user has bet (absolute)
+ * @property {number} betWon - total number of dabs user has won (absolute)
+ * @property {[string]} badges - badges user has achieved
+ */
+
+/**
  * [ApplicationCommand](https://discord.com/developers/docs/interactions/slash-commands#applicationcommand)
  * - A command, or each individual subcommand, can have a maximum of 10 `options`.
  * - An application command is the base "command" model that belongs to an application. This is what you are creating when you `POST` a new command.

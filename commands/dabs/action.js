@@ -35,9 +35,9 @@ const CommandOptionType = {
  */
 export default async function (client, interaction) {
   switch (interaction.data.options[0].name) {
-    /*
     case 'bet-dubs':
       return await betDubs(client, interaction)
+    /*
     case 'bet-flip':
       return await betFlip(client, interaction)
     case 'bet-roll':
