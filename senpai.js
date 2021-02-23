@@ -93,3 +93,8 @@ client.ws.on('INTERACTION_CREATE', /** @param {Interaction} interaction */ async
     writeFileSync(errorPath, JSON.stringify(interaction, null, 2), 'utf8')
   }
 })
+client.on('message', message => {
+  if (Math.random() > 0.99) {
+    message.channel.send('^ Interesting')
+  }
+})
