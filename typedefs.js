@@ -15,6 +15,7 @@
  * @property {number} dailyWins - total number of dabs user has won from daily-roll (absolute)
  * @property {number} betTotal - total number of dabs user has bet (absolute)
  * @property {number} betWon - total number of dabs user has won (absolute)
+ * @property {number} flipSteak - number of bet-flips won in a row
  * @property {[string]} badges - badges user has achieved
  */
 

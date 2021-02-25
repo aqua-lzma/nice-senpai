@@ -1,4 +1,4 @@
-import { readFileSync, write, writeFileSync } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -27,6 +27,7 @@ const template = {
   // Gambling
   betTotal: 0,
   betWon: 0,
+  flipSteak: 0,
   // Badges
   badges: []
 }
@@ -89,18 +90,4 @@ export function validateGambleInput (amount, dabs) {
     (dabs > 0 && amount > dabs) ||
     (dabs < 0 && amount < dabs)
   ) return 'Not enough dabs.'
-}
-
-/**
- * Check if user has achieved any new badges
- * @param {NiceUser} user
- * @returns {[string]} new badges user has achieved, empty if none
- */
-export function checkGenericBadges (user) {
-  let badges = []
-  if (!user.badges) {}
-}
-
-export function checkGambleBadges (user, amount, winnings) {
-
 }

@@ -1,34 +1,16 @@
 /**
- * @module template-action Response generator for template command
+ * @module bet-dubs-action Response generator for template command
  */
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
+import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
 import {
   readUser,
   writeUser,
   emojiNumbers,
   validateGambleInput,
-  checkGambleBadges
 } from '../utils.js'
-
-async function generateEmbedTemplate (client, interaction) {
-  let guild = await client.guilds.fetch(interaction.guild_id)
-  let guildUser = await guild.members.fetch(interaction.member.user.id)
-  let displayName = guildUser.displayName
-  let avatarURL = guildUser.user.avatarURL()
-  let displayColor = guildUser.displayColor
-
-  return {
-    title: `Bet dubs: ${interaction.data.options[0].options[0].value}`,
-    color: displayColor,
-    fields: [],
-    footer: {
-      icon_url: avatarURL,
-      text: displayName
-    },
-    timestamp: (new Date()).toISOString()
-  }
-}
+import { badgeDescriptions, checkGambleBadges } from '../badges.js'
 
 function doGamble (amount) {
   let number = Math.floor(Math.random() * 1000000)
@@ -47,6 +29,7 @@ function doGamble (amount) {
     ['***S E X T U P L E S ! ! !***', 5000],
   ][dubs]
   let winnings = amount * multiplier
+  return [roll, flavour, winnings]
   return [[
     emojiNumbers(roll),
     flavour,
@@ -75,22 +58,34 @@ const CommandOptionType = {
  */
 export default async function (client, interaction) {
   let embed = await generateEmbedTemplate(client, interaction)
-  let user = readUser(interaction.member.user.id)
   let amount = interaction.data.options[0].options[0].value
+  embed.title = `Bet dubs: ${amount}`
+  let user = readUser(interaction.member.user.id)
   if (amount === 0) amount = user.dabs
   let error = validateGambleInput(amount, user.dabs)
 
   if (error == null) {
-    let [description, winnings] = doGamble(amount)
+    let [roll, flavour, winnings] = doGamble(amount)
+    embed.description = [
+      emojiNumbers(roll),
+      flavour,
+      `Winnings: **${winnings} dabs**`
+    ].join('\n')
     embed.description = description
-
     user.dabs -= amount
     user.dabs += winnings
     user.highestDabs = Math.max(user.highestDabs, user.dabs)
     user.lowestDabs = Math.min(user.lowestDabs, user.dabs)
     user.betTotal += Math.abs(amount)
     user.betWon += Math.abs(winnings)
-
+    let badges = checkGambleBadges(user, amount, winnings)
+    for (let badge of badges) {
+      user.badges.push(badge)
+      embed.fields.push({
+        name: 'Badge earned.',
+        value: `${badgeDescriptions[badge][1]} ${badgeDescriptions[badge][0]} +0.1* daily roll rewards`
+      })
+    }
     writeUser(interaction.member.user.id, user)
   } else {
     embed.description = error

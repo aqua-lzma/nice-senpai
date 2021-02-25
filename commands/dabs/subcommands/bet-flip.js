@@ -4,6 +4,9 @@
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
 
+const headsURL = 'https://raw.githubusercontent.com/aqua-lzma/Nice-Senpai/master/resources/makotocoinheads.png'
+const tailsURL = 'https://raw.githubusercontent.com/aqua-lzma/Nice-Senpai/master/resources/makotocointails.png'
+
 /**
  * Enum for InteractionResponseType values.
  * @readonly
@@ -24,65 +27,44 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
-
-}
-
-let oldStuff = {
-    title: "Bet flip",
-    desc: "Bet dabs on a coin flip and win one and a half times what you bet if you win.",
-    alias: ["betflip", "bflip", "blip", "bf"],
-    syntax: "`{prefix}betflip <number> <heads | tails>` where number equals how much you want to bet.\n" +
-            "`{prefix}betflip <tails | heads> <number>` this also works.\n" +
-            "`{prefix}betflip all <heads | tails>` bet all your dabs *(madman)*.\n" +
-            "You can use `h` or `t` as shorthand for heads/tails.",
-    owner_only: false,
-    affect_config: true,
-    action: function(message, config) {
-        user = update_dabs(message.author, config)
-        content = message.content.toLowerCase().split(" ")
-        bonus = 1
-        if (content[1] === "all"){
-            amount = user.dabs
-            choice = content[2]
-            bonus = 2
-        } else if (content[2] === "all") {
-            amount = user.dabs
-            choice = content[1]
-            bonus = 2
-        } else {
-            amount = Number(content[1])
-            choice = content[2]
-            if (amount === NaN || Math.floor(amount) != amount || amount < 0) {
-                amount = Number(content[2])
-                choice = content[1]
-                if (amount === NaN || Math.floor(amount) != amount || amount < 0)
-                    return message.channel.send("Invalid amount.")
-            }
-            if (amount > user.dabs)
-                return message.channel.send("You don't have enough dabs.")
-        }
-        if (choice === undefined || (!choice.startsWith("h") && !choice.startsWith("t")))
-            return message.channel.send("Invalid choice.")
-
-        user.dabs -= amount
-        result = Math.floor(Math.random() * 2)
-        title = "Coin flip: "
-        coin = "https://raw.githubusercontent.com/aqua-rar/Nice-Senpai/master/makotocoin"
-        if (result === 1) {
-            title += "heads"
-            coin += "head.png"
-            success = choice.startsWith("h")
-        } else {
-            title += "tails"
-            coin += "tails.png"
-            success = choice.startsWith("t")
-        }
-        text = "You win no dabs."
-        if (success) {
-            winnings = Math.floor(amount * 1.5 * bonus)
-            user.dabs += winnings
-            text = `You win ${winnings} dabs! ${config.dab_emoji}`
-        }
-        message.channel.send((new Discord.RichEmbed({ title: title, description: text })).setImage(coin))
+  let embed = await generateEmbedTemplate(client, interaction)
+  let choice = interaction.data.options[0].options.find(o => o.name === 'choice')
+  let amount = interaction.data.options[0].options.find(o => o.name === 'dabs')
+  embed.title = `Bet flip - ${choice}: ${amount}`
+  let user = readUser(interaction.member.user.id)
+  if (amount === 0) amount = user.dabs
+  let error = validateGambleInput(amount, user.dabs)
+  if (error == null) {
+    let n = Math.floor(Math.random() * 2)
+    let flip = n === 0 ? 'heads' : 'tails'
+    let imgURL = n === 0 ? headsURL : tailsURL
+    let won = flip === choice
+    let winnings = won ? Math.floor(amount * 2) : 0
+    embed.thumbnail = { url: imgURL }
+    embed.description = [
+      `Result: **${flip}**`,
+      `Winnings: **${winnings}**`
+    ].join('\n')
+    user.dabs -= amount
+    user.dabs += winnings
+    user.highestDabs = Math.max(user.highestDabs, user.dabs)
+    user.lowestDabs = Math.min(user.lowestDabs, user.dabs)
+    user.betTotal += Math.abs(amount)
+    user.betWon += Math.abs(winnings)
+    let badges = checkGambleBadges(user, amount, winnings)
+    for (let badge of badges) {
+      user.badges.push(badge)
+      embed.fields.push({
+        name: 'Badge earned.',
+        value: `${badgeDescriptions[badge][1]} ${badgeDescriptions[badge][0]} +0.1* daily roll rewards`
+      })
     }
+  } else {
+    embed.description = error
+    embed.color = 0xff0000
+  }
+  return {
+    type: CommandOptionType.ChannelMessage,
+    data: { embeds: [embed] }
+  }
 }
