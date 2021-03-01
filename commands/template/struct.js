@@ -1,5 +1,5 @@
 /**
- * @module template-struct Command structure for template command
+ * @module template-struct Command structure for `template` command
  */
 import '../../typedefs.js'
 
@@ -22,5 +22,13 @@ const CommandOptionType = {
 /**
  * @type {ApplicationCommand}
  */
-const struct = {}
+const struct = {
+  name: 'tempalte',
+  description: 'template description',
+  options: [{
+    type: CommandOptionType.INTEGER,
+    name: 'template option',
+    description: 'template option description'
+  }]
+}
 export default struct

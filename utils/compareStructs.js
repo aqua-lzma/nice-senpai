@@ -15,7 +15,7 @@ function compareOptions (live, target) {
     console.log('Description mismatch')
     return false
   }
-  if (live.required != target.required) {
+  if (live.required !== target.required) {
     console.log('Required? mismatch')
     return false
   }
@@ -32,8 +32,8 @@ function compareOptions (live, target) {
       console.log('Choice length mismatch')
       return false
     }
-    for (let choice of target.choices) {
-      let liveChoice = live.choices.find(c => c.name === choice.name)
+    for (const choice of target.choices) {
+      const liveChoice = live.choices.find(c => c.name === choice.name)
       if (liveChoice == null) {
         console.log(`Missing choice ${choice.name}`)
         return false
@@ -57,8 +57,8 @@ function compareOptions (live, target) {
       console.log('Option length mismatch')
       return false
     }
-    for (let option of target.options) {
-      let liveOption = live.options.find(o => o.name === option.name)
+    for (const option of target.options) {
+      const liveOption = live.options.find(o => o.name === option.name)
       if (liveOption == null) {
         console.log(`Missing option ${option.name}`)
         return false
@@ -96,8 +96,8 @@ export default function (live, target) {
       console.log('Option length mismatch')
       return false
     }
-    for (let option of target.options) {
-      let liveOption = live.options.find(o => o.name === option.name)
+    for (const option of target.options) {
+      const liveOption = live.options.find(o => o.name === option.name)
       if (liveOption == null) {
         console.log(`Missing option ${option.name}`)
         return false

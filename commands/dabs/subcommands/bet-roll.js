@@ -1,8 +1,40 @@
 /**
- * @module template-action Response generator for template command
+ * @module bet-roll-action Response generator for `dabs bet-roll` command
  */
+// eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
+import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import {
+  readUser,
+  writeUser,
+  emojiNumbers,
+  validateGambleInput
+} from '../utils.js'
+import { badgeMap, checkGambleBadges } from '../badges.js'
+
+function doGamble (amount) {
+  const number = Math.floor(Math.random() * 101)
+  const win = number < 66 ? 0 : number < 90 ? 1 : number < 100 ? 2 : 3
+  const flavour = [
+    'No payout.',
+    '2 x payout!',
+    '3.5 x payout for getting above 90!',
+    '10 x payout! PERFECT ROLL!'
+  ][win]
+  const winnings = [
+    0,
+    amount * 2,
+    amount * 3.5,
+    amount * 10
+  ][win]
+  const description = [
+    emojiNumbers(String(number)),
+    flavour,
+    `Winnings: **${winnings}**`
+  ].join('\n')
+  return [description, winnings]
+}
 
 /**
  * Enum for InteractionResponseType values.
@@ -24,57 +56,41 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
+  const embed = await generateEmbedTemplate(client, interaction)
+  let amount = interaction.data.options[0].options[0].value
+  const userID = interaction.member.user.id
+  const user = readUser(userID)
 
-}
+  if (amount === 0) amount = user.dabs
+  embed.title = `Bet roll: ${amount}`
+  const error = validateGambleInput(amount, user.dabs)
+  if (error == null) {
+    const [description, winnings] = doGamble(amount)
 
+    embed.description = description
 
-let oldStuff = {
-    title: "Bet roll",
-    desc: "Bet dabs on a roll between 0 and 100 inclusive." +
-            "```\n" +
-            "0-65  : No money back\n" +
-            "66-89 : Double what you bet\n" +
-            "90-99 : 3.5 times what you bet\n" +
-            "100   : Ten times your bet!\n" +
-            "```",
-    alias: ["betroll", "broll", "brool", "bro", "br"],
-    syntax: "`{prefix}betroll <number>` where number equals how much you want to bet.\n" +
-            "`{prefix}betroll all` bet all of your dabs *(madman)*.",
-    owner_only: false,
-    affect_config: true,
-    action: function(message, config) {
-        user = update_dabs(message.author, config)
-        content = message.content.toLowerCase().split(" ")[1]
-        bonus = 1
-        if (content === "all") {
-            amount = user.dabs
-            bonus = 2
-        } else {
-            amount = Number(content)
-            if (amount === NaN || Math.floor(amount) != amount || amount < 0)
-                return message.channel.send("Invalid amount.")
-            if (amount > user.dabs) {
-                return message.channel.send("You don't have enough dabs.")
-            }
-        }
-
-        user.dabs -= amount
-        number = Math.floor(Math.random() * 101)
-        if (number < 66) {
-            suffix = "no dabs."
-            winnings = 0
-        } else if (number < 90) {
-            winnings = amount * 2 * bonus
-            suffix = `${winnings} dabs! ${config.dab_emoji}`
-        } else if (number < 100) {
-            winnings = Math.floor(amount * 3.5 * bonus)
-            suffix = `${winnings} dabs for getting above 90! ${config.dab_emoji}`
-        } else if (number == 100) {
-            winnings = amount * 10 * bonus
-            suffix = `${winnings} dabs! PERFECT ROLL! ${config.dab_emoji}`
-        } else
-            suffix = "Something went wrong."
-        user.dabs += winnings
-        message.channel.send(`You rolled ${number} and won ${suffix}`)
+    user.dabs -= amount
+    user.dabs += winnings
+    user.highestDabs = Math.max(user.highestDabs, user.dabs)
+    user.lowestDabs = Math.min(user.lowestDabs, user.dabs)
+    user.betTotal += Math.abs(amount)
+    user.betWon += Math.abs(winnings)
+    const badges = checkGambleBadges(user, amount, winnings)
+    for (const badge of badges) {
+      user.badges.push(badge)
+      embed.fields.push({
+        name: 'Badge earned',
+        value: `${badgeMap[badge].emoji} ${badgeMap[badge].desc} +0.${badge.slice(-1)}* daily roll rewards`
+      })
     }
+    user.badges = user.badges.sort()
+    writeUser(userID, user)
+  } else {
+    embed.description = error
+    embed.color = 0xff0000
+  }
+  return {
+    type: CommandOptionType.ChannelMessage,
+    data: { embeds: [embed] }
+  }
 }

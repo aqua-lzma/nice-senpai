@@ -38,9 +38,9 @@ const template = {
  * @returns {NiceUser} user object tied to ID
  */
 export function readUser (userID) {
-  let filePath = join(userDataDir, userID + '.json')
+  const filePath = join(userDataDir, userID + '.json')
   try {
-    let user = JSON.parse(readFileSync(filePath, 'utf8'))
+    const user = JSON.parse(readFileSync(filePath, 'utf8'))
     return user
   } catch {
     writeFileSync(filePath, JSON.stringify(template), 'utf8')
@@ -54,7 +54,7 @@ export function readUser (userID) {
  * @param {NiceUser} userData
  */
 export function writeUser (userID, userData) {
-  let filePath = join(userDataDir, userID + '.json')
+  const filePath = join(userDataDir, userID + '.json')
   writeFileSync(filePath, JSON.stringify(userData), 'utf8')
 }
 
@@ -64,16 +64,16 @@ export function writeUser (userID, userData) {
  */
 export function emojiNumbers (string) {
   return string
-  .replace(/0/g, ':zero:')
-  .replace(/1/g, ':one:')
-  .replace(/2/g, ':two:')
-  .replace(/3/g, ':three:')
-  .replace(/4/g, ':four:')
-  .replace(/5/g, ':five:')
-  .replace(/6/g, ':six:')
-  .replace(/7/g, ':seven:')
-  .replace(/8/g, ':eight:')
-  .replace(/9/g, ':nine:')
+    .replace(/0/g, ':zero:')
+    .replace(/1/g, ':one:')
+    .replace(/2/g, ':two:')
+    .replace(/3/g, ':three:')
+    .replace(/4/g, ':four:')
+    .replace(/5/g, ':five:')
+    .replace(/6/g, ':six:')
+    .replace(/7/g, ':seven:')
+    .replace(/8/g, ':eight:')
+    .replace(/9/g, ':nine:')
 }
 
 /**

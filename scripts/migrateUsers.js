@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, write, writeFileSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -10,9 +10,9 @@ const userDataDir = join(rootDir, 'data', 'users')
 const userFileList = readdirSync(userDataDir).filter(a => a !== '.gitignore' && a !== 'template.json')
 const config = JSON.parse(readFileSync(join(rootDir, 'config.json'), 'utf8'))
 
-for (let userFile of userFileList) {
-  let userID = userFile.split('.')[0]
-  let user = readUser(userID)
+for (const userFile of userFileList) {
+  const userID = userFile.split('.')[0]
+  const user = readUser(userID)
   let changed = false
   for (let prop in templateUser) {
     if (!(prop in user)) {
@@ -26,11 +26,11 @@ for (let userFile of userFileList) {
 }
 
 if (config.users != null) {
-  for (let userID in config.users) {
-    let oldUser = config.users[userID]
-    let user = readUser(userID)
+  for (const userID in config.users) {
+    const oldUser = config.users[userID]
+    const user = readUser(userID)
     user.dabs = oldUser.dabs
-    user.highestDabs = oldUser.highestDabs
+    user.highestDabs = oldUser.dab_record
     user.level = oldUser.level
     writeUser(userID, user)
   }

@@ -1,5 +1,5 @@
 /**
- * @module dabs-struct Command structure for dab commands
+ * @module dabs-struct Command structure for `dab` commands
  */
 import '../../typedefs.js'
 
@@ -33,6 +33,10 @@ const struct = {
       type: CommandOptionType.USER,
       name: 'user',
       description: 'User to check'
+    }, {
+      type: CommandOptionType.BOOLEAN,
+      name: 'Detailed',
+      description: 'Make the output detailed?'
     }]
   }, {
     type: CommandOptionType.SUB_COMMAND,
@@ -62,7 +66,7 @@ const struct = {
       name: 'priority',
       description: 'Priority value for the leaderboards',
       choices: [{
-        name: 'Current dabs', value: 'currentDabs',
+        name: 'Current dabs', value: 'currentDabs'
       }, {
         name: 'Record dabs', value: 'recordDabs'
       }]
@@ -85,7 +89,7 @@ const struct = {
       name: 'type',
       description: 'Type of mode to switch to',
       choices: [{
-        name: 'Positive', value: 'positive',
+        name: 'Positive', value: 'positive'
       }, {
         name: 'Negative', value: 'negative'
       }]

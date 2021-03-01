@@ -1,9 +1,13 @@
 {
   "name": "nice-senpai",
-  "type": "module",
   "version": "6.6.6",
   "description": "nice bot",
   "main": "senpai.js",
+  "type": "module",
+  "scripts": {
+    "start": "node senpai.js",
+    "test": "echo \"Error: no tests yet\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aqua-lzma/nice-senpai.git"
@@ -16,5 +20,8 @@
   "homepage": "https://github.com/aqua-lzma/nice-senpai",
   "dependencies": {
     "discord.js": "^12.5.1"
+  },
+  "devDependencies": {
+    "standard": "^16.0.3"
   }
 }

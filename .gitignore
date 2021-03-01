@@ -3,3 +3,5 @@ logs/*
 
 package-lock\.json
 config\.json
+
+\.vscode/

@@ -1,30 +1,35 @@
+const thresholds = [10000, 100000, 500000, 1000000, 10000000]
+
 /**
- * @type {Object.<string, [string, string]>}
- * - Key: badge name
- * - List[0]: description
- * - List[1]: emoji string
+ * @typedef Badge
+ * @property {string} desc - description of what achieved the badge
+ * @property {string} emoji - discord emoji icon for the badge
  */
-export const badgeDescriptions = {
-  'dabs1': ['Have a total of 10,000 dabs.', 'emoji'],
-  'dabs2': ['Have a total of 100,000 dabs.', 'emoji'],
-  'dabs3': ['Have a total of 500,000 dabs.', 'emoji'],
-  'dabs4': ['Have a total of 1,000,000 dabs.', 'emoji'],
-  'dabs5': ['Have a total of 10,000,000 dabs.', 'emoji'],
-  '-dabs1': ['Have a total of -10,000 dabs.', 'emoji'],
-  '-dabs2': ['Have a total of -100,000 dabs.', 'emoji'],
-  '-dabs3': ['Have a total of -500,000 dabs.', 'emoji'],
-  '-dabs4': ['Have a total of -1,000,000 dabs.', 'emoji'],
-  '-dabs5': ['Have a total of -10,000,000 dabs.', 'emoji'],
-  'betWin1': ['Bet 10,000 dabs in a single bet and win.', 'emoji'],
-  'betWin2': ['Bet 100,000 dabs in a single bet and win.', 'emoji'],
-  'betWin3': ['Bet 500,000 dabs in a single bet and win.', 'emoji'],
-  'betWin4': ['Bet 1,000,000 dabs in a single bet and win.', 'emoji'],
-  'betWin5': ['Bet 10,000,000 dabs in a single bet and win.', 'emoji'],
-  'betLose1': ['Lose 10,000 dabs in a single bet.', 'emoji'],
-  'betLose2': ['Lose 100,000 dabs in a single bet.', 'emoji'],
-  'betLose3': ['Lose 500,000 dabs in a single bet.', 'emoji'],
-  'betLose4': ['Lose 1,000,000 dabs in a single bet.', 'emoji'],
-  'betLose5': ['Lose 10,000,000 dabs in a single bet.', 'emoji'],
+
+/**
+ * @type {Object.<string, Badge>}
+ */
+export const badgeMap = {
+  dabs1: { desc: 'Have a total of 10,000 dabs.', emoji: '<:that:640311611516518421>' },
+  dabs2: { desc: 'Have a total of 100,000 dabs.', emoji: '<:that:640311611516518421>' },
+  dabs3: { desc: 'Have a total of 500,000 dabs.', emoji: '<:that:640311611516518421>' },
+  dabs4: { desc: 'Have a total of 1,000,000 dabs.', emoji: '<:that:640311611516518421>' },
+  dabs5: { desc: 'Have a total of 10,000,000 dabs.', emoji: '<:that:640311611516518421>' },
+  nDabs1: { desc: 'Have a total of -10,000 dabs.', emoji: '<:that:640311611516518421>' },
+  nDabs2: { desc: 'Have a total of -100,000 dabs.', emoji: '<:that:640311611516518421>' },
+  nDabs3: { desc: 'Have a total of -500,000 dabs.', emoji: '<:that:640311611516518421>' },
+  nDabs4: { desc: 'Have a total of -1,000,000 dabs.', emoji: '<:that:640311611516518421>' },
+  nDabs5: { desc: 'Have a total of -10,000,000 dabs.', emoji: '<:that:640311611516518421>' },
+  betWin1: { desc: 'Bet 10,000 dabs in a single bet and win.', emoji: '<:that:640311611516518421>' },
+  betWin2: { desc: 'Bet 100,000 dabs in a single bet and win.', emoji: '<:that:640311611516518421>' },
+  betWin3: { desc: 'Bet 500,000 dabs in a single bet and win.', emoji: '<:that:640311611516518421>' },
+  betWin4: { desc: 'Bet 1,000,000 dabs in a single bet and win.', emoji: '<:that:640311611516518421>' },
+  betWin5: { desc: 'Bet 10,000,000 dabs in a single bet and win.', emoji: '<:that:640311611516518421>' },
+  betLose1: { desc: 'Lose 10,000 dabs in a single bet.', emoji: '<:that:640311611516518421>' },
+  betLose2: { desc: 'Lose 100,000 dabs in a single bet.', emoji: '<:that:640311611516518421>' },
+  betLose3: { desc: 'Lose 500,000 dabs in a single bet.', emoji: '<:that:640311611516518421>' },
+  betLose4: { desc: 'Lose 1,000,000 dabs in a single bet.', emoji: '<:that:640311611516518421>' },
+  betLose5: { desc: 'Lose 10,000,000 dabs in a single bet.', emoji: '<:that:640311611516518421>' }
 }
 
 /**
@@ -35,19 +40,19 @@ export const badgeDescriptions = {
  * @returns {[string]} new badges user has achieved, empty if none
  */
 export function checkGenericBadges (user) {
-  let badges = []
-  [10000, 100000, 500000, 1000000, 10000000].map((threshold, index) => {
+  const badges = []
+  for (let i = 0; i < 5; i++) {
     if (
-      !user.badges.includes(`dabs${index + 1}`) &&
-      user.dabs > threshold
-    ) badges.push(`dabs${index + 1}`)
-  })
-  [-10000, -100000, -500000, -1000000, -10000000].map((threshold, index) => {
+      !user.badges.includes(`dabs${i + 1}`) &&
+      user.dabs >= thresholds[i]
+    ) badges.push(`dabs${i + 1}`)
+  }
+  for (let i = 0; i < 5; i++) {
     if (
-      !user.badges.includes(`-dabs${index + 1}`) &&
-      user.dabs < threshold
-    ) badges.push(`-dabs${index + 1}`)
-  })
+      !user.badges.includes(`nDabs${i + 1}`) &&
+      user.dabs <= -thresholds[i]
+    ) badges.push(`nDabs${i + 1}`)
+  }
   return badges
 }
 
@@ -61,18 +66,18 @@ export function checkGenericBadges (user) {
  * @returns {[string]} new badges user has achieved, empty if none
  */
 export function checkGambleBadges (user, amount, winnings) {
-  let badges = checkGenericBadges(user)
-  [10000, 100000, 500000, 1000000, 10000000].map((threshold, index) => {
+  const badges = checkGenericBadges(user)
+  for (let i = 0; i < 5; i++) {
     if (
-      !user.badges.includes(`betWin${index + 1}`) &&
-      amount > threshold && winnings !== 0
-    ) badges.push(`betWin${index + 1}`)
-  })
-  [10000, 100000, 500000, 1000000, 10000000].map((threshold, index) => {
+      !user.badges.includes(`betWin${i + 1}`) &&
+      amount >= thresholds[i] && winnings !== 0
+    ) badges.push(`betWin${i + 1}`)
+  }
+  for (let i = 0; i < 5; i++) {
     if (
-      !user.badges.includes(`betLose${index + 1}`) &&
-      amount > threshold && winnings === 0
-    ) badges.push(`betLose${index + 1}`)
-  })
+      !user.badges.includes(`betLose${i + 1}`) &&
+      amount >= thresholds[i] && winnings === 0
+    ) badges.push(`betLose${i + 1}`)
+  }
   return badges
 }

@@ -1,8 +1,16 @@
 /**
- * @module template-action Response generator for template command
+ * @module bet-flip-action Response generator for `dabs bet-flip` command
  */
+// eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
+import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import {
+  readUser,
+  writeUser,
+  validateGambleInput
+} from '../utils.js'
+import { badgeMap, checkGambleBadges } from '../badges.js'
 
 const headsURL = 'https://raw.githubusercontent.com/aqua-lzma/Nice-Senpai/master/resources/makotocoinheads.png'
 const tailsURL = 'https://raw.githubusercontent.com/aqua-lzma/Nice-Senpai/master/resources/makotocointails.png'
@@ -27,38 +35,44 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
-  let embed = await generateEmbedTemplate(client, interaction)
-  let choice = interaction.data.options[0].options.find(o => o.name === 'choice')
-  let amount = interaction.data.options[0].options.find(o => o.name === 'dabs')
-  embed.title = `Bet flip - ${choice}: ${amount}`
-  let user = readUser(interaction.member.user.id)
+  const embed = await generateEmbedTemplate(client, interaction)
+  const choice = interaction.data.options[0].options.find(o => o.name === 'choice').value
+  let amount = interaction.data.options[0].options.find(o => o.name === 'dabs').value
+  const userID = interaction.member.user.id
+  const user = readUser(userID)
+
   if (amount === 0) amount = user.dabs
-  let error = validateGambleInput(amount, user.dabs)
+  embed.title = `Bet flip - ${choice}: ${amount}`
+  const error = validateGambleInput(amount, user.dabs)
   if (error == null) {
-    let n = Math.floor(Math.random() * 2)
-    let flip = n === 0 ? 'heads' : 'tails'
-    let imgURL = n === 0 ? headsURL : tailsURL
-    let won = flip === choice
-    let winnings = won ? Math.floor(amount * 2) : 0
+    const n = Math.floor(Math.random() * 2)
+    const flip = n === 0 ? 'heads' : 'tails'
+    const imgURL = n === 0 ? headsURL : tailsURL
+    const won = flip === choice
+    const winnings = won ? Math.floor(amount * 2) : 0
+
     embed.thumbnail = { url: imgURL }
     embed.description = [
       `Result: **${flip}**`,
       `Winnings: **${winnings}**`
     ].join('\n')
+
     user.dabs -= amount
     user.dabs += winnings
     user.highestDabs = Math.max(user.highestDabs, user.dabs)
     user.lowestDabs = Math.min(user.lowestDabs, user.dabs)
     user.betTotal += Math.abs(amount)
     user.betWon += Math.abs(winnings)
-    let badges = checkGambleBadges(user, amount, winnings)
-    for (let badge of badges) {
+    const badges = checkGambleBadges(user, amount, winnings)
+    for (const badge of badges) {
       user.badges.push(badge)
       embed.fields.push({
-        name: 'Badge earned.',
-        value: `${badgeDescriptions[badge][1]} ${badgeDescriptions[badge][0]} +0.1* daily roll rewards`
+        name: 'Badge earned',
+        value: `${badgeMap[badge].emoji} ${badgeMap[badge].desc} +0.${badge.slice(-1)}* daily roll rewards`
       })
     }
+    user.badges = user.badges.sort()
+    writeUser(userID, user)
   } else {
     embed.description = error
     embed.color = 0xff0000

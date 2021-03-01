@@ -1,6 +1,7 @@
 /**
- * @module dabs-action Response generator for dabs command
+ * @module dabs-action Response generator for `dab` commands
  */
+// eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../typedefs.js'
 
@@ -37,12 +38,10 @@ export default async function (client, interaction) {
   switch (interaction.data.options[0].name) {
     case 'bet-dubs':
       return await betDubs(client, interaction)
-    /*
     case 'bet-flip':
       return await betFlip(client, interaction)
     case 'bet-roll':
       return await betRoll(client, interaction)
-    */
     case 'check':
       return await check(client, interaction)
     /*

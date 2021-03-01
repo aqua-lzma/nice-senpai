@@ -1,9 +1,12 @@
 /**
- * @module template-action Response generator for template command
+ * @module dabs-check-action Response generator for `dabs check` command
  */
-import { readUser, writeUser } from '../utils.js'
+// eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
+import { readUser } from '../utils.js'
+import { badgeMap } from '../badges.js'
+import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
 
 /**
  * Enum for InteractionResponseType values.
@@ -25,15 +28,16 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
-  let guild = await client.guilds.fetch(interaction.guild_id)
-  let invokerGuildUser = await guild.members.fetch(interaction.member.user.id)
-  let invokerDisplayName = invokerGuildUser.displayName
-  let invokerAvatarURL = invokerGuildUser.user.avatarURL()
+  const embed = await generateEmbedTemplate(client, interaction)
+  const guild = await client.guilds.fetch(interaction.guild_id)
+  const invokerGuildUser = await guild.members.fetch(interaction.member.user.id)
+  const invokerDisplayName = invokerGuildUser.displayName
+  const invokerAvatarURL = invokerGuildUser.user.avatarURL()
 
   let targetUserID, targetDisplayName, targetAvatarURL, targetDisplayColour
   if (interaction.data.options[0].options != null) {
     targetUserID = interaction.data.options[0].options[0].value
-    let guildMember = await guild.members.fetch(targetUserID)
+    const guildMember = await guild.members.fetch(targetUserID)
     targetDisplayName = guildMember.displayName
     targetAvatarURL = guildMember.user.avatarURL()
     targetDisplayColour = guildMember.displayColor
@@ -44,7 +48,11 @@ export default async function (client, interaction) {
     targetDisplayColour = invokerGuildUser.displayColor
   }
 
-  let user = readUser(targetUserID)
+  const user = readUser(targetUserID)
+
+  embed.title = `**${targetDisplayName}**`
+  embed.thumbnail = { url: targetAvatarURL }
+  embed.color = targetDisplayColour
 
   return {
     type: CommandOptionType.ChannelMessage,
@@ -56,62 +64,59 @@ export default async function (client, interaction) {
         fields: [{
           name: '**Dabs:**',
           value: [
-            '```',
-            `Mode:    ${user.positive ? 'positive' : 'negative'}`,
-            `Current: ${user.dabs}`,
-            `Highest: ${user.highestDabs}`,
-            `Lowest:  ${user.lowestDabs}`,
+            '```md',
+            `<Mode:    ${user.positive ? 'nice' : 'ebil'}>`,
+            `<Current: ${user.dabs}>`,
+            `<Highest: ${user.highestDabs}>`,
+            `<Lowest:  ${user.lowestDabs}>`,
             '```'
-          ].join('\n'),
-          //inline: true
+          ].join('\n')
         }, {
           name: '**Levels:**',
           value: [
-            '```',
-            `Current: ${user.level}`,
-            `Highest: ${user.highestLevel}`,
-            `Lowest:  ${user.lowestLevel}`,
-            '```'
-          ].join('\n'),
-          inline: true
-        }, {
-          name: '**Daily rolls:**',
-          value: [
-            '```',
-            `Claimed?:  ${true}`,
-            `Streak:    ${user.claimStreak}`,
-            `Total won: ${user.dailyWins}`,
+            '```md',
+            `<Current ${user.level}>`,
+            `<Highest ${user.highestLevel}>`,
+            `<Lowest  ${user.lowestLevel}>`,
             '```'
           ].join('\n'),
           inline: true
         }, {
           name: '**Gambling:**',
           value: [
-            '```',
-            `Total bet: ${user.betTotal}`,
-            `Total won: ${user.betWon}`,
-            `Net:       ${user.betWon - user.betTotal}`,
+            '```md',
+            `<Bet     ${user.betTotal}>`,
+            `<Won     ${user.betWon}>`,
+            `<Net    ${user.betWon - user.betTotal}>`,
             '```'
           ].join('\n'),
           inline: true
         }, {
-          name: '**Badges:**',
+          name: '**Daily rolls:**',
           value: [
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-            '<:that:640311611516518421>',
-          ].join(' ')
+            '```md',
+            `<Claimed ${Math.random() > 0.5 ? ' yes' : '  no'}>`,
+            `<Streak  ${user.claimStreak}>`,
+            `<Won     ${user.dailyWins}>`,
+            '```'
+          ].join('\n'),
+          inline: true
+        }, {
+          name: '**Roll History**',
+          value: [
+            '```md',
+            `<Singles: ${1234}> <Doubles: ${1234}>`,
+            `<Triples: ${1234}> <Quads:   ${1234}>`,
+            `<Quints:  ${1234}> <Sextups: ${1234}>`,
+            '```'
+          ].join('\n')
+        }, {
+          name: '**Badges:**',
+          value: (
+            user.badges.length !== 0
+              ? user.badges.map(name => badgeMap[name].emoji).join(' ')
+              : 'None'
+          )
         }],
         footer: {
           icon_url: invokerAvatarURL,
