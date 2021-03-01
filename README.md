@@ -1,4 +1,7 @@
 # Nice-Senpai
+
+[![Node.js CI](https://github.com/aqua-lzma/Nice-Senpai/actions/workflows/node.js.yml/badge.svg)](https://github.com/aqua-lzma/Nice-Senpai/actions/workflows/node.js.yml)
+
 nice bot
 does dabs and stuff...
 
