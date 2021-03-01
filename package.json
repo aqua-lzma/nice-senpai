@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node senpai.js",
-    "test": "echo \"Error: no tests yet\" && exit 1"
+    "test": "npx standard"
   },
   "repository": {
     "type": "git",

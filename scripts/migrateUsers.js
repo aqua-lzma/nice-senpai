@@ -14,7 +14,7 @@ for (const userFile of userFileList) {
   const userID = userFile.split('.')[0]
   const user = readUser(userID)
   let changed = false
-  for (let prop in templateUser) {
+  for (const prop in templateUser) {
     if (!(prop in user)) {
       user[prop] = templateUser[prop]
       changed = true
