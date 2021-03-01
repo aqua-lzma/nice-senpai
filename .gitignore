@@ -1,7 +1,10 @@
-node_modules/
-logs/*
-
-package-lock\.json
+# Application stuff
 config\.json
+live-commands\.json
 
+# Node stuff
+node_modules/
+package-lock\.json
+
+# IDE stuff
 \.vscode/

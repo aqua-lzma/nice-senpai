@@ -9,6 +9,15 @@ import './typedefs.js'
 import commands from './commands/index.js'
 import compareStructs from './utils/compareStructs.js'
 
+function logError (message, error, data) {
+  console.error(message)
+  console.error(error)
+  const errorFileName = `${(new Date()).getTime()}.json`
+  const errorPath = join(rootDir, 'logs', errorFileName)
+  console.error(`Logging to: ${errorPath}`)
+  writeFileSync(errorPath, JSON.stringify(data, null, 2), 'utf8')
+}
+
 const client = new Client()
 
 const rootDir = dirname(fileURLToPath(import.meta.url))
@@ -18,9 +27,22 @@ client.login(config.token)
 
 client.on('ready', async function () {
   console.log('hi . . .')
+  if (config.testMode) {
+    console.log('Running in test mode . . .')
+    const testGuild = await client.guilds.fetch(config.testGuild)
+    if (testGuild == null) {
+      console.error(`Cannot find test guild id: ${config.testGuild}`)
+      process.exit()
+    }
+  }
   console.log('Comparing live and target commands . . .')
   /** @type {[ApplicationCommand]} */
-  const liveCommands = await client.api.applications(client.user.id).commands.get()
+  const liveCommands = (
+    config.testMode
+      ? await client.api.applications(client.user.id).guilds(config.testGuild).commands.get()
+      : await client.api.applications(client.user.id).commands.get()
+  )
+  writeFileSync(join(rootDir, 'live-commands.json'), JSON.stringify(liveCommands, null, 2), 'utf8')
   let changesMade = false
   for (const command of commands) {
     const liveCommand = liveCommands.find(c => c.name === command.name)
@@ -29,22 +51,20 @@ client.on('ready', async function () {
         console.log(`${command.name}: Matched . . .`)
       } else {
         console.log(`${command.name}: Mismatched, patching . . .`)
-        /*
-        await client.api.applications(client.user.id).commands(liveCommand.id).patch({
-          data: command.struct
-        })
-        */
-        // The PATCH method is autistic, because it rejects commands with the same name.
-        // So we delete and re-upload.
-        await client.api.applications(client.user.id).commands(liveCommand.id).delete()
-        await client.api.applications(client.user.id).commands.post({
+        await (config.testMode
+          ? client.api.applications(client.user.id).guilds(config.testGuild)
+          : client.api.applications(client.user.id)
+        ).commands(liveCommand.id).patch({
           data: command.struct
         })
         changesMade = true
       }
     } else {
       console.log(`${command.name}: Missing, uploading . . .`)
-      await client.api.applications(client.user.id).commands.post({
+      await (config.testMode
+        ? client.api.applications(client.user.id).guilds(config.testGuild)
+        : client.api.applications(client.user.id)
+      ).commands.post({
         data: command.struct
       })
       changesMade = true
@@ -53,11 +73,14 @@ client.on('ready', async function () {
   for (const liveCommand of liveCommands) {
     if (!commands.some(command => liveCommand.name === command.name)) {
       console.log(`${liveCommand.name}: Deprecated, deleting . . .`)
-      await client.api.applications(client.user.id).commands(liveCommand.id).delete()
+      await (config.testMode
+        ? client.api.applications(client.user.id).guilds(config.testGuild)
+        : client.api.applications(client.user.id)
+      ).commands(liveCommand.id).delete()
       changesMade = true
     }
   }
-  if (changesMade) {
+  if (changesMade && !config.testMode) {
     console.warn('WARNING: Changes were made to the command structures. Bot may misbehave for an hour while the changes go live.')
   }
 })
@@ -70,12 +93,11 @@ client.ws.on('INTERACTION_CREATE', /** @param {Interaction} interaction */ async
     try {
       response = await command.action(client, interaction)
     } catch (error) {
-      console.error(`Failed running command: ${interaction.data.name}`)
-      console.error(error)
-      const errorFileName = `${(new Date()).getTime()}.json`
-      const errorPath = join(rootDir, 'logs', errorFileName)
-      console.error(`Logging interaction to: ${errorPath}`)
-      writeFileSync(errorPath, JSON.stringify({ error, interaction }, null, 2), 'utf8')
+      logError(
+        `Failed running command: ${interaction.data.name}`,
+        error,
+        { error, interaction }
+      )
       response = { type: 5 }
     }
     try {
@@ -83,19 +105,18 @@ client.ws.on('INTERACTION_CREATE', /** @param {Interaction} interaction */ async
         data: response
       })
     } catch (error) {
-      console.error(`Failed to respond to command: ${interaction.data.name}`)
-      console.error(error)
-      const errorFileName = `${(new Date()).getTime()}.json`
-      const errorPath = join(rootDir, 'logs', errorFileName)
-      console.error(`Logging interaction and response to: ${errorPath}`)
-      writeFileSync(errorPath, JSON.stringify({ error, interaction, response }, null, 2), 'utf8')
+      logError(
+        `Failed to respond to command: ${interaction.data.name}`,
+        error,
+        { error, interaction, response }
+      )
     }
   } else {
-    console.error(`Interaction with unknown command name: ${interaction.data.name}`)
-    const errorFileName = `${(new Date()).getTime()}.json`
-    const errorPath = join(rootDir, 'logs', errorFileName)
-    console.error(`Logging interaction to: ${errorPath}`)
-    writeFileSync(errorPath, JSON.stringify({ interaction }, null, 2), 'utf8')
+    logError(
+      `Interaction with unknown command name: ${interaction.data.name}`,
+      null,
+      { interaction }
+    )
   }
 })
 

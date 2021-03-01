@@ -30,13 +30,13 @@ const struct = {
     name: 'check',
     description: 'Check how many dabs you or someone else has',
     options: [{
+      type: CommandOptionType.BOOLEAN,
+      name: 'detailed',
+      description: 'Make the output detailed?'
+    }, {
       type: CommandOptionType.USER,
       name: 'user',
       description: 'User to check'
-    }, {
-      type: CommandOptionType.BOOLEAN,
-      name: 'Detailed',
-      description: 'Make the output detailed?'
     }]
   }, {
     type: CommandOptionType.SUB_COMMAND,

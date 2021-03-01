@@ -14,11 +14,17 @@ client.login(config.token)
 client.on('ready', async function () {
   console.log('hi . . .')
   /** @type {[ApplicationCommand]} */
-  const commands = await client.api.applications(client.user.id).commands.get()
+  const commands = await (config.testMode
+    ? client.api.applications(client.user.id).guilds(config.testGuild)
+    : client.api.applications(client.user.id)
+  ).commands.get()
   console.log(commands)
   for (const command of commands) {
     console.log(`Deleting ${command.name}`)
-    await client.api.applications(client.user.id).commands(command.id).delete()
+    await (config.testMode
+      ? client.api.applications(client.user.id).guilds(config.testGuild)
+      : client.api.applications(client.user.id)
+    ).commands(command.id).delete()
   }
   process.exit()
 })
