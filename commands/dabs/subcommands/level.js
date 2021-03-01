@@ -30,7 +30,7 @@ export default async function (client, interaction) {
   }
 }
 
-
+/*
 function get_max(level, dabs) {
     cost = Math.floor((level * level * 0.1) + 10)
     count = 0
@@ -102,3 +102,4 @@ let oldStuff = {
         })
     }
 }
+*/

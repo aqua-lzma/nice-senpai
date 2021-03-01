@@ -30,7 +30,7 @@ export default async function (client, interaction) {
   }
 }
 
-
+/*
 function buildFields (lbs, page) {
   var output = []
   for (let user of lbs.slice(10 * page, (10 * page) + 10)) {
@@ -42,7 +42,6 @@ function buildFields (lbs, page) {
   return output
 }
 
-let oldStuff = {
   title: 'Leaderboards',
   desc: [
     'Show server members with the **largest** dab collections.',
@@ -108,3 +107,4 @@ let oldStuff = {
     })
   }
 }
+*/

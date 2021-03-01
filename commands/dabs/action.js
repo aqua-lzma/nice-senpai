@@ -10,10 +10,12 @@ import betFlip from './subcommands/bet-flip.js'
 import betRoll from './subcommands/bet-roll.js'
 import check from './subcommands/check.js'
 import dailyRoll from './subcommands/daily-roll.js'
+/*
 import give from './subcommands/give.js'
 import leaderboards from './subcommands/leaderboards.js'
 import level from './subcommands/level.js'
 import switchMode from './subcommands/switch-mode.js'
+*/
 
 /**
  * Enum for InteractionResponseType values.

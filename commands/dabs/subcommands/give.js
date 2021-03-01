@@ -30,6 +30,7 @@ export default async function (client, interaction) {
   }
 }
 
+/*
 let oldStuff = {
     title: "Give",
     desc: "Give mentioned users <amount> dabs. Positive amounts only.",
@@ -62,7 +63,8 @@ let oldStuff = {
             update_dabs(receiver, config, amount)
         }
 
-        message.channel.send("Sent " + total_amount + " dabs to " + 
+        message.channel.send("Sent " + total_amount + " dabs to " +
             receivers.size + " users")
     }
 }
+*/
