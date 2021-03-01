@@ -3,11 +3,13 @@ function calcDailyRolls (level) {
 }
 
 function calcStreakBonus (days) {
-  return (
+  return ((
     (days % 7 === 0 ? 2 : 1) *
     (days % 14 === 0 ? 2.5 : 1) *
     (days % 28 === 0 ? 5 : 1)
-  )
+  ) + (
+    days > 28 ? (days - 28) / 10 : 0
+  ))
 }
 
 function oneRoll () {

@@ -2,61 +2,10 @@ import { readFileSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
-import '../../typedefs.js'
+import { templateUser } from '../../typedefs.js'
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const userDataDir = join(rootDir, 'data', 'users')
-/** @type {NiceUser} */
-const template = {
-  // Overall
-  positive: true,
-  dabs: 0,
-  highestDabs: 0,
-  lowestDabs: 0,
-  // Sharing
-  lastGive: 0,
-  givenPercent: 0,
-  // Levels
-  level: 0,
-  highestLevel: 0,
-  lowestLevel: 0,
-  // Daily rolls
-  lastClaim: 0,
-  claimStreak: 0,
-  dailyWins: 0,
-  // Gambling
-  betTotal: 0,
-  betWon: 0,
-  flipSteak: 0,
-  // Badges
-  badges: []
-}
-
-/**
- * Read user from file
- * @param {string} userID
- * @returns {NiceUser} user object tied to ID
- */
-export function readUser (userID) {
-  const filePath = join(userDataDir, userID + '.json')
-  try {
-    const user = JSON.parse(readFileSync(filePath, 'utf8'))
-    return user
-  } catch {
-    writeFileSync(filePath, JSON.stringify(template), 'utf8')
-    return { ...template }
-  }
-}
-
-/**
- * Save user to file
- * @param {string} userID
- * @param {NiceUser} userData
- */
-export function writeUser (userID, userData) {
-  const filePath = join(userDataDir, userID + '.json')
-  writeFileSync(filePath, JSON.stringify(userData), 'utf8')
-}
 
 /**
  * Converts a string of numbers to Discord number emojis
@@ -74,6 +23,42 @@ export function emojiNumbers (string) {
     .replace(/7/g, ':seven:')
     .replace(/8/g, ':eight:')
     .replace(/9/g, ':nine:')
+}
+
+/**
+ * Format number to string SI suffix and a width of 5
+ * @param {number} n
+ */
+export function formatNumber (n) {
+  let s = `    ${n}`
+  s = s.slice(-5)
+  return s
+}
+
+/**
+ * Read user from file
+ * @param {string} userID
+ * @returns {NiceUser} user object tied to ID
+ */
+export function readUser (userID) {
+  const filePath = join(userDataDir, userID + '.json')
+  try {
+    const user = JSON.parse(readFileSync(filePath, 'utf8'))
+    return user
+  } catch {
+    writeFileSync(filePath, JSON.stringify(templateUser), 'utf8')
+    return { ...templateUser }
+  }
+}
+
+/**
+ * Save user to file
+ * @param {string} userID
+ * @param {NiceUser} userData
+ */
+export function saveUser (userID, userData) {
+  const filePath = join(userDataDir, userID + '.json')
+  writeFileSync(filePath, JSON.stringify(userData), 'utf8')
 }
 
 /**

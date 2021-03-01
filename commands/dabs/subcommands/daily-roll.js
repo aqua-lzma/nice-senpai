@@ -1,8 +1,51 @@
 /**
- * @module template-action Response generator for template command
+ * @module dabs-daily-roll-action Response generator for `dabs daily-roll` command
  */
+// eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
+import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import {
+  emojiNumbers,
+  formatNumber,
+  readUser,
+  saveUser
+} from '../utils.js'
+import { checkDailyRollBadges } from '../badges.js'
+
+/**
+ * Calculate multiplier based on streak
+ * @param {number} days - days in the streak
+ */
+function calcStreakBonus (days) {
+  return ((
+    (days % 7 === 0 ? 2 : 1) *
+    (days % 14 === 0 ? 2.5 : 1) *
+    (days % 28 === 0 ? 5 : 1)
+  ) + (
+    days > 28 ? (days - 28) / 10 : 0
+  ))
+}
+
+/**
+ * Generate rolls and return 6 lists of rolls per win time from singles to sextuples
+ * @param {number} nRolls - number of rolls to generate
+ * @returns {[[number]]}
+ */
+function doRolls (nRolls) {
+  const rolls = [[], [], [], [], [], []]
+  for (let i = 0; i < nRolls; i++) {
+    const roll = Math.floor(Math.random() * 1000000)
+    const sRoll = String(roll)
+    let win = 0
+    for (let c = 5; c > 0; c--) {
+      if (sRoll[c] === sRoll[c - 1]) win += 1
+      else break
+    }
+    rolls[win].push(roll)
+  }
+  return rolls
+}
 
 /**
  * Enum for InteractionResponseType values.
@@ -24,138 +67,101 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
+  const embed = await generateEmbedTemplate(client, interaction)
+  const userID = interaction.member.user.id
+  const user = readUser(userID)
+  const today = Math.floor((new Date()).getTime() / (1000 * 60 * 60 * 24))
+  const daysPassed = today - user.lastClaim
+  const claimStreak = daysPassed === 1 ? user.claimStreak + 1 : 0
 
-}
-
-function rolls_to_string(rolls) {
-    text_out = ""
-    for (let item of rolls) {
-        text_out += item[0]
-            .split("0").join(":zero:") .split("1").join(":one:")
-            .split("2").join(":two:")  .split("3").join(":three:")
-            .split("4").join(":four:") .split("5").join(":five:")
-            .split("6").join(":six:")  .split("7").join(":seven:")
-            .split("8").join(":eight:").split("9").join(":nine:")
-        text_out += " "
-        text_out += [
-            "",
-            "*dubs*",
-            "**trips**",
-            "**QUADS**",
-            "***QUINTUPLES***",
-            "***S E X T U P L E S***",
-            "**L E G E N D A R Y   R O L L**"
-        ][item[1]]
-        text_out += "\n"
-    }
-    return text_out
-}
-
-let oldStuff = {
-    title: "Daily roll",
-    desc: "Claim your daily rolls and win dabs if you roll dubs.\n" +
-          "```\n" +
-          "singles    : 1      dab\n" +
-          "doubles    : 22     dabs\n" +
-          "triples    : 333    dabs\n" +
-          "quadruples : 5555   dabs\n" +
-          "quintuples : 77777  dabs\n" +
-          "sextuples  : 999999 dabs\n" +
-          "```\n" +
-          "Your level increases overall winnings.\n" +
-          "*Try not to drool over yourself.* 🤤",
-    alias: ["dailyroll", "droll", "drool", "dr"],
-    syntax: "`{prefix}droll` roll once.\n" +
-            "`{prefix}droll <number>` roll number amount of times.\n" +
-            "`{prefix}drool all` roll all you can and get it over with.\n",
-    owner_only: false,
-    affect_config: true,
-    action: function(message, config) {
-        user = update_dabs(message.author, config)
-
-        content = message.content.toLowerCase().split(" ")
-        amount = 1
-        // Decoding input
-        if (content.length >= 2) {
-            if (content[1] === "all")
-                amount = user.daily_rolls
-            else
-                amount = Number(content[1])
+  embed.title = '**Daily roll:**'
+  if (daysPassed !== 0) {
+    const rolls = doRolls(Math.abs(user.level) + 10)
+    // Calculate bonus from badges based on badge number
+    let multiplier = user.badges.reduce((acc, val) => acc + Number(`0.${val[val.length - 1]}`), 0)
+    multiplier += calcStreakBonus(claimStreak)
+    // Rounding that hurts my brain, but in this number shouldn't ever be more than 1 decimal place
+    multiplier = Math.round((multiplier + Number.EPSILON) * 10) / 10
+    // Winnings
+    let winnings = Math.floor((
+      (rolls[0].length) +
+      (rolls[1].length * 22) +
+      (rolls[2].length * 333) +
+      (rolls[3].length * 5555) +
+      (rolls[4].length * 77777) +
+      (rolls[5].length * 999999)
+    ) * multiplier)
+    if (!user.positive) winnings = -winnings
+    embed.description = [
+      `Streak: **${claimStreak}**`,
+      `Multiplier: **${multiplier}**`,
+      `Dabs won: **${winnings}**`
+    ].join('\n')
+    // Highlights
+    let highestRoll
+    for (let i = 5; i >= 0; i--) {
+      highestRoll = i + 1
+      if (i !== 0) {
+        if (rolls[i].length === 0) continue
+        else {
+          embed.fields.push({
+            name: '**Highlights:**',
+            value: rolls[i].map(val => emojiNumbers(`00000${val}`.slice(-6))).join('\n')
+          })
+          break
         }
-        if (content[1] === "all" && amount === 0)
-            return message.channel.send("No dabs left, try tomorrow.")
-        if (amount > user.daily_rolls)
-            return message.channel.send("Not enough rolls left.")
-        if (amount === NaN || Math.floor(amount) != amount || amount <= 0)
-            return message.channel.send("Invalid input.")
-        user.daily_rolls -= amount
-
-        // Do rolls
-        full_rolls = []
-        win_dict = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0 }
-        for (i=0; i<amount; i++) {
-            num = Math.floor(Math.random() * 1000001)
-            if (num === 0 || num === 1000000) {
-                full_rolls.push([num.toString(), 6])
-                continue
-            }
-            roll = ("000000" + num).slice(-6)
-            win = 0
-            for (c=5; c>0; c--) {
-                if (roll[c] === roll[c-1]) win += 1
-                else break
-            }
-            full_rolls.push([roll, win])
-            win_dict[String(win)] += 1
-        }
-
-        // Filter until fits in message
-        filter = 0
-        filtered = full_rolls.slice()
-        text_out = rolls_to_string(filtered)
-        while (text_out.length >= 1300) {
-            filter += 1
-            if (filter > 6) {
-                text_out = "Something went wrong."
-                break
-            }
-            filtered = full_rolls.filter(item => item[1] >= filter)
-            text_out = rolls_to_string(filtered)
-        }
-
-        winnings = 0
-        for (let roll of full_rolls) {
-            winnings += [1,22,333,5555,77777,999999][roll[1]]
-        }
-        winnings = Math.floor(
-            winnings *
-            (Math.floor(5 * (Math.log(user.level) / Math.log(2.5))) + 1)
-        )
-        user.dabs += winnings
-
-        embed = {
-            author: { name:"Daily rolls" },
-            description: text_out,
-            fields: []
-        }
-        if (filter > 0) {
-            strings = ["Singles", "Doubles", "Triples", "Quadruples", "Quintuples", "Sextuples"]
-            totals = ""
-            for (let key in win_dict) {
-                val = win_dict[key]
-                if (val == 0) continue
-                totals += strings[key]
-                totals += ": " + String(val) + "\n"
-            }
-            totals += `*Only showing rolls above ${strings[filter].toLowerCase()}*`
-            embed.fields.push({ name: "Overview:", value: totals })
-        }
-        embed.fields.push({ name: "Total dabs won:", value: String(winnings) })
-        message.guild.fetchMember(message.author)
-        .then(guildMember => {
-            embed.author.icon_url = guildMember.user.avatarURL
-            embed.color = guildMember.displayColor
-            message.channel.send("", {embed: embed})
+      } else {
+        embed.fields.push({
+          name: '**Highlights:**',
+          value: 'None!'
         })
+      }
     }
+    // Breakdown
+    const breakdown = [
+      `<Singles: ${formatNumber(rolls[0].length)}>`,
+      `<Doubles: ${formatNumber(rolls[1].length)}>`,
+      `<Triples: ${formatNumber(rolls[2].length)}>`,
+      `<Quads:   ${formatNumber(rolls[3].length)}>`,
+      `<Quints:  ${formatNumber(rolls[4].length)}>`,
+      `<Sextups: ${formatNumber(rolls[5].length)}>`
+    ].slice(0, highestRoll).join('\n')
+    embed.fields.push({
+      name: '**Breakdown:**',
+      value: [
+        '```md',
+        breakdown,
+        '```'
+      ].join('\n')
+    })
+
+    user.dabs += winnings
+    user.highestDabs = Math.max(user.highestDabs, user.dabs)
+    user.lowestDabs = Math.min(user.lowestDabs, user.dabs)
+    user.lastClaim = today
+    user.claimStreak = claimStreak
+    user.dailyWins += winnings
+    for (let i = 0; i < 6; i++) {
+      user.history[i] += rolls[i].length
+    }
+    const { badges, messages } = checkDailyRollBadges(user, rolls, winnings)
+    if (badges.length !== 0) {
+      for (const badge of badges) user.badge.push(badge)
+      embed.fields.push({
+        name: '**Badges earned:**',
+        value: messages.join('\n')
+      })
+    }
+    user.badges = user.badges.sort()
+    saveUser(userID, user)
+  } else {
+    embed.description = 'Already rolled today.'
+    embed.colour = 0xff0000
+  }
+  return {
+    type: CommandOptionType.ChannelMessage,
+    data: {
+      embeds: [embed]
+    }
+  }
 }

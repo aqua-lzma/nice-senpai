@@ -1,4 +1,4 @@
-const thresholds = [10000, 100000, 500000, 1000000, 10000000]
+const thresholdsA = [10000, 100000, 500000, 1000000, 10000000]
 
 /**
  * @typedef Badge
@@ -37,47 +37,82 @@ export const badgeMap = {
  * - User should already be updated
  * - This function will not update the user
  * @param {NiceUser} user
- * @returns {[string]} new badges user has achieved, empty if none
+ * @returns {{badges:[string],messages:[string]}}
  */
 export function checkGenericBadges (user) {
   const badges = []
+  const messages = []
   for (let i = 0; i < 5; i++) {
+    let badgeName = `dabs${i + 1}`
+    let badge = badgeMap[badgeName]
+    let message = `${badge.emoji} **${badge.desc}** *+0.${i + 1} x daily roll rewards*`
     if (
-      !user.badges.includes(`dabs${i + 1}`) &&
-      user.dabs >= thresholds[i]
-    ) badges.push(`dabs${i + 1}`)
-  }
-  for (let i = 0; i < 5; i++) {
+      !user.badges.includes(badgeName) &&
+      user.dabs >= thresholdsA[i]
+    ) {
+      badges.push(badgeName)
+      messages.push(message)
+    }
+    badgeName = `nDabs${i + 1}`
+    badge = badgeMap[badgeName]
+    message = `${badge.emoji} **${badge.desc}** *+0.${i + 1} x daily roll rewards*`
     if (
-      !user.badges.includes(`nDabs${i + 1}`) &&
-      user.dabs <= -thresholds[i]
-    ) badges.push(`nDabs${i + 1}`)
+      !user.badges.includes(badgeName) &&
+      user.dabs <= -thresholdsA[i]
+    ) {
+      badges.push(badgeName)
+      messages.push(message)
+    }
   }
-  return badges
+  return { badges, messages }
 }
 
 /**
- * Check if user has achieved any new badges
+ * Check if user has achieved any new badges after a gamble
  * - User should already be updated
  * - This function will not update the user
  * @param {NiceUser} user
  * @param {number} amount - amount of dabs user bet
  * @param {number} winnings - amount of dabs user won
- * @returns {[string]} new badges user has achieved, empty if none
+ * @returns {{badges:[string],messages:[string]}}
  */
 export function checkGambleBadges (user, amount, winnings) {
-  const badges = checkGenericBadges(user)
+  const { badges, messages } = checkGenericBadges(user)
   for (let i = 0; i < 5; i++) {
+    let badgeName = `betWin${i + 1}`
+    let badge = badgeMap[badgeName]
+    let message = `${badge.emoji} **${badge.desc}** *+0.${i + 1} x daily roll rewards*`
     if (
-      !user.badges.includes(`betWin${i + 1}`) &&
-      amount >= thresholds[i] && winnings !== 0
-    ) badges.push(`betWin${i + 1}`)
-  }
-  for (let i = 0; i < 5; i++) {
+      !user.badges.includes(badgeName) &&
+      amount >= thresholdsA[i] && winnings !== 0
+    ) {
+      badges.push(badgeName)
+      messages.push(message)
+    }
+    badgeName = `betLose${i + 1}`
+    badge = badge = badgeMap[badgeName]
+    message = `${badge.emoji} **${badge.desc}** *+0.${i + 1} x daily roll rewards*`
     if (
-      !user.badges.includes(`betLose${i + 1}`) &&
-      amount >= thresholds[i] && winnings === 0
-    ) badges.push(`betLose${i + 1}`)
+      !user.badges.includes(badgeName) &&
+      amount >= thresholdsA[i] && winnings === 0
+    ) {
+      badges.push(badgeName)
+      messages.push(message)
+    }
   }
-  return badges
+  return { badges, messages }
+}
+
+/**
+ * Check if user has achieved any new badges after a daily roll
+ * - User should already be updated
+ * - This function will not update the user
+ * @param {NiceUser} user
+ * @param {number} amount - amount of dabs user bet
+ * @param {number} winnings - amount of dabs user won
+ * @returns {{badges:[string],messages:[string]}}
+ */
+export function checkDailyRollBadges (user, rolls, winnings) {
+  const { badges, messages } = checkGenericBadges(user)
+  return { badges, messages }
 }

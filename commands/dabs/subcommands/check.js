@@ -4,19 +4,9 @@
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
-import { readUser } from '../utils.js'
+import { formatNumber, readUser } from '../utils.js'
 import { badgeMap } from '../badges.js'
 import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
-
-/**
- * Format number to SI suffix and a width of 5
- * @param {number} n
- */
-function formatNumber (n) {
-  let s = `    ${n}`
-  s = s.slice(-5)
-  return s
-}
 
 /**
  * Enum for InteractionResponseType values.
@@ -44,22 +34,22 @@ export default async function (client, interaction) {
   let userID = interaction.data.options[0].options.find(o => o.name === 'user')
   if (userID == null) userID = interaction.member.user.id
   const detailed = Boolean(interaction.data.options[0].options.find(o => o.name === 'detailed'))
-
   const guildMember = await guild.members.fetch(userID)
+  const user = readUser(userID)
+  const today = Math.floor((new Date()).getTime() / (1000 * 60 * 60 * 24))
+
   embed.title = `**${guildMember.displayName}**`
   embed.thumbnail = { url: guildMember.user.avatarURL() }
-  const user = readUser(userID)
 
   if (!detailed) {
     embed.description = [
       '```md',
-      `<Dabs:  ${user.dabs}>`,
-      `<Level: ${user.level}>`,
+      `<Dabs:  ${formatNumber(user.dabs)}>`,
+      `<Level: ${formatNumber(user.level)}>`,
       `<Daily: ${Math.random() > 0.5 ? 'ready' : ' done'}>`,
       '```'
     ].join('\n')
   } else {
-    embed.fields = []
     embed.fields.push({
       name: '**Dabs:**',
       value: [
@@ -97,7 +87,7 @@ export default async function (client, interaction) {
       name: '**Daily rolls:**',
       value: [
         '```md',
-        `<Claimed ${Math.random() > 0.5 ? ' yes' : '  no'}>`,
+        `<Claimed ${user.lastClaim < today ? '  yes' : '   no'}>`,
         `<Streak  ${formatNumber(user.claimStreak)}>`,
         `<Won     ${formatNumber(user.dailyWins)}>`,
         '```'
@@ -108,9 +98,9 @@ export default async function (client, interaction) {
       name: '**Roll history:**',
       value: [
         '```md',
-        `<Singles: ${formatNumber(12345)}> <Doubles: ${formatNumber(12345)}>`,
-        `<Triples: ${formatNumber(12345)}> <Quads:   ${formatNumber(12345)}>`,
-        `<Quints:  ${formatNumber(12345)}> <Sextups: ${formatNumber(12345)}>`,
+        `<Singles: ${formatNumber(user.history[0])}> <Doubles: ${formatNumber(user.history[1])}>`,
+        `<Triples: ${formatNumber(user.history[2])}> <Quads:   ${formatNumber(user.history[3])}>`,
+        `<Quints:  ${formatNumber(user.history[4])}> <Sextups: ${formatNumber(user.history[5])}>`,
         '```'
       ].join('\n')
     })

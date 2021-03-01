@@ -7,10 +7,10 @@ import '../../../typedefs.js'
 import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
 import {
   readUser,
-  writeUser,
+  saveUser,
   validateGambleInput
 } from '../utils.js'
-import { badgeMap, checkGambleBadges } from '../badges.js'
+import { checkGambleBadges } from '../badges.js'
 
 const headsURL = 'https://raw.githubusercontent.com/aqua-lzma/Nice-Senpai/master/resources/makotocoinheads.png'
 const tailsURL = 'https://raw.githubusercontent.com/aqua-lzma/Nice-Senpai/master/resources/makotocointails.png'
@@ -63,16 +63,16 @@ export default async function (client, interaction) {
     user.lowestDabs = Math.min(user.lowestDabs, user.dabs)
     user.betTotal += Math.abs(amount)
     user.betWon += Math.abs(winnings)
-    const badges = checkGambleBadges(user, amount, winnings)
-    for (const badge of badges) {
-      user.badges.push(badge)
+    const { badges, messages } = checkGambleBadges(user, amount, winnings)
+    if (badges.length !== 0) {
+      for (const badge of badges) user.badges.push(badge)
       embed.fields.push({
-        name: 'Badge earned',
-        value: `${badgeMap[badge].emoji} ${badgeMap[badge].desc} +0.${badge.slice(-1)}* daily roll rewards`
+        name: '**Badges earned:**',
+        value: messages.join('\n')
       })
     }
     user.badges = user.badges.sort()
-    writeUser(userID, user)
+    saveUser(userID, user)
   } else {
     embed.description = error
     embed.color = 0xff0000

@@ -13,11 +13,37 @@
  * @property {number} lastClaim - last time user used daily-roll command
  * @property {number} claimStreak - number of days in a row user has used daily-roll
  * @property {number} dailyWins - total number of dabs user has won from daily-roll (absolute)
+ * @property {[number]} history - list of rolls achieved, singles, dubs, etc. to sextuples
  * @property {number} betTotal - total number of dabs user has bet (absolute)
  * @property {number} betWon - total number of dabs user has won (absolute)
  * @property {number} flipSteak - number of bet-flips won in a row
  * @property {[string]} badges - badges user has achieved
  */
+export const templateUser = {
+  // Overall
+  positive: true,
+  dabs: 0,
+  highestDabs: 0,
+  lowestDabs: 0,
+  // Sharing
+  lastGive: 0,
+  givenPercent: 0,
+  // Levels
+  level: 0,
+  highestLevel: 0,
+  lowestLevel: 0,
+  // Daily rolls
+  lastClaim: 0,
+  claimStreak: 0,
+  dailyWins: 0,
+  history: [0, 0, 0, 0, 0, 0],
+  // Gambling
+  betTotal: 0,
+  betWon: 0,
+  flipSteak: 0,
+  // Badges
+  badges: []
+}
 
 /**
  * [ApplicationCommand](https://discord.com/developers/docs/interactions/slash-commands#applicationcommand)

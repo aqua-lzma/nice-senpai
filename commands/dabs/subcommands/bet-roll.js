@@ -6,21 +6,21 @@ import { Client } from 'discord.js'
 import '../../../typedefs.js'
 import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
 import {
-  readUser,
-  writeUser,
   emojiNumbers,
+  readUser,
+  saveUser,
   validateGambleInput
 } from '../utils.js'
-import { badgeMap, checkGambleBadges } from '../badges.js'
+import { checkGambleBadges } from '../badges.js'
 
 function doGamble (amount) {
   const number = Math.floor(Math.random() * 101)
   const win = number < 66 ? 0 : number < 90 ? 1 : number < 100 ? 2 : 3
   const flavour = [
-    'No payout.',
-    '2 x payout!',
-    '3.5 x payout for getting above 90!',
-    '10 x payout! PERFECT ROLL!'
+    '*No payout.*',
+    '*2 x payout!*',
+    '*3.5 x payout for getting above 90!*',
+    '*10 x payout! PERFECT ROLL!*'
   ][win]
   const winnings = [
     0,
@@ -75,16 +75,16 @@ export default async function (client, interaction) {
     user.lowestDabs = Math.min(user.lowestDabs, user.dabs)
     user.betTotal += Math.abs(amount)
     user.betWon += Math.abs(winnings)
-    const badges = checkGambleBadges(user, amount, winnings)
-    for (const badge of badges) {
-      user.badges.push(badge)
+    const { badges, messages } = checkGambleBadges(user, amount, winnings)
+    if (badges.length !== 0) {
+      for (const badge of badges) user.badges.push(badge)
       embed.fields.push({
-        name: 'Badge earned',
-        value: `${badgeMap[badge].emoji} ${badgeMap[badge].desc} +0.${badge.slice(-1)}* daily roll rewards`
+        name: '**Badges earned:**',
+        value: messages.join('\n')
       })
     }
     user.badges = user.badges.sort()
-    writeUser(userID, user)
+    saveUser(userID, user)
   } else {
     embed.description = error
     embed.color = 0xff0000

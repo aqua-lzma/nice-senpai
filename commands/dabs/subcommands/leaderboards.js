@@ -1,6 +1,7 @@
 /**
- * @module template-action Response generator for template command
+ * @module template-action Response generator for `template` command
  */
+// eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
 
@@ -24,8 +25,11 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
-
+  return {
+    type: CommandOptionType.AcknowledgeWithSource
+  }
 }
+
 
 function buildFields (lbs, page) {
   var output = []

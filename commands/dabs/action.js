@@ -44,9 +44,9 @@ export default async function (client, interaction) {
       return await betRoll(client, interaction)
     case 'check':
       return await check(client, interaction)
-    /*
     case 'daily-roll':
       return await dailyRoll(client, interaction)
+    /*
     case 'give':
       return await give(client, interaction)
     case 'leaderboards':
