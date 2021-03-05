@@ -92,7 +92,7 @@ export default async function (client, interaction) {
     embed.color = 0xff0000
   }
   return {
-    type: CommandOptionType.ChannelMessageWithSource,
+    type: CommandOptionType.ChannelMessage,
     data: { embeds: [embed] }
   }
 }

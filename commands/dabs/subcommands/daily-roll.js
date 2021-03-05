@@ -94,9 +94,10 @@ export default async function (client, interaction) {
     ) * multiplier)
     if (!user.positive) winnings = -winnings
     embed.description = [
+      `Dabs won: **${formatNumber(winnings)}**`,
       '```md',
-      `<Rolls: ${formatNumber(user.level + 10)}> <Streak: ${formatNumber(claimStreak)}>`,
-      `<Multi: ${formatNumber(multiplier)}> <Won:    ${formatNumber(winnings)}>`,
+      `<Rolls ${formatNumber(user.level + 10)}> <Streak ${formatNumber(claimStreak)}>`,
+      `<Multi ${formatNumber(multiplier)}>`,
       '```'
     ].join('\n')
     // Highlights
@@ -124,12 +125,12 @@ export default async function (client, interaction) {
     }
     // Breakdown
     const breakdown = [
-      `<Singles: ${formatNumber(rolls[0].length)}>`,
-      `<Doubles: ${formatNumber(rolls[1].length)}>`,
-      `<Triples: ${formatNumber(rolls[2].length)}>`,
-      `<Quads:   ${formatNumber(rolls[3].length)}>`,
-      `<Quints:  ${formatNumber(rolls[4].length)}>`,
-      `<Sextups: ${formatNumber(rolls[5].length)}>`
+      `<Singles ${formatNumber(rolls[0].length)}>`,
+      `<Doubles ${formatNumber(rolls[1].length)}>`,
+      `<Triples ${formatNumber(rolls[2].length)}>`,
+      `<Quads   ${formatNumber(rolls[3].length)}>`,
+      `<Quints  ${formatNumber(rolls[4].length)}>`,
+      `<Sextups ${formatNumber(rolls[5].length)}>`
     ].slice(0, highestRoll).join('\n')
     embed.fields.push({
       name: '**Breakdown:**',

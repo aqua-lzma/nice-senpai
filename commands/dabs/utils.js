@@ -62,6 +62,40 @@ const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const userDataDir = join(rootDir, 'data', 'users')
 
 /**
+ * Calculate cost of going `from` level `to` level
+ * - Works for negative numbers too
+ * @param {number} from
+ * @param {number} to
+ */
+export function calcLevelCost (from, to) {
+  const fSum = Math.floor((1 / 60) * from * (from + 1) * (2 * from + 1))
+  const tSum = Math.floor((1 / 60) * to * (to + 1) * (2 * to + 1))
+  return tSum - fSum
+}
+
+/**
+ * Calculate maximum times user can level up
+ * @param {number} current - current level
+ * @param {number} dabs - dabs held
+ * @param {boolean} positive - if the user is in positive mode
+ */
+export function calcMaxLevel (current, dabs, positive) {
+  if (positive) {
+    let n = 1
+    while (calcLevelCost(current, current + n) <= dabs) {
+      n++
+    }
+    return n - 1
+  } else {
+    let n = -1
+    while (calcLevelCost(current, current + n) >= dabs) {
+      n--
+    }
+    return n + 1
+  }
+}
+
+/**
  * Flavour text for bet-roll and daily-roll
  * @param {number} dubs - Type of win `0` - `5`
  */
@@ -108,20 +142,46 @@ const numberSets = {
  * @param {'normal' | 'ebil'} set - emoji set to use
  */
 export function emojiNumbers (string, set = 'normal') {
-  for (let i = 0; i < 10; i++) {
-    string = string.replace(RegExp(`(?<=^\\d*|>\\d*)${i}(?=\\d*$|\\d*<)`, 'g'), numberSets[set][i])
+  if (set === 'normal') {
+    for (let i = 0; i < 10; i++) string = string.replace(RegExp(`${i}`, 'g'), numberSets[set][i])
+  } else {
+    for (let i = 0; i < 10; i++) {
+      string = string.replace(RegExp(`(?<=^\\d*|>\\d*)${i}(?=\\d*$|\\d*<)`, 'g'), numberSets[set][i])
+    }
   }
   return string
 }
 
 /**
  * Format number to string SI suffix and a width of 5
- * @param {number} n
+ * @param {number} number
  */
-export function formatNumber (n) {
-  let s = `    ${n}`
-  s = s.slice(-5)
-  return s
+export function formatNumber (number) {
+  const abs = Math.abs(number)
+  let space = number < 0 ? 3 : 4
+  let suffix, decimal
+  if (abs >= 1000000000000000000000000) {
+    suffix = 'y'; decimal = abs / 1000000000000000000000000
+  } else if (abs >= 1000000000000000000000) {
+    suffix = 'z'; decimal = abs / 1000000000000000000000
+  } else if (abs >= 1000000000000000000) {
+    suffix = 'e'; decimal = abs / 1000000000000000000
+  } else if (abs >= 1000000000000000) {
+    suffix = 'p'; decimal = abs / 1000000000000000
+  } else if (abs >= 1000000000000) {
+    suffix = 't'; decimal = abs / 1000000000000
+  } else if (abs >= 1000000000) {
+    suffix = 'g'; decimal = abs / 1000000000
+  } else if (abs >= 1000000) {
+    suffix = 'm'; decimal = abs / 1000000
+  } else if (abs >= 1000) {
+    suffix = 'k'; decimal = abs / 1000
+  } else {
+    suffix = ''; decimal = abs; space += 1
+  }
+  let string = String(decimal).slice(0, space)
+  if (string.endsWith('.')) string = string.slice(0, space - 1)
+  return `     ${number < 0 ? '-' : ''}${string}${suffix}`.slice(-5)
 }
 
 /**
@@ -158,8 +218,8 @@ export function saveUser (userID, userData) {
  */
 export function validateGambleInput (amount, dabs) {
   if (dabs === 0) return 'Cannot bet while holding 0 dabs.'
-  if (amount < 0 && dabs > 0) return 'Cannot bet negative dabs while holding a positive amount.'
   if (amount > 0 && dabs < 0) return 'Cannot bet positive dabs while holding a negative amount.'
+  if (amount < 0 && dabs > 0) return 'Cannot bet negative dabs while holding a positive amount.'
   if (
     (dabs > 0 && amount > dabs) ||
     (dabs < 0 && amount < dabs)
@@ -177,8 +237,8 @@ export function validateGiveInput (amount, dabs, given) {
   if (dabs === 0) return 'Cannot give dabs while holding 0.'
   if (given >= 0.5) return "You've already given half your dabs today."
   if (amount === 0) return 'The remaining percentage of your current dabs you can give away today is not a whole number.'
-  if (amount < 0 && dabs > 0) return 'Cannot give negative dabs while holding a positive amount.'
   if (amount > 0 && dabs < 0) return 'Cannot give positive dabs while holding a negative amount.'
+  if (amount < 0 && dabs > 0) return 'Cannot give negative dabs while holding a positive amount.'
   if (
     ((amount > (0.5 - given) * dabs) && dabs > 0) ||
     ((amount < (0.5 - given) * dabs) && dabs < 0)
@@ -186,5 +246,24 @@ export function validateGiveInput (amount, dabs, given) {
   if (
     (dabs > 0 && amount > dabs) ||
     (dabs < 0 && amount < dabs)
+  ) return 'Not enough dabs.'
+}
+
+/**
+ * Level restrictions check
+ * @param {number} amount - number of levels to level up
+ * @param {number} dabs - current dabs user has
+ * @param {number} level - users current level
+ * @param {boolean} positive - if the user is in positive mode
+ * @returns {string?} `null` if ok, otherwise `string` reason for failure
+ */
+export function validateLevelInput (amount, dabs, level, positive) {
+  if (dabs === 0) return 'Cannot level while holding 0 dabs.'
+  if (amount === 0) return 'Cannot level up even once.'
+  if (amount > 0 && !positive) return 'Cannot level up positively while in negative mode.'
+  if (amount < 0 && positive) return 'Cannot level up negatively while in positive mode.'
+  if (
+    (amount > 0 && calcLevelCost(level, level + amount) > dabs) ||
+    (amount < 0 && calcLevelCost(level, level + amount) < dabs)
   ) return 'Not enough dabs.'
 }

@@ -91,7 +91,7 @@ export default async function (client, interaction) {
     giver.dabs -= amount
     taker.dabs += amount
     taker.highestDabs = Math.max(taker.highestDabs, taker.dabs)
-    taker.lowestDabs = Math.max(taker.lowestDabs, taker.dabs)
+    taker.lowestDabs = Math.min(taker.lowestDabs, taker.dabs)
     giver.lastGiveDate = today
     giver.percentGiven = newGiven
     giver.totalGive += gifted

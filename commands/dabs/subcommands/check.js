@@ -45,9 +45,9 @@ export default async function (client, interaction) {
   if (!detailed) {
     embed.description = [
       '```md',
-      `<Dabs:  ${formatNumber(user.dabs)}>`,
-      `<Level: ${formatNumber(user.level)}>`,
-      `<Daily: ${Math.random() > 0.5 ? 'ready' : ' done'}>`,
+      `<Dabs  ${formatNumber(user.dabs)}>`,
+      `<Level ${formatNumber(user.level)}>`,
+      `<Daily ${Math.random() > 0.5 ? 'ready' : ' done'}>`,
       '```'
     ].join('\n')
   } else {
@@ -99,9 +99,9 @@ export default async function (client, interaction) {
       name: '**Roll history:**',
       value: [
         '```md',
-        `<Singles: ${formatNumber(user.history[0])}> <Doubles: ${formatNumber(user.history[1])}>`,
-        `<Triples: ${formatNumber(user.history[2])}> <Quads:   ${formatNumber(user.history[3])}>`,
-        `<Quints:  ${formatNumber(user.history[4])}> <Sextups: ${formatNumber(user.history[5])}>`,
+        `<Singles ${formatNumber(user.history[0])}> <Doubles ${formatNumber(user.history[1])}>`,
+        `<Triples ${formatNumber(user.history[2])}> <Quads   ${formatNumber(user.history[3])}>`,
+        `<Quints  ${formatNumber(user.history[4])}> <Sextups ${formatNumber(user.history[5])}>`,
         '```'
       ].join('\n')
     })

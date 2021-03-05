@@ -44,6 +44,20 @@ const struct = {
     description: 'Roll your daily rolls for some daily dabs'
   }, {
     type: CommandOptionType.SUB_COMMAND,
+    name: 'level',
+    description: 'Level up, or down if you are in ebil mode',
+    options: [{
+      type: CommandOptionType.INTEGER,
+      name: 'amount',
+      description: 'Number of times to try to level up. 0 means maximum possible level',
+      required: true
+    }, {
+      type: CommandOptionType.BOOLEAN,
+      name: 'dry-run',
+      description: 'Dry-run will only show the cost of leveling up. Default true'
+    }]
+  }, {
+    type: CommandOptionType.SUB_COMMAND,
     name: 'give',
     description: 'Give some of your dabs to a different user. Maximum of 50% of your total dabs a day',
     options: [{
@@ -91,7 +105,7 @@ const struct = {
   }, {
     type: CommandOptionType.SUB_COMMAND,
     name: 'switch-mode',
-    description: 'Change from positive dabs to negative dabs. Or vice versa.',
+    description: 'Change from positive dabs to negative dabs. Or vice versa',
     options: [{
       type: CommandOptionType.STRING,
       name: 'type',

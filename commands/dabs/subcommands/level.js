@@ -4,6 +4,16 @@
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
+import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import unwrapDict from '../../../utils/unwrapDict.js'
+import {
+  calcLevelCost,
+  calcMaxLevel,
+  formatNumber,
+  readUser,
+  saveUser,
+  validateLevelInput
+} from '../utils.js'
 
 /**
  * Enum for InteractionResponseType values.
@@ -25,81 +35,44 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
+  const embed = await generateEmbedTemplate(client, interaction)
+  const options = unwrapDict(interaction.data.options[0].options)
+  let amount = options.amount
+  let dryRun = options['dry-run']
+  if (dryRun == null) dryRun = true
+  const userID = interaction.member.user.id
+  const user = readUser(userID)
+  if (amount === 0) amount = calcMaxLevel(user.level, user.dabs, user.positive)
+  const cost = calcLevelCost(user.level, user.level + amount)
+
+  embed.title = `**Level ${amount}${dryRun ? ' (dry run)' : ''}:**`
+  embed.description = [
+    '```md',
+    `<Cost   ${formatNumber(cost)}>`,
+    '',
+    `<Dabs-before ${formatNumber(user.dabs)}>`,
+    `<Dabs-after  ${formatNumber(user.dabs - cost)}>`,
+    '```'
+  ].join('\n')
+  const error = validateLevelInput(amount, user.dabs, user.level, user.positive)
+  if (error == null) {
+    if (!dryRun) {
+      embed.description += '\n' + `You are now level: **${user.level + amount}**!`
+
+      user.dabs -= cost
+      user.level += amount
+      user.highestLevel = Math.max(user.highestLevel, user.level)
+      user.lowestLevel = Math.min(user.lowestLevel, user.level)
+      saveUser(userID, user)
+    } else {
+      embed.description += '\n' + 'To confirm, run with `dry-mode: false`'
+    }
+  } else {
+    embed.description = error + '\n' + embed.description
+    embed.color = 0xff0000
+  }
   return {
-    type: CommandOptionType.AcknowledgeWithSource
+    type: CommandOptionType.ChannelMessage,
+    data: { embeds: [embed] }
   }
 }
-
-/*
-function get_max(level, dabs) {
-    cost = Math.floor((level * level * 0.1) + 10)
-    count = 0
-    while (cost < dabs) {
-        count++
-        cost += Math.floor(((Math.pow((level + count), 2)) * 0.1) + 10)
-    }
-    return count
-}
-
-function get_cost(level, count) {
-    cost = 0
-    for(i=0; i<count; i++)
-        cost += Math.floor(((Math.pow((level + i), 2)) * 0.1) + 10)
-    return cost
-}
-
-let oldStuff = {
-    title: "Level up",
-    desc: "Use your dabs to increase your level so you can get more dabs so you can get more levels!\n" +
-          "You will always be prompted to level up so you can just check how much it costs.\n" +
-          "*More levels equal more dabs equal more levels!*",
-    syntax: "`{prefix}level` Try to level up once.\n" +
-            "`{prefix}level <number>` try level up `number` amount of times.\n" +
-            "`{prefix}level all` will calculate how many levels you can afford if any.",
-    alias: ["level", "lvl"],
-    owner_only: false,
-    affect_config: true,
-    action: function(message, config) {
-        user = update_dabs(message.author, config)
-
-        content = message.content.toLowerCase().split(" ")
-        if (content.length >= 2) {
-            if (content[1] === "all") {
-                amount = get_max(user.level, user.dabs)
-                if (amount == 0)
-                    return message.channel.send("You don't have enough dabs to even level up once.")
-            } else {
-                amount = Number(content[1])
-                if (amount === NaN || Math.floor(amount) != amount || amount < 0)
-                    return message.channel.send("Invalid amount.")
-            }
-        } else
-            amount = 1
-
-        cost = get_cost(user.level, amount)
-        output = `Leveling up ${(amount==1?"once":`${amount} times`)} will cost you ${cost} dabs.\n`
-        if (cost > user.dabs)
-            return message.channel.send(output + "You can't afford this.")
-
-        message.channel.send(output + "Proceed? `y/n`")
-        message.channel.awaitMessages(
-            m => {
-                return (
-                    m.content.toLowerCase().startsWith("y") ||
-                    m.content.toLowerCase().startsWith("n")
-                ) && (
-                    m.author.id == message.author.id
-                )
-            },
-            { time: 10000, maxMatches: 1 }
-        )
-        .then(response => {
-            if (response.first().content.toLowerCase().startsWith("y")) {
-                user.level += amount
-                user.dabs -= cost
-                message.channel.send(`You are now level ${user.level}!`)
-            }
-        })
-    }
-}
-*/
