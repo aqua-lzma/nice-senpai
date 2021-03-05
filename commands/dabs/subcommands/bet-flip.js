@@ -5,12 +5,13 @@
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
 import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import unwrapDict from '../../../utils/unwrapDict.js'
+import { checkGambleBadges } from '../badges.js'
 import {
   readUser,
   saveUser,
   validateGambleInput
 } from '../utils.js'
-import { checkGambleBadges } from '../badges.js'
 
 const headsURL = 'https://raw.githubusercontent.com/aqua-lzma/Nice-Senpai/master/resources/makotocoinheads.png'
 const tailsURL = 'https://raw.githubusercontent.com/aqua-lzma/Nice-Senpai/master/resources/makotocointails.png'
@@ -36,13 +37,14 @@ const CommandOptionType = {
  */
 export default async function (client, interaction) {
   const embed = await generateEmbedTemplate(client, interaction)
-  const choice = interaction.data.options[0].options.find(o => o.name === 'choice').value
-  let amount = interaction.data.options[0].options.find(o => o.name === 'dabs').value
+  const options = unwrapDict(interaction.data.options[0].options)
+  const choice = options.choice
+  let amount = options.dabs
   const userID = interaction.member.user.id
   const user = readUser(userID)
 
   if (amount === 0) amount = user.dabs
-  embed.title = `Bet flip - ${choice}: ${amount}`
+  embed.title = `**Bet flip - ${choice}: ${amount}**`
   const error = validateGambleInput(amount, user.dabs)
   if (error == null) {
     const n = Math.floor(Math.random() * 2)
@@ -71,7 +73,7 @@ export default async function (client, interaction) {
         value: messages.join('\n')
       })
     }
-    user.badges = user.badges.sort()
+    user.badges.sort()
     saveUser(userID, user)
   } else {
     embed.description = error

@@ -68,6 +68,20 @@ export function checkGenericBadges (user) {
 }
 
 /**
+ * Check if user has achieved any new badges after a daily roll
+ * - User should already be updated
+ * - This function will not update the user
+ * @param {NiceUser} user
+ * @param {number} amount - amount of dabs user bet
+ * @param {number} winnings - amount of dabs user won
+ * @returns {{badges:[string],messages:[string]}}
+ */
+export function checkDailyRollBadges (user, rolls, winnings) {
+  const { badges, messages } = checkGenericBadges(user)
+  return { badges, messages }
+}
+
+/**
  * Check if user has achieved any new badges after a gamble
  * - User should already be updated
  * - This function will not update the user
@@ -104,7 +118,7 @@ export function checkGambleBadges (user, amount, winnings) {
 }
 
 /**
- * Check if user has achieved any new badges after a daily roll
+ * Check if user (giver) has achieved any new badges after a give
  * - User should already be updated
  * - This function will not update the user
  * @param {NiceUser} user
@@ -112,7 +126,21 @@ export function checkGambleBadges (user, amount, winnings) {
  * @param {number} winnings - amount of dabs user won
  * @returns {{badges:[string],messages:[string]}}
  */
-export function checkDailyRollBadges (user, rolls, winnings) {
+export function checkGiverBadges (user, rolls, winnings) {
+  const { badges, messages } = checkGenericBadges(user)
+  return { badges, messages }
+}
+
+/**
+ * Check if user (receiver) has achieved any new badges after a give
+ * - User should already be updated
+ * - This function will not update the user
+ * @param {NiceUser} user
+ * @param {number} amount - amount of dabs user bet
+ * @param {number} winnings - amount of dabs user won
+ * @returns {{badges:[string],messages:[string]}}
+ */
+export function checkGivenBadges (user, rolls, winnings) {
   const { badges, messages } = checkGenericBadges(user)
   return { badges, messages }
 }

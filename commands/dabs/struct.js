@@ -63,21 +63,21 @@ const struct = {
     description: 'Check the current server leaderboards',
     options: [{
       type: CommandOptionType.STRING,
-      name: 'priority',
-      description: 'Priority value for the leaderboards',
+      name: 'sort-by',
+      description: 'Which value to sort by for the leaderboards',
       choices: [{
-        name: 'Current dabs', value: 'currentDabs'
+        name: 'current dabs', value: 'currentDabs'
       }, {
-        name: 'Record dabs', value: 'recordDabs'
+        name: 'record dabs', value: 'recordDabs'
       }]
     }, {
       type: CommandOptionType.STRING,
       name: 'type',
       description: 'Type of leaderboards to show',
       choices: [{
-        name: 'Positive', value: 'positive'
+        name: 'positive', value: 'positive'
       }, {
-        name: 'Negative', value: 'negative'
+        name: 'negative', value: 'negative'
       }]
     }]
   }, {
@@ -89,9 +89,9 @@ const struct = {
       name: 'type',
       description: 'Type of mode to switch to',
       choices: [{
-        name: 'Positive', value: 'positive'
+        name: 'positive', value: 'positive'
       }, {
-        name: 'Negative', value: 'negative'
+        name: 'negative', value: 'negative'
       }]
     }]
   }, {
@@ -114,9 +114,9 @@ const struct = {
       description: 'Your choice of heads or tails',
       required: true,
       choices: [{
-        name: 'Heads', value: 'heads'
+        name: 'heads', value: 'heads'
       }, {
-        name: 'Tails', value: 'tails'
+        name: 'tails', value: 'tails'
       }]
     }, {
       type: CommandOptionType.INTEGER,

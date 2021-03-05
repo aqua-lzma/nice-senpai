@@ -5,13 +5,14 @@
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
 import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import { checkDailyRollBadges } from '../badges.js'
 import {
+  dubsFlavour,
   emojiNumbers,
   formatNumber,
   readUser,
   saveUser
 } from '../utils.js'
-import { checkDailyRollBadges } from '../badges.js'
 
 /**
  * Calculate multiplier based on streak
@@ -93,9 +94,10 @@ export default async function (client, interaction) {
     ) * multiplier)
     if (!user.positive) winnings = -winnings
     embed.description = [
-      `Streak: **${claimStreak}**`,
-      `Multiplier: **${multiplier}**`,
-      `Dabs won: **${winnings}**`
+      '```md',
+      `<Rolls: ${formatNumber(user.level + 10)}> <Streak: ${formatNumber(claimStreak)}>`,
+      `<Multi: ${formatNumber(multiplier)}> <Won:    ${formatNumber(winnings)}>`,
+      '```'
     ].join('\n')
     // Highlights
     let highestRoll
@@ -106,7 +108,10 @@ export default async function (client, interaction) {
         else {
           embed.fields.push({
             name: '**Highlights:**',
-            value: rolls[i].map(val => emojiNumbers(`00000${val}`.slice(-6))).join('\n')
+            value: [
+              dubsFlavour(i),
+              ...rolls[i].map(val => emojiNumbers(`00000${val}`.slice(-6)) + ' ')
+            ].join('\n')
           })
           break
         }
@@ -146,13 +151,13 @@ export default async function (client, interaction) {
     }
     const { badges, messages } = checkDailyRollBadges(user, rolls, winnings)
     if (badges.length !== 0) {
-      for (const badge of badges) user.badge.push(badge)
+      for (const badge of badges) user.badges.push(badge)
       embed.fields.push({
         name: '**Badges earned:**',
         value: messages.join('\n')
       })
     }
-    user.badges = user.badges.sort()
+    user.badges.sort()
     saveUser(userID, user)
   } else {
     embed.description = 'Already rolled today.'

@@ -4,9 +4,10 @@
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
-import { formatNumber, readUser } from '../utils.js'
-import { badgeMap } from '../badges.js'
 import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import unwrapDict from '../../../utils/unwrapDict.js'
+import { badgeMap } from '../badges.js'
+import { formatNumber, readUser } from '../utils.js'
 
 /**
  * Enum for InteractionResponseType values.
@@ -29,11 +30,11 @@ const CommandOptionType = {
  */
 export default async function (client, interaction) {
   const embed = await generateEmbedTemplate(client, interaction)
+  const options = unwrapDict(interaction.data.options[0].options)
   const guild = await client.guilds.fetch(interaction.guild_id)
-  if (interaction.data.options[0].options == null) interaction.data.options[0].options = []
-  let userID = interaction.data.options[0].options.find(o => o.name === 'user')
+  let userID = options.user
   if (userID == null) userID = interaction.member.user.id
-  const detailed = Boolean(interaction.data.options[0].options.find(o => o.name === 'detailed'))
+  const detailed = Boolean(options.detailed)
   const guildMember = await guild.members.fetch(userID)
   const user = readUser(userID)
   const today = Math.floor((new Date()).getTime() / (1000 * 60 * 60 * 24))

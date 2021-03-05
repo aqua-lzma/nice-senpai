@@ -5,15 +5,17 @@
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
 import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import unwrapDict from '../../../utils/unwrapDict.js'
+import { checkGambleBadges } from '../badges.js'
 import {
+  dubsFlavour,
   emojiNumbers,
   readUser,
   saveUser,
   validateGambleInput
 } from '../utils.js'
-import { checkGambleBadges } from '../badges.js'
 
-function doGamble (amount) {
+function doGamble (amount, numberSet) {
   const number = Math.floor(Math.random() * 1000000)
   const roll = `00000${number}`.slice(-6)
   let dubs = 0
@@ -21,14 +23,6 @@ function doGamble (amount) {
     if (roll[c] === roll[c - 1]) dubs += 1
     else break
   }
-  const flavour = [
-    '*Singles, no payout.*',
-    '*Dubs!*',
-    '**Trips!**',
-    '**QUADS!**',
-    '***QUINTUPLES!!!***',
-    '***S E X T U P L E S ! ! !***'
-  ][dubs]
   const winnings = [
     0,
     amount * 5,
@@ -38,8 +32,8 @@ function doGamble (amount) {
     amount * 5000
   ][dubs]
   const description = [
-    emojiNumbers(roll),
-    flavour,
+    emojiNumbers(roll, numberSet),
+    dubsFlavour(dubs),
     `Winnings: **${winnings}**`
   ].join('\n')
   return [description, winnings]
@@ -66,15 +60,16 @@ const CommandOptionType = {
  */
 export default async function (client, interaction) {
   const embed = await generateEmbedTemplate(client, interaction)
-  let amount = interaction.data.options[0].options[0].value
+  const options = unwrapDict(interaction.data.options[0].options)
+  let amount = options.dabs
   const userID = interaction.member.user.id
   const user = readUser(userID)
 
   if (amount === 0) amount = user.dabs
-  embed.title = `Bet dubs: ${amount}`
+  embed.title = `**Bet dubs: ${amount}**`
   const error = validateGambleInput(amount, user.dabs)
   if (error == null) {
-    const [description, winnings] = doGamble(amount)
+    const [description, winnings] = doGamble(amount, user.positive ? 'normal' : 'ebil')
 
     embed.description = description
 
@@ -92,7 +87,7 @@ export default async function (client, interaction) {
         value: messages.join('\n')
       })
     }
-    user.badges = user.badges.sort()
+    user.badges.sort()
     saveUser(userID, user)
   } else {
     embed.description = error
