@@ -64,16 +64,24 @@ const struct = {
     options: [{
       type: CommandOptionType.STRING,
       name: 'sort-by',
-      description: 'Which value to sort by for the leaderboards',
+      description: 'Which value to sort by for the leaderboards. Default is current dabs',
       choices: [{
-        name: 'current dabs', value: 'currentDabs'
+        name: 'current dabs', value: 'dabs'
       }, {
-        name: 'record dabs', value: 'recordDabs'
+        name: 'highest dabs', value: 'highestDabs'
+      }, {
+        name: 'lowest dabs', value: 'lowestDabs'
+      }, {
+        name: 'current level', value: 'level'
+      }, {
+        name: 'highest level', value: 'highestLevel'
+      }, {
+        name: 'lowest level', value: 'lowestLevel'
       }]
     }, {
       type: CommandOptionType.STRING,
       name: 'type',
-      description: 'Type of leaderboards to show',
+      description: 'Type of leaderboards to show. Default is positive',
       choices: [{
         name: 'positive', value: 'positive'
       }, {
