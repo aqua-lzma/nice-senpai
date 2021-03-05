@@ -30,7 +30,9 @@ cd nice-senpai
 npm i
 cp config.json.example config.json
 ```
-Put the bot token in the `token` field in `config.json`
+- Put the bot token in the `token` field in `config.json`
+- Set `testMode` to `true`
+- Put in a server id into `testGuild` where you want to test the bot
 ```
 node senpai.js
 ```
