@@ -160,22 +160,22 @@ export function formatNumber (number) {
   const abs = Math.abs(number)
   let space = number < 0 ? 3 : 4
   let suffix, decimal
-  if (abs >= 1000000000000000000000000) {
-    suffix = 'y'; decimal = abs / 1000000000000000000000000
-  } else if (abs >= 1000000000000000000000) {
-    suffix = 'z'; decimal = abs / 1000000000000000000000
-  } else if (abs >= 1000000000000000000) {
-    suffix = 'e'; decimal = abs / 1000000000000000000
-  } else if (abs >= 1000000000000000) {
-    suffix = 'p'; decimal = abs / 1000000000000000
-  } else if (abs >= 1000000000000) {
-    suffix = 't'; decimal = abs / 1000000000000
-  } else if (abs >= 1000000000) {
-    suffix = 'g'; decimal = abs / 1000000000
-  } else if (abs >= 1000000) {
-    suffix = 'm'; decimal = abs / 1000000
-  } else if (abs >= 1000) {
-    suffix = 'k'; decimal = abs / 1000
+  if (abs >= 10 ** 24) {
+    suffix = 'y'; decimal = abs / 10 ** 24
+  } else if (abs >= 10 ** 21) {
+    suffix = 'z'; decimal = abs / 10 ** 21
+  } else if (abs >= 10 ** 18) {
+    suffix = 'e'; decimal = abs / 10 ** 18
+  } else if (abs >= 10 ** 15) {
+    suffix = 'p'; decimal = abs / 10 ** 15
+  } else if (abs >= 10 ** 12) {
+    suffix = 't'; decimal = abs / 10 ** 12
+  } else if (abs >= 10 ** 9) {
+    suffix = 'g'; decimal = abs / 10 ** 9
+  } else if (abs >= 10 ** 6) {
+    suffix = 'm'; decimal = abs / 10 ** 6
+  } else if (abs >= 10 ** 3) {
+    suffix = 'k'; decimal = abs / 10 ** 3
   } else {
     suffix = ''; decimal = abs; space += 1
   }
