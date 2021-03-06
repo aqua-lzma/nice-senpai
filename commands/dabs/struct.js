@@ -105,17 +105,7 @@ const struct = {
   }, {
     type: CommandOptionType.SUB_COMMAND,
     name: 'switch-mode',
-    description: 'Change from positive dabs to negative dabs. Or vice versa',
-    options: [{
-      type: CommandOptionType.STRING,
-      name: 'type',
-      description: 'Type of mode to switch to',
-      choices: [{
-        name: 'positive', value: 'positive'
-      }, {
-        name: 'negative', value: 'negative'
-      }]
-    }]
+    description: 'Change from nice to ebil mode (or vice versa). WARNING: Level will be reset to 0!'
   }, {
     type: CommandOptionType.SUB_COMMAND,
     name: 'bet-roll',

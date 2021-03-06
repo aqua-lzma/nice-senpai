@@ -5,6 +5,7 @@
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
 import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import { flipInvert } from '../../../utils/imageManipulation.js'
 import unwrapDict from '../../../utils/unwrapDict.js'
 import { badgeMap } from '../badges.js'
 import { formatNumber, readUser } from '../utils.js'
@@ -40,7 +41,16 @@ export default async function (client, interaction) {
   const today = Math.floor((new Date()).getTime() / (1000 * 60 * 60 * 24))
 
   embed.title = `**${guildMember.displayName}**`
-  embed.thumbnail = { url: guildMember.user.avatarURL() }
+  if (user.positive) {
+    embed.thumbnail = { url: guildMember.user.avatarURL() }
+  } else {
+    try {
+      const flippedURL = await flipInvert(guildMember.user.avatarURL({ format: 'png' }))
+      embed.thumbnail = { url: flippedURL }
+    } catch {
+      embed.thumbnail = { url: guildMember.user.avatarURL() }
+    }
+  }
 
   if (!detailed) {
     embed.description = [

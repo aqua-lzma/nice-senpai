@@ -4,6 +4,11 @@
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../../typedefs.js'
+import generateEmbedTemplate from '../../../utils/generateEmbedTemplate.js'
+import {
+  readUser,
+  saveUser
+} from '../utils.js'
 
 /**
  * Enum for InteractionResponseType values.

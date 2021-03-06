@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/aqua-lzma/nice-senpai",
   "dependencies": {
+    "axios": "^0.21.1",
+    "canvas": "^2.7.0",
     "discord.js": "^12.5.1"
   },
   "devDependencies": {

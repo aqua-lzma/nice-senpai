@@ -68,8 +68,8 @@ const userDataDir = join(rootDir, 'data', 'users')
  * @param {number} to
  */
 export function calcLevelCost (from, to) {
-  const fSum = Math.floor((1 / 60) * from * (from + 1) * (2 * from + 1))
-  const tSum = Math.floor((1 / 60) * to * (to + 1) * (2 * to + 1))
+  const fSum = Math.trunc((1 / 60) * from * (from + 1) * (2 * from + 1))
+  const tSum = Math.trunc((1 / 60) * to * (to + 1) * (2 * to + 1))
   return tSum - fSum
 }
 
