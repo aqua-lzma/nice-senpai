@@ -12,17 +12,7 @@ Server invite links: (You need **administrator** permission in the server to inv
 
 ## Installation / Contribution
 
-### Setting up a bot user
-
-1. Go to [Discord devlopers portal](https://discord.com/developers/applications).
-2. Make a new application (button in top right).
-3. Create a bot user (bot settings in the tab on the right).
-4. Make sure `Requires OAuth2 Code Grant` is disabled and the two `Privileged Gateway Intents` are enabled.
-5. Make a invite link by going to the OAuth2 tab on the left. Enable `bot` and `applications.commands` scopes. Go to the generated link.
-6. Invite the bot to whatever server you're testing on.
-7. Get the token from the bot tab
-
-### Running the bot
+### Main project
 
 ```
 git clone https://github.com/aqua-lzma/nice-senpai
@@ -30,16 +20,44 @@ cd nice-senpai
 npm i
 cp config.json.example config.json
 ```
-- Put the bot token in the `token` field in `config.json`
-- Set `testMode` to `true`
-- Put in a server id into `testGuild` where you want to test the bot
+
+### Populating `config.json`-`token`:
+
+1. Go to [Discord Devlopers Portal](https://discord.com/developers/applications)
+2. **New application** (button in top right) (name can be anything)
+3. **Settings** -> **Bot**: **Add Bot**
+4. **Click to Reveal Token**: This is the `token` for `config.json`
+5. **Priviliged Gateway Intents**: Tick ``Presence intent` and `Server members intent`
+6. **Settings** -> **OAuth2**: In **Scopes** tick `bot` and `applications.commands`
+7. Go to the generated URL and invite the bot to a server
+
+### Populating `config.json`-`testGuild`:
+
+1. In `config.json` change `testMode` to `true` unless you want to wait an hour for command struct changes to go live
+2. For this to work you need set `testGuild` to a guild ID
+
+#### To easily copy guild IDs:
+1. In Discord:
+2. **User settings** -> **Appearance** -> **Advanced**: Tick `Developer Mode`
+3. *Right click a guild*: `Copy ID`
+
+### Populating `config.json`-`imgurAPIKey` (optional):
+
+1. Create a new imgur client [here](https://api.imgur.com/oauth2/addclient)
+2. **Application name:** can be anything (put `nice-senpai`)
+3. **Authorization type:** `OAauth 2 authorization without a callback URL`
+4. **Email:** *your email*
+5. **Client ID**: This is the `imgurAPIKey` for `config.json`
+
+### Running the bot
+
 ```
 node senpai.js
 ```
 
 ### Merging changes
 
-1. Fork this repo.
-2. Make a pull request to merge with your fork.
+1. Fork this repo
+2. Make a pull request to merge with your fork
 
 *Stop asking me to make you a contributor.*
