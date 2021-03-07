@@ -114,3 +114,22 @@ export async function flipInvert (imageURL) {
   saveMap('flipInvert', map)
   return newURL
 }
+
+export async function haah (imageURL) {
+  const image = await canvas.loadImage(imageURL)
+  const cnv = canvas.createCanvas(image.width, image.height)
+  const ctx = cnv.getContext('2d')
+  return imageURL
+}
+
+export async function waaw () {
+  
+}
+
+export async function hooh () {
+  
+}
+
+export async function woow () {
+  
+}

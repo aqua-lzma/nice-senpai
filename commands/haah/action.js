@@ -1,9 +1,35 @@
 /**
- * @module template-action Response generator for `template` command
+ * @module haah-action Response generator for `haah` command
  */
 // eslint-disable-next-line no-unused-vars
-import { Client } from 'discord.js'
+import { Client, TextChannel } from 'discord.js'
 import '../../typedefs.js'
+import generateEmbedTemplate from '../../utils/generateEmbedTemplate.js'
+import {
+  haah,
+  waaw,
+  hooh,
+  woow
+} from '../../utils/imageManipulation.js'
+import unwrapDict from '../../utils/unwrapDict.js'
+
+/**
+ * Get last image posted in a text channel
+ * @param {TextChannel} channel
+ */
+async function getLastImage (channel) {
+  const messages = await channel.messages.fetch()
+  for (const message of messages.values()) {
+    for (const attachment of message.attachments.values()) {
+      if (attachment.height != null) {
+        return attachment.url
+      }
+    }
+    for (const embed of message.embeds) {
+      if (embed.type === 'image') return embed.url
+    }
+  }
+}
 
 /**
  * Enum for InteractionResponseType values.
@@ -12,10 +38,10 @@ import '../../typedefs.js'
  */
 const CommandOptionType = {
   Pong: 1, // ACK a Ping
-  Acknowledge: 2, // ACK a command without sending a message, eating the user's input
-  ChannelMessage: 3, // respond with a message, eating the user's input
-  ChannelMessageWithSource: 4, // respond with a message, showing the user's input
-  AcknowledgeWithSource: 5 // ACK a command without sending a message, showing the user's input
+  Acknowledge: 2, // DEPRECATED ACK a command without sending a message, eating the user's input
+  ChannelMessage: 3, // DEPRECATED respond with a message, eating the user's input
+  ChannelMessageWithSource: 4, // respond to an interaction with a message
+  DeferredChannelMessageWithSource: 5 // ACK an interaction and edit to a response later, the user sees a loading state
 }
 
 /**
@@ -25,8 +51,34 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
+  const embed = await generateEmbedTemplate(client, interaction)
+  const guild = await client.guilds.fetch(interaction.guild_id)
+  const channel = guild.channels.resolve(interaction.channel_id)
+  const imageURL = await getLastImage(channel)
+  const options = unwrapDict(interaction.options)
+  /*
+  let opt = options.haah
+  if (opt == null) opt = 'haah'
+  switch (opt) {
+    case 'haah':
+    case 'waaw':
+    case 'hooh':
+    case 'woow':
+  }
+  */
+  embed.title = 'haah'
+  if (imageURL != null) {
+    const newURL = await haah(imageURL)
+    embed.image = { url: newURL }
+  } else {
+    embed.color = 0xff0000
+    embed.description = 'No image found'
+  }
   return {
-    type: CommandOptionType.AcknowledgeWithSource
+    type: CommandOptionType.ChannelMessage,
+    data: {
+      embeds: [embed]
+    }
   }
 }
 

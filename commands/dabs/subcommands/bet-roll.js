@@ -44,10 +44,10 @@ function doGamble (amount, numberSet) {
  */
 const CommandOptionType = {
   Pong: 1, // ACK a Ping
-  Acknowledge: 2, // ACK a command without sending a message, eating the user's input
-  ChannelMessage: 3, // respond with a message, eating the user's input
-  ChannelMessageWithSource: 4, // respond with a message, showing the user's input
-  AcknowledgeWithSource: 5 // ACK a command without sending a message, showing the user's input
+  Acknowledge: 2, // DEPRECATED ACK a command without sending a message, eating the user's input
+  ChannelMessage: 3, // DEPRECATED respond with a message, eating the user's input
+  ChannelMessageWithSource: 4, // respond to an interaction with a message
+  DeferredChannelMessageWithSource: 5 // ACK an interaction and edit to a response later, the user sees a loading state
 }
 
 /**
