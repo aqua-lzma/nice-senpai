@@ -1,5 +1,5 @@
 /**
- * @module template-action Response generator for `template` command
+ * @module dabs-level-action Response generator for `dabs level` command
  */
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'

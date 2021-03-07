@@ -1,5 +1,5 @@
 /**
- * @module template-action Response generator for `template` command
+ * @module dabs-leaderboards-action Response generator for `dabs leaderboards` command
  */
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'

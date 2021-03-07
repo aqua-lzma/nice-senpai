@@ -1,5 +1,5 @@
 /**
- * @module bet-roll-action Response generator for `dabs bet-roll` command
+ * @module dabs-bet-roll-action Response generator for `dabs bet-roll` command
  */
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'

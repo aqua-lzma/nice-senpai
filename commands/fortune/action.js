@@ -1,9 +1,37 @@
 /**
- * @module template-action Response generator for `template` command
+ * @module fortune-action Response generator for `fortune` command
  */
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../typedefs.js'
+import generateEmbedTemplate from '../../utils/generateEmbedTemplate.js'
+
+/** @type {[[number,string]]} */
+const rareFortunes = [
+  [0x2600D0, 'Your fortune: le ebin dubs xDDDDDDDDDDDD'],
+  [0x2A56FB, "Your fortune: you gon' get some dick"],
+  [0xE941E3, 'Your fortune: ayy lmao'],
+  [0xFF0000, 'Your fortune: (YOU ARE BANNED)'],
+  [0x68923A, 'Your fortune: Get Shrekt'],
+  [0x8C8C8C, 'Your fortune: YOU JUST LOST THE GAME']
+]
+
+/** @type {[[number,string]]} */
+const fortunes = [
+  [0xF51C6A, 'Your fortune: Reply hazy, try again'],
+  [0xFD4D32, 'Your fortune: Excellent Luck'],
+  [0xE7890C, 'Your fortune: Good Luck'],
+  [0xBAC200, 'Your fortune: Average Luck'],
+  [0x7FEC11, 'Your fortune: Bad Luck'],
+  [0x43FD3B, 'Your fortune: Good news will come to you by mail'],
+  [0x16F174, 'Your fortune: （　´_ゝ`）ﾌｰﾝ '],
+  [0x00CBB0, 'Your fortune: ｷﾀ━━━━━━(ﾟ∀ﾟ)━━━━━━ !!!!'],
+  [0x0893E1, 'Your fortune: You will meet a dark handsome stranger'],
+  [0x2A56FB, 'Your fortune: Better not tell you now'],
+  [0x6023F8, 'Your fortune: Outlook good'],
+  [0x9D05DA, 'Your fortune: Very Bad Luck'],
+  [0xD302A7, 'Your fortune: Godly Luck']
+]
 
 /**
  * Enum for InteractionResponseType values.
@@ -25,54 +53,20 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
+  const embed = await generateEmbedTemplate(client, interaction)
+  let fortune
+  if (Math.random() > 0.99) {
+    fortune = rareFortunes[Math.floor(Math.random() * rareFortunes.length)]
+  } else {
+    fortune = fortunes[Math.floor(Math.random() * fortunes.length)]
+  }
+  embed.title = '🔮 **Fortune**'
+  embed.color = fortune[0]
+  embed.description = fortune[1]
   return {
-    type: CommandOptionType.AcknowledgeWithSource
-  }
-}
-
-/*
-module.exports = {
-  title: 'Fortune',
-  desc: [
-    '[s4s] Rule #1: You must check your #fortune in order to post on this board.',
-    '*Note: Moderators must check their #fortune as well.*'
-  ].join('\n'),
-  syntax: '`{prefix}fortune`',
-  alias: ['fortune'],
-  owner_only: false,
-  affect_config: false,
-  action: (message, config) => {
-    let output
-    if (Math.floor(Math.random() * 100) === 0) { // Rare replies
-      output = [
-        {color: 0x2600D0, title: 'Your fortune: le ebin dubs xDDDDDDDDDDDD'},
-        {color: 0x2A56FB, title: 'Your fortune: you gon\' get some dick'},
-        {color: 0xE941E3, title: 'Your fortune: ayy lmao'},
-        {color: 0xFF0000, title: 'Your fortune: (YOU ARE BANNED)'},
-        {color: 0x68923A, title: 'Your fortune: Get Shrekt'},
-        {color: 0x8C8C8C, title: 'Your fortune: YOU JUST LOST THE GAME'}
-      ][Math.floor(Math.random() * 6)]
-    } else {
-      output = [
-        {color: 0xF51C6A, title: 'Your fortune: Reply hazy, try again'},
-        {color: 0xFD4D32, title: 'Your fortune: Excellent Luck'},
-        {color: 0xE7890C, title: 'Your fortune: Good Luck'},
-        {color: 0xBAC200, title: 'Your fortune: Average Luck'},
-        {color: 0x7FEC11, title: 'Your fortune: Bad Luck'},
-        {color: 0x43FD3B, title: 'Your fortune: Good news will come to you by mail'},
-*/
-// standard.js doesnt like the fact that a comment has irregular whitespace . . .
-console.log({ color: 0x16F174, title: 'Your fortune: （　´_ゝ`）ﾌｰﾝ ' })
-/*
-{color: 0x00CBB0, title: 'Your fortune: ｷﾀ━━━━━━(ﾟ∀ﾟ)━━━━━━ !!!!'},
-        {color: 0x0893E1, title: 'Your fortune: You will meet a dark handsome stranger'},
-        {color: 0x2A56FB, title: 'Your fortune: Better not tell you now'},
-        {color: 0x6023F8, title: 'Your fortune: Outlook good'},
-        {color: 0x9D05DA, title: 'Your fortune: Very Bad Luck'},
-        {color: 0xD302A7, title: 'Your fortune: Godly Luck'}
-      ][Math.floor(Math.random() * 13)]
+    type: CommandOptionType.ChannelMessage,
+    data: {
+      embeds: [embed]
     }
-    message.channel.send('', {embed: output})
   }
 }
-*/
