@@ -60,6 +60,8 @@ export default async function (client, interaction) {
   const embed = await generateEmbedTemplate(client, interaction)
   const options = unwrapDict(interaction.data.options[0].options)
   let amount = options.dabs
+  // Until this issue is fixed: https://github.com/discord/discord-api-docs/issues/2687
+  amount = Number(amount)
   const userID = interaction.member.user.id
   const user = readUser(userID)
 

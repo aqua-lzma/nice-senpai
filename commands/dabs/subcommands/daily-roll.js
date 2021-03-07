@@ -19,6 +19,7 @@ import {
  * @param {number} days - days in the streak
  */
 function calcStreakBonus (days) {
+  if (days === 0) return 1
   return ((
     (days % 7 === 0 ? 2 : 1) *
     (days % 14 === 0 ? 2.5 : 1) *
@@ -101,28 +102,25 @@ export default async function (client, interaction) {
       '```'
     ].join('\n')
     // Highlights
-    let highestRoll
+    let highestRoll, highlights
     for (let i = 5; i >= 0; i--) {
       highestRoll = i + 1
       if (i !== 0) {
         if (rolls[i].length === 0) continue
-        else {
-          embed.fields.push({
-            name: '**Highlights:**',
-            value: [
-              dubsFlavour(i),
-              ...rolls[i].map(val => emojiNumbers(`00000${val}`.slice(-6)) + ' ')
-            ].join('\n')
-          })
-          break
-        }
+        highlights = dubsFlavour(i) + '\n'
+        highlights += rolls[i].slice(0, 5).map(num => {
+          const roll = String(num).padStart(6, 0)
+          return emojiNumbers(roll, 'dancing')
+        }).join('\n')
+        break
       } else {
-        embed.fields.push({
-          name: '**Highlights:**',
-          value: 'None!'
-        })
+        highlights = 'None!'
       }
     }
+    embed.fields.push({
+      name: '**Highlights:**',
+      value: highlights
+    })
     // Breakdown
     const breakdown = [
       `<Singles ${formatNumber(rolls[0].length)}>`,

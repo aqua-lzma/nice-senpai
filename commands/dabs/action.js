@@ -13,9 +13,7 @@ import dailyRoll from './subcommands/daily-roll.js'
 import give from './subcommands/give.js'
 import leaderboards from './subcommands/leaderboards.js'
 import level from './subcommands/level.js'
-/*
 import switchMode from './subcommands/switch-mode.js'
-*/
 
 /**
  * Enum for InteractionResponseType values.
@@ -54,10 +52,8 @@ export default async function (client, interaction) {
       return await leaderboards(client, interaction)
     case 'level':
       return await level(client, interaction)
-    /*
     case 'switch-mode':
       return await switchMode(client, interaction)
-    */
     default:
       return {
         type: CommandOptionType.AcknowledgeWithSource

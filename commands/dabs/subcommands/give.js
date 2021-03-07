@@ -49,6 +49,8 @@ export default async function (client, interaction) {
   const takerName = (await guild.members.fetch(takerID)).displayName
   const taker = readUser(takerID)
   let amount = options.dabs
+  // Until this issue is fixed: https://github.com/discord/discord-api-docs/issues/2687
+  amount = Number(amount)
 
   if (amount === 0) amount = Math.trunc((0.5 - given) * giver.dabs)
   embed.title = `**Give: ${amount}**`

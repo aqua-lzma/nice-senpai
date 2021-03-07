@@ -18,6 +18,7 @@ import { fileURLToPath } from 'url'
  * @property {number} level - current level of user
  * @property {number} highestLevel - highest level user has ever had
  * @property {number} lowestLevel - lowest level user has ever had
+ * @property {number} levelsDestroyed - number of levels destroyed when switching mode
  * @property {number} lastClaim - last time user used daily-roll command
  * @property {number} claimStreak - number of days in a row user has used daily-roll
  * @property {number} dailyWins - total number of dabs user has won from daily-roll (absolute)
@@ -27,6 +28,7 @@ import { fileURLToPath } from 'url'
  * @property {number} flipSteak - number of bet-flips won in a row
  * @property {[string]} badges - badges user has achieved
  */
+/** @type {NiceUser} */
 export const templateUser = {
   // Overall
   positive: true,
@@ -134,12 +136,24 @@ const numberSets = {
     '<:ebil7:817402897025073182>',
     '<:ebil8:817402896941187165>',
     '<:ebil9:817402897028743248>'
+  ],
+  dancing: [
+    '<a:dancing0:818190097957781544>',
+    '<a:dancing1:818190099509411850>',
+    '<a:dancing2:818190099581763594>',
+    '<a:dancing3:818190099401408553>',
+    '<a:dancing4:818190099379388479>',
+    '<a:dancing5:818190099916259328>',
+    '<a:dancing6:818190101698838538>',
+    '<a:dancing7:818190101657026598>',
+    '<a:dancing8:818190101435383829>',
+    '<a:dancing9:818190101468807209>'
   ]
 }
 /**
  * Converts a string of numbers to Discord number emojis
  * @param {string} string - string of numbers `[0-9]` only
- * @param {'normal' | 'ebil'} set - emoji set to use
+ * @param {'normal' | 'ebil' | 'dancing'} set - emoji set to use
  */
 export function emojiNumbers (string, set = 'normal') {
   if (set === 'normal') {

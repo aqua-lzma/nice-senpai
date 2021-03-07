@@ -38,6 +38,8 @@ export default async function (client, interaction) {
   const embed = await generateEmbedTemplate(client, interaction)
   const options = unwrapDict(interaction.data.options[0].options)
   let amount = options.amount
+  // Until this issue is fixed: https://github.com/discord/discord-api-docs/issues/2687
+  amount = Number(amount)
   let dryRun = options['dry-run']
   if (dryRun == null) dryRun = true
   const userID = interaction.member.user.id
@@ -48,8 +50,7 @@ export default async function (client, interaction) {
   embed.title = `**Level ${amount}${dryRun ? ' (dry run)' : ''}:**`
   embed.description = [
     '```md',
-    `<Cost   ${formatNumber(cost)}>`,
-    '',
+    `<Cost        ${formatNumber(cost)}>`,
     `<Dabs-before ${formatNumber(user.dabs)}>`,
     `<Dabs-after  ${formatNumber(user.dabs - cost)}>`,
     '```'

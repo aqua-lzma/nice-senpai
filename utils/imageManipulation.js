@@ -2,8 +2,9 @@ import { readFileSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
-import canvas from 'canvas'
 import axios from 'axios'
+import canvas from 'canvas'
+import GIFEncoder from 'gifencoder'
 
 const rootDir = dirname(dirname(fileURLToPath(import.meta.url)))
 const imageDataDir = join(rootDir, 'data', 'image-manipulation')
@@ -37,6 +38,60 @@ function saveMap (funcName, map) {
   writeFileSync(filePath, JSON.stringify(map), 'utf8')
 }
 
+async function uploadToImgur (buffer, type) {
+  try {
+    const response = await axios.post('https://api.imgur.com/3/image', buffer, {
+      headers: {
+        'content-type': type,
+        Authorization: `Client-ID ${config.imgurAPIKey}`
+      }
+    })
+    return response.data.data.link
+  } catch (error) {
+    console.error('Failed to POST image to imgur.')
+    console.error(error)
+  }
+}
+
+/**
+ * Animate a gif inverting the colours and flipping vertically
+ * @param {string} imageURL - Image URL, `png` or `jpeg` only
+ * @returns {string} Image URL to edited image
+ */
+export async function animInvert (imageURL) {
+  const map = readMap('animInvert')
+  if (imageURL in map) return map[imageURL]
+  const image = await canvas.loadImage(imageURL)
+  const cnv = canvas.createCanvas(image.width, image.height)
+  const icnv = canvas.createCanvas(image.width, image.height)
+  const ctx = cnv.getContext('2d')
+  const ictx = icnv.getContext('2d')
+  ictx.translate(0, cnv.height)
+  ictx.scale(1, -1)
+  ictx.drawImage(image, 0, 0)
+  ictx.globalCompositeOperation = 'difference'
+  ictx.fillStyle = 'white'
+  ictx.fillRect(0, 0, image.width, image.height)
+
+  const gif = new GIFEncoder(image.width, image.height)
+  const stream = gif.createReadStream()
+  gif.start()
+  gif.setRepeat(-1)
+  gif.setDelay(120)
+  for (let i = 0; i < 11; i++) {
+    ctx.globalAlpha = 1
+    ctx.drawImage(image, 0, 0)
+    ctx.globalAlpha = 0.1 * i
+    ctx.drawImage(icnv, 0, 0)
+    gif.addFrame(ctx)
+  }
+  gif.finish()
+  const newURL = await uploadToImgur(stream.read(), 'image/gif')
+  map[imageURL] = newURL
+  saveMap('animInvert', map)
+  return newURL
+}
+
 /**
  * Invert the colours and flip vertically
  * @param {string} imageURL - Image URL, `png` or `jpeg` only
@@ -54,20 +109,8 @@ export async function flipInvert (imageURL) {
   ctx.globalCompositeOperation = 'difference'
   ctx.fillStyle = 'white'
   ctx.fillRect(0, 0, image.width, image.height)
-  const buffer = cnv.toBuffer('image/png')
-  try {
-    const response = await axios.post('https://api.imgur.com/3/image', buffer, {
-      headers: {
-        'content-type': 'image/png',
-        Authorization: `Client-ID ${config.imgurAPIKey}`
-      }
-    })
-    const newURL = response.data.data.link
-    map[imageURL] = newURL
-    saveMap('flipInvert', map)
-    return newURL
-  } catch (error) {
-    console.error('Failed to POST image to imgur.')
-    console.error(error)
-  }
+  const newURL = await uploadToImgur(cnv.toBuffer('image/png'), 'image/png')
+  map[imageURL] = newURL
+  saveMap('flipInvert', map)
+  return newURL
 }

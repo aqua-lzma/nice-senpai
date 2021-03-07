@@ -113,7 +113,7 @@ const struct = {
     options: [{
       type: CommandOptionType.INTEGER,
       name: 'dabs',
-      description: 'Number of dabs to bet. ',
+      description: 'Number of dabs to bet',
       required: true
     }]
   }, {
