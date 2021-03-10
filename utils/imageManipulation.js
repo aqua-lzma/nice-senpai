@@ -115,21 +115,82 @@ export async function flipInvert (imageURL) {
   return newURL
 }
 
+/**
+ * Mirror image - copy left half to right half
+ * @param {string} imageURL - Image URL, `png` or `jpeg` only
+ * @returns {string} Image URL to edited image
+ */
 export async function haah (imageURL) {
   const image = await canvas.loadImage(imageURL)
   const cnv = canvas.createCanvas(image.width, image.height)
+  const cnv2 = canvas.createCanvas(image.width, image.height)
   const ctx = cnv.getContext('2d')
-  return imageURL
+  const ctx2 = cnv2.getContext('2d')
+  ctx.translate(cnv.width, 0)
+  ctx.scale(-1, 1)
+  ctx.drawImage(image, 0, 0, cnv.width / 2, cnv.height, 0, 0, cnv.width / 2, cnv.height)
+  ctx2.drawImage(image, 0, 0, cnv.width / 2, cnv.height, 0, 0, cnv.width / 2, cnv.height)
+  ctx2.drawImage(cnv, 0, 0)
+  const newURL = await uploadToImgur(cnv2.toBuffer('image/png'), 'image/png')
+  return newURL
 }
 
-export async function waaw () {
-  
+/**
+ * Mirror image - copy right half to left half
+ * @param {string} imageURL - Image URL, `png` or `jpeg` only
+ * @returns {string} Image URL to edited image
+ */
+export async function waaw (imageURL) {
+  const image = await canvas.loadImage(imageURL)
+  const cnv = canvas.createCanvas(image.width, image.height)
+  const cnv2 = canvas.createCanvas(image.width, image.height)
+  const ctx = cnv.getContext('2d')
+  const ctx2 = cnv2.getContext('2d')
+  ctx.translate(cnv.width, 0)
+  ctx.scale(-1, 1)
+  ctx.drawImage(image, cnv.width / 2, 0, cnv.width / 2, cnv.height, cnv.width / 2, 0, cnv.width / 2, cnv.height)
+  ctx2.drawImage(image, cnv.width / 2, 0, cnv.width / 2, cnv.height, cnv.width / 2, 0, cnv.width / 2, cnv.height)
+  ctx2.drawImage(cnv, 0, 0)
+  const newURL = await uploadToImgur(cnv2.toBuffer('image/png'), 'image/png')
+  return newURL
 }
 
-export async function hooh () {
-  
+/**
+ * Mirror image - copy bottom half to top half
+ * @param {string} imageURL - Image URL, `png` or `jpeg` only
+ * @returns {string} Image URL to edited image
+ */
+export async function hooh (imageURL) {
+  const image = await canvas.loadImage(imageURL)
+  const cnv = canvas.createCanvas(image.width, image.height)
+  const cnv2 = canvas.createCanvas(image.width, image.height)
+  const ctx = cnv.getContext('2d')
+  const ctx2 = cnv2.getContext('2d')
+  ctx.translate(0, cnv.height)
+  ctx.scale(1, -1)
+  ctx.drawImage(image, 0, cnv.height / 2, cnv.width, cnv.height / 2, 0, cnv.height / 2, cnv.width, cnv.height / 2)
+  ctx2.drawImage(image, 0, cnv.height / 2, cnv.width, cnv.height / 2, 0, cnv.height / 2, cnv.width, cnv.height / 2)
+  ctx2.drawImage(cnv, 0, 0)
+  const newURL = await uploadToImgur(cnv2.toBuffer('image/png'), 'image/png')
+  return newURL
 }
 
-export async function woow () {
-  
+/**
+ * Mirror image - copy top half to bottom half
+ * @param {string} imageURL - Image URL, `png` or `jpeg` only
+ * @returns {string} Image URL to edited image
+ */
+export async function woow (imageURL) {
+  const image = await canvas.loadImage(imageURL)
+  const cnv = canvas.createCanvas(image.width, image.height)
+  const cnv2 = canvas.createCanvas(image.width, image.height)
+  const ctx = cnv.getContext('2d')
+  const ctx2 = cnv2.getContext('2d')
+  ctx.translate(0, cnv.height)
+  ctx.scale(1, -1)
+  ctx.drawImage(image, 0, 0, cnv.width, cnv.height / 2, 0, 0, cnv.width, cnv.height / 2)
+  ctx2.drawImage(image, 0, 0, cnv.width, cnv.height / 2, 0, 0, cnv.width, cnv.height / 2)
+  ctx2.drawImage(cnv, 0, 0)
+  const newURL = await uploadToImgur(cnv2.toBuffer('image/png'), 'image/png')
+  return newURL
 }

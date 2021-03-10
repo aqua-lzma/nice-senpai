@@ -4,7 +4,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../typedefs.js'
-import { InteractionResponseType } from '../../../enums.js'
+import { InteractionResponseType } from '../../enums.js'
 
 import betDubs from './subcommands/bet-dubs.js'
 import betFlip from './subcommands/bet-flip.js'

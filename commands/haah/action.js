@@ -4,7 +4,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Client, TextChannel } from 'discord.js'
 import '../../typedefs.js'
-import { InteractionResponseType } from '../../../enums.js'
+import { InteractionResponseType } from '../../enums.js'
 import generateEmbedTemplate from '../../utils/generateEmbedTemplate.js'
 import {
   haah,
@@ -28,6 +28,7 @@ async function getLastImage (channel) {
     }
     for (const embed of message.embeds) {
       if (embed.type === 'image') return embed.url
+      if (embed.image != null) return embed.image.url
     }
   }
 }
@@ -43,20 +44,28 @@ export default async function (client, interaction) {
   const guild = await client.guilds.fetch(interaction.guild_id)
   const channel = guild.channels.resolve(interaction.channel_id)
   const imageURL = await getLastImage(channel)
-  const options = unwrapDict(interaction.options)
-  /*
+  console.log(interaction)
+  const options = unwrapDict(interaction.data.options)
   let opt = options.haah
   if (opt == null) opt = 'haah'
-  switch (opt) {
-    case 'haah':
-    case 'waaw':
-    case 'hooh':
-    case 'woow':
-  }
-  */
-  embed.title = 'haah'
+
+  embed.title = `**haah:** ${opt}`
   if (imageURL != null) {
-    const newURL = await haah(imageURL)
+    let newURL
+    switch (opt) {
+      case 'haah':
+        newURL = await haah(imageURL)
+        break
+      case 'waaw':
+        newURL = await waaw(imageURL)
+        break
+      case 'hooh':
+        newURL = await hooh(imageURL)
+        break
+      case 'woow':
+        newURL = await woow(imageURL)
+        break
+    }
     embed.image = { url: newURL }
   } else {
     embed.color = 0xff0000
