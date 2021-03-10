@@ -58,7 +58,7 @@ export default async function (client, interaction) {
   }
   saveUser(userID, user)
   return {
-    type: CommandOptionType.ChannelMessage,
+    type: CommandOptionType.Acknowledge,
     data: {
       embeds: [embed]
     }

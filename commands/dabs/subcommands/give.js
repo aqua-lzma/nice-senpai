@@ -125,7 +125,7 @@ export default async function (client, interaction) {
     embed.color = 0xff0000
   }
   return {
-    type: CommandOptionType.ChannelMessage,
+    type: CommandOptionType.Acknowledge,
     data: {
       embeds: [embed]
     }

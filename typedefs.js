@@ -1,33 +1,35 @@
+// Up to date as of 2021-03-10
+
 /**
- * [ApplicationCommand](https://discord.com/developers/docs/interactions/slash-commands#applicationcommand)
- * - A command, or each individual subcommand, can have a maximum of 10 `options`.
- * - An application command is the base "command" model that belongs to an application. This is what you are creating when you `POST` a new command.
+ * [ApplicationCommand](https://discord.com/developers/docs/interactions/slash-commands#applicationcommand):
+ * An application command is the base "command" model that belongs to an application. This is what you are creating when you `POST` a new command.
+ * - A command, or each individual subcommand, can have a maximum of 10 options
  * @typedef {object} ApplicationCommand
- * @property {string?} id - unique id of the command
- * @property {string?} application_id - unique id of the parent application
- * @property {string} name - 3-32 character name matching `^[\w-]{3,32}$`
+ * @property {string?} id - Unique id of the command
+ * @property {string?} application_id - Unique id of the parent application
+ * @property {string} name - 1-32 character name matching `^[\w-]{1,32}$`
  * @property {string} description - 1-100 character description
  * @property {[ApplicationCommandOption]} [options] - The parameters for the command
 */
 
 /**
  * [ApplicationCommandOption](https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoption)
- * - You can specify a maximum of 10 `choices` per option.
+ * - You can specify a maximum of 10 `choices` per option
  * @typedef {object} ApplicationCommandOption
  * @property {number} type - value of [ApplicationCommandOptionType](https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoptiontype)
  * @property {string} name - 1-32 character name matching `^[\w-]{1,32}$`
  * @property {string} description - 1-100 character description
- * @property {boolean} [required] - if the parameter is required or optional -- default `false`
+ * @property {boolean} [required] - If the parameter is required or optional -- default `false`
  * @property {[ApplicationCommandOptionChoice]} [choices] - choices for `string` and `int` types for the user to pick from
- * @property {[ApplicationCommandOption]} [options] - if the option is a subcommand or subcommand group type, this nested options will be the parameters
+ * @property {[ApplicationCommandOption]} [options] - If the option is a subcommand or subcommand group type, this nested options will be the parameters
  */
 
 /**
  * [ApplicationCommandOptionChoice](https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoptionchoice)
- * - If you specify `choices` for an option, they are the only valid values for a user to pick.
+ * - If you specify `choices` for an option, they are the only valid values for a user to pick
  * @typedef {object} ApplicationCommandOptionChoice
  * @property {string} name - 1-100 character choice name
- * @property {string | number} value - value of the choice
+ * @property {string | number} value - Value of the choice, up to 100 characters if string
  */
 
 /**
@@ -65,45 +67,48 @@
  */
 
 /**
- * [Interaction](https://discord.com/developers/docs/interactions/slash-commands#interaction)
- * - An interaction is the base "thing" that is sent when a user invokes a command, and is the same for Slash Commands and other future interaction types.
+ * [Interaction](https://discord.com/developers/docs/interactions/slash-commands#interaction):
+ * An interaction is the base "thing" that is sent when a user invokes a command, and is the same for Slash Commands and other future interaction types.
  * @typedef {object} Interaction
- * @property {string} id - id of the interaction
- * @property {number} type - the [type](https://discord.com/developers/docs/interactions/slash-commands#interaction-interactiontype) of interaction.
+ * @property {string} id - ID of the interaction
+ * @property {number} type - The [type](https://discord.com/developers/docs/interactions/slash-commands#interaction-interactiontype) of interaction
  * - Ping: `1`
  * - ApplicationCommand: `2`
- * @property {ApplicationCommandInteractionData} [data] - the command data payload.
- * - This is always present on ApplicationCommand interaction types.
- * - It is optional for future-proofing against new interaction types
- * @property {string} guild_id - the guild it was sent from
- * @property {string} channel_id - the channel it was sent from
- * @property {GuildMember} member - guild member data for the invoking user, including permissions
- * @property {string} token - a continuation token for responding to the interaction
- * @property {number} version - read-only property, always `1`
+ * @property {ApplicationCommandInteractionData} [data] - The command data payload
+ * - This is always present on `ApplicationCommand` interaction types. It is optional for future-proofing against new interaction types
+ * @property {string} guild_id - The guild it was sent from
+ * @property {string} channel_id - The channel it was sent from
+ * @property {GuildMember} [member] - Guild member data for the invoking user, including permissions
+ * - Member is sent when the command is invoked in a guild, and `user` is sent when invoked in a DM
+ * @property {User} [user] - User object for the invoking user, if invoked in a DM
+ * @property {string} token - A continuation token for responding to the interaction
+ * @property {number} version - Read-only property, always `1`
  */
 
 /**
  * [ApplicationCommandInteractionData](https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondata)
  * @typedef {object} ApplicationCommandInteractionData
- * @property {string} id - the ID of the invoked command
- * @property {string} name - the name of the invoked command
- * @property {[ApplicationCommandInteractionDataOption]} [options] the params + values from the user
+ * @property {string} id - The ID of the invoked command
+ * @property {string} name - The name of the invoked command
+ * @property {[ApplicationCommandInteractionDataOption]} [options] The params + values from the user
  */
 
 /**
- * [ApplicationCommandInteractionDataOption](https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondataoption)
- * - All options have names, and an option can either be a parameter and input `value` -- in which case value will be set -- or it can denote a subcommand or group -- in which case it will contain a top-level key and another array of `options`.
+ * [ApplicationCommandInteractionDataOption](https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondataoption):
+ * All options have names, and an option can either be a parameter and input value--in which case `value` will be set--or it can denote a subcommand or group--in which case it will contain a top-level key and another array of `options`.
  * - `value` and `options` are mutually exclusive.
  * @typedef {object} ApplicationCommandInteractionDataOption
- * @property {string} name - the name of the parameter
- * @property {string | number | boolean} [value] - the `ApplicationCommandOptionType` value of the pair
- * @property {[ApplicationCommandInteractionDataOption]} [options] - present if this option is a group or subcommand
+ * @property {string} name - The name of the parameter
+ * @property {string | number | boolean} [value] - The `ApplicationCommandOptionType` value of the pair
+ * @property {[ApplicationCommandInteractionDataOption]} [options] - Present if this option is a group or subcommand
  */
 
 /**
- * [InteractionResponse](https://discord.com/developers/docs/interactions/slash-commands#interaction-response)
- * - After receiving an interaction, you must respond to acknowledge it. This may be a `pong` for a `ping`, a message, or simply an acknowledgement that you have received it and will handle the command async.
- * - Interaction responses may choose to "eat" the user's command input if you do not wish to have their slash command show up as message in chat. This may be helpful for slash commands, or commands whose responses are asynchronous or ephemeral messages.
+ * [InteractionResponse](https://discord.com/developers/docs/interactions/slash-commands#interaction-response):
+ * After receiving an interaction, you must respond to acknowledge it. You can choose to respond with a message immediately using type `4`, or you can choose to send a deferred response with type `5`. If choosing a deferred response, the user will see a loading state for the interaction, and you'll have up to 15 minutes to edit the original deferred response using [Edit Original Interaction Response](https://discord.com/developers/docs/interactions/slash-commands#edit-original-interaction-response).
+ * - A defered response tells the user "Bot name is thinking"
+ * - Interaction responses can also be public—everyone can see it—or "ephemeral"—only the invoking user can see it. That is determined by setting flags to 64 on the [InteractionApplicationCommandCallbackData](https://discord.com/developers/docs/interactions/slash-commands#InteractionApplicationCommandCallbackData).
+ * - Interaction response types `2` and `3` have been deprecated
  * @typedef {object} InteractionResponse
  * @property {number} type - the [type](https://discord.com/developers/docs/interactions/slash-commands#interaction-response-interactionresponsetype) of response
  * @property {InteractionApplicationCommandCallbackData} [data] - an optional response message
@@ -111,10 +116,11 @@
 
 /**
  * [InteractionApplicationCommandCallbackData](https://discord.com/developers/docs/interactions/slash-commands#interaction-response-interactionapplicationcommandcallbackdata)
- * - Not all message fields are currently supported.
+ * - Not all message fields are currently supported
  * @typedef {object} InteractionApplicationCommandCallbackData
- * @property {boolean} [tts] - is the response TTS
- * @property {string} content - message content
- * @property {[object]} [embeds] - supports up to 10 embeds
- * @property {object} [allowed_mentions] - [allowed mentions](https://discord.com/developers/docs/resources/channel#allowed-mentions-object) object
+ * @property {boolean} [tts] - Is the response TTS
+ * @property {string} [content] - Message content
+ * @property {[object]} [embeds] - Supports up to 10 [embeds](https://discord.com/developers/docs/resources/channel#embed-object)
+ * @property {object} [allowed_mentions] - [Allowed mentions](https://discord.com/developers/docs/resources/channel#allowed-mentions-object) object
+ * @property {number} [flags] - Set to `64` to make your response ephemeral
  */

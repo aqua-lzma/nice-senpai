@@ -65,7 +65,7 @@ export default async function (client, interaction) {
   message.push('```')
   embed.description = message.join('\n')
   return {
-    type: CommandOptionType.ChannelMessage,
+    type: CommandOptionType.Acknowledge,
     data: { embeds: [embed] }
   }
 }

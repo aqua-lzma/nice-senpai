@@ -64,7 +64,7 @@ export default async function (client, interaction) {
   embed.color = fortune[0]
   embed.description = fortune[1]
   return {
-    type: CommandOptionType.ChannelMessage,
+    type: CommandOptionType.Acknowledge,
     data: {
       embeds: [embed]
     }

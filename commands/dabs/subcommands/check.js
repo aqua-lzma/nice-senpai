@@ -126,7 +126,7 @@ export default async function (client, interaction) {
   }
 
   return {
-    type: CommandOptionType.ChannelMessage,
+    type: CommandOptionType.Acknowledge,
     data: {
       embeds: [embed]
     }

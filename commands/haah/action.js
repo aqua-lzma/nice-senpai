@@ -75,7 +75,7 @@ export default async function (client, interaction) {
     embed.description = 'No image found'
   }
   return {
-    type: CommandOptionType.ChannelMessage,
+    type: CommandOptionType.Acknowledge,
     data: {
       embeds: [embed]
     }
