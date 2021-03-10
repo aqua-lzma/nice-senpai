@@ -20,6 +20,10 @@ const struct = {
       { name: 'hooh', value: 'hooh' },
       { name: 'woow', value: 'woow' }
     ]
+  }, {
+    type: ApplicationCommandOptionType.STRING,
+    name: 'url',
+    description: 'Image URL'
   }]
 }
 export default struct

@@ -3,6 +3,7 @@
  */
 // eslint-disable-next-line no-unused-vars
 import { Client, TextChannel } from 'discord.js'
+import canvas from 'canvas'
 import '../../typedefs.js'
 import { InteractionResponseType } from '../../enums.js'
 import generateEmbedTemplate from '../../utils/generateEmbedTemplate.js'
@@ -43,9 +44,18 @@ export default async function (client, interaction) {
   const embed = await generateEmbedTemplate(client, interaction)
   const guild = await client.guilds.fetch(interaction.guild_id)
   const channel = guild.channels.resolve(interaction.channel_id)
-  const imageURL = await getLastImage(channel)
-  console.log(interaction)
   const options = unwrapDict(interaction.data.options)
+  let imageURL
+  if (options.url == null) {
+    imageURL = await getLastImage(channel)
+  } else {
+    imageURL = options.url
+    try {
+      await canvas.loadImage(imageURL)
+    } catch {
+      imageURL = null
+    }
+  }
   let opt = options.haah
   if (opt == null) opt = 'haah'
 
@@ -66,6 +76,7 @@ export default async function (client, interaction) {
         newURL = await woow(imageURL)
         break
     }
+    embed.url = imageURL
     embed.image = { url: newURL }
   } else {
     embed.color = 0xff0000
