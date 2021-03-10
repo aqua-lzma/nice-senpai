@@ -2,22 +2,7 @@
  * @module haah-struct Command structure for `haah` command
  */
 import '../../typedefs.js'
-
-/**
- * Enum for ApplicationCommandOptionType values.
- * @readonly
- * @enum {number}
- */
-const CommandOptionType = {
-  SUB_COMMAND: 1,
-  SUB_COMMAND_GROUP: 2,
-  STRING: 3,
-  INTEGER: 4,
-  BOOLEAN: 5,
-  USER: 6,
-  CHANNEL: 7,
-  ROLE: 8
-}
+import { ApplicationCommandOptionType } from '../../enums.js'
 
 /**
  * @type {ApplicationCommand}
@@ -26,7 +11,7 @@ const struct = {
   name: 'haah',
   description: 'haah waaw',
   options: [{
-    type: CommandOptionType.STRING,
+    type: ApplicationCommandOptionType.STRING,
     name: 'haah',
     description: 'haah waaw hooh woow',
     choices: [
