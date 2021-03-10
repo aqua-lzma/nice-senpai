@@ -1,6 +1,7 @@
 {
     "token": "",
-    "imgurAPIKey": "",
     "testMode": false,
-    "testGuild": ""
+    "testGuild": "",
+    "imgurAPIKey": "",
+    "lastfmAPIKey": "",
 }

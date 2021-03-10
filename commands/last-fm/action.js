@@ -1,22 +1,18 @@
 /**
- * @module template-action Response generator for `template` command
+ * @module image-search-action Response generator for `image-search` command
  */
 // eslint-disable-next-line no-unused-vars
 import { Client } from 'discord.js'
 import '../../typedefs.js'
-
-/**
- * Enum for InteractionResponseType values.
- * @readonly
- * @enum {number}
- */
-const CommandOptionType = {
-  Pong: 1, // ACK a Ping
-  Acknowledge: 2, // DEPRECATED ACK a command without sending a message, eating the user's input
-  ChannelMessage: 3, // DEPRECATED respond with a message, eating the user's input
-  ChannelMessageWithSource: 4, // respond to an interaction with a message
-  DeferredChannelMessageWithSource: 5 // ACK an interaction and edit to a response later, the user sees a loading state
-}
+import { InteractionResponseType } from '../../enums.js'
+import generateEmbedTemplate from '../../utils/generateEmbedTemplate.js'
+import {
+  getRecent,
+  getAlbums,
+  getArtists,
+  getTracks
+} from '../../utils/last-fm.js'
+import unwrapDict from '../../utils/unwrapDict.js'
 
 /**
  * Respond to command trigger
@@ -25,16 +21,44 @@ const CommandOptionType = {
  * @returns {InteractionResponse} interaction to send back
  */
 export default async function (client, interaction) {
+  const embed = await generateEmbedTemplate(client, interaction)
+  const options = unwrapDict(interaction.data.options)
+
+  embed.title = `**Last.fm: ${options.user}**`
+  if (options.type == null && options.timeframe == null && options.gridsize == null) options.type = 'recent'
+  if (options.type == null) options.type = 'albums'
+  if (options.timeframe == null) options.timeframe = '7day'
+  if (options.gridsize == null) options.gridsize = 9
+
+  try {
+    if (options.type === 'recent') {
+      const data = await getRecent(options.user)
+      embed.thumbnail = { url: data.coverURL }
+      embed.description = data.description
+    } else {
+      switch (options.type) {
+        case 'albums':
+          embed.image = { url: await getAlbums(options.user, options.timeframe, options.gridsize) }
+          break
+        case 'artists':
+          embed.image = { url: await getArtists(options.user, options.timeframe, options.gridsize) }
+          break
+        case 'tracks':
+          embed.image = { url: await getTracks(options.user, options.timeframe, options.gridsize) }
+          break
+      }
+    }
+  } catch {
+    embed.description = 'User not found.'
+    embed.color = 0xff0000
+  }
   return {
-    type: CommandOptionType.AcknowledgeWithSource
+    type: InteractionResponseType.Acknowledge,
+    data: {
+      embeds: [embed]
+    }
   }
 }
-
-/*
-
-const request = require('request')
-const Jimp = require('jimp')
-const { RichEmbed } = require('discord.js')
 
 function embedHeader (user) {
   return new Promise((resolve, reject) => {
@@ -233,9 +257,7 @@ const periods = [
   '12month'
 ]
 
-let apiKey = ''
-
-module.exports = {
+const a = {
   title: 'Last fm',
   desc: [
     'Look up a users information on last.fm.',
@@ -287,5 +309,3 @@ module.exports = {
     })
   }
 }
-
-*/

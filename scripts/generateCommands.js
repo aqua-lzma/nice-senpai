@@ -11,13 +11,13 @@ const commandList = commandFiles.filter(a => a !== 'index.js' && a !== 'template
 
 let indexString = ''
 for (const commandDir of commandList) {
-  const varName = commandDir.split('-').join('_')
+  const varName = commandDir.split('-').join('')
   indexString += `import ${varName}Struct from './${commandDir}/struct.js'\n`
   indexString += `import ${varName}Action from './${commandDir}/action.js'\n`
 }
 indexString += 'export default [\n'
 for (const commandDir of commandList) {
-  const varName = commandDir.split('-').join('_')
+  const varName = commandDir.split('-').join('')
   indexString += `  { name: '${commandDir}', struct: ${varName}Struct, action: ${varName}Action },\n`
 }
 indexString += ']\n'

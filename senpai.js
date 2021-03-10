@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url'
 import { Client } from 'discord.js'
 // Local modules
 import './typedefs.js'
+import { InteractionResponseType } from './enums.js'
 import commands from './commands/index.js'
 import compareStructs from './utils/compareStructs.js'
 
@@ -86,6 +87,16 @@ client.on('ready', async function () {
 })
 
 client.ws.on('INTERACTION_CREATE', /** @param {Interaction} interaction */ async interaction => {
+  await client.api.interactions(interaction.id, interaction.token).callback.post({
+    data: {
+      type: InteractionResponseType.Acknowledge,
+      data: {
+        embeds: [{
+          title: '<a:typing:819337369676808192> Sending command...'
+        }]
+      }
+    }
+  })
   const command = commands.find(command => command.name === interaction.data.name)
   if (command != null) {
     /** @type {InteractionResponse} */
@@ -98,12 +109,15 @@ client.ws.on('INTERACTION_CREATE', /** @param {Interaction} interaction */ async
         error,
         { error, interaction }
       )
-      response = { type: 5 }
+      response = { type: InteractionResponseType.Acknowledge }
     }
     try {
-      await client.api.interactions(interaction.id, interaction.token).callback.post({
+      await client.api.webhooks(client.user.id, interaction.token).messages('@original').patch(response)
+      /*
+      const res = await client.api.interactions(interaction.id, interaction.token).callback.post({
         data: response
       })
+      */
     } catch (error) {
       logError(
         `Failed to respond to command: ${interaction.data.name}`,
