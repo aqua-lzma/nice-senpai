@@ -21,7 +21,7 @@
     "ffmpeg-binaries": "^3.2.2-3",
     "fs": "0.0.1-security",
     "jimp": "^0.2.28",
-    "moment-timezone": "^0.5.14",
+    "moment-timezone": "^0.5.35",
     "opusscript": "0.0.4",
     "package.json": "^2.0.1",
     "request": "^2.83.0",
