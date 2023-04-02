@@ -29,7 +29,7 @@ module.exports = {
     affect_config: false,
     action: function(message, config) {
         if (message.mentions.members.size == 0)
-            message.guild.fetchMember(message.author)
+            message.guild.members.fetch(message.author)
             .then(guildMember => message.channel.send("", build_embed(guildMember, config)))
         else
             message.mentions.members.map(
