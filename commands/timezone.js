@@ -40,8 +40,8 @@ async function execute (interaction) {
   const localTime = new Date(timestamp + offset)
 
   let description = localTime.toUTCString().slice(0, -4)
-  description += '\n\n UTC' + (offset >= 0 ? '+' : '')
-  description += String(Math.floor(offset / 3600000)).padStart(2, '0')
+  description += '\n\n UTC' + (offset >= 0 ? '+' : '-')
+  description += String(Math.abs(Math.floor(offset / 3600000))).padStart(2, '0')
   description += ':' + String((offset % 3600000) / 60000).padStart(2, '0')
   description += '\n' + timeData.data.timeZoneId
   description += '\n' + timeData.data.timeZoneName
