@@ -1,12 +1,23 @@
-const fs =   require("fs")
-const path = require("path")
+const { readdirSync } = require('fs')
 
-var exports = []
+/**
+ * @typedef {import('discord.js').ChatInputCommandInteraction} ChatInputCommandInteraction
+ * @typedef {import('discord.js').SlashCommandBuilder} SlashCommandBuilder
+ * @typedef {(interaction: ChatInputCommandInteraction) => Promise<void>} Execute
+ */
 
-for (let command of fs.readdirSync("./commands")) {
-    if (!command.startsWith("_")) {
-        exports.push(require(`./commands/${command}`))
-    }
+/**
+ * @type {Object.<string, Execute>} commandMap
+ */
+const commandMap = {}
+const commandList = []
+for (const name of readdirSync('./commands')) {
+  /**
+   * @type {{command: SlashCommandBuilder, execute: Execute}}
+   */
+  const module = require(`./commands/${name}`)
+  commandMap[module.command.name] = module.execute
+  commandList.push(module.command.toJSON())
 }
 
-module.exports = exports
+module.exports = { commandMap, dataList: commandList }
